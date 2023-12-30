@@ -63,15 +63,22 @@ function App() {
         player
             .load(`./mods/${track.url}`)
             .then((buffer) => {
-                setCurrentTrack(track)
+                setIsLoading(false)
+
                 player.pause()
                 player.play(buffer)
                 player.seek(0)
 
+                setIsPlay(true)
+
+                setCurrentTrack(track)
+                setSize(buffer.byteLength)
+                setMeta(player.metadata())
+
                 const _analyser = context.createAnalyser()
 
                 _analyser.fftSize = 2048
-                _nalyser.maxDecibels = -10
+                _analyser.maxDecibels = -10
                 _analyser.minDecibels = -90
                 _analyser.smoothingTimeConstant = 0.05
 
@@ -81,12 +88,8 @@ function App() {
                 _analyser.connect(Audio.destination)
 
                 setAnalyser(_analyser)
-                
-                setIsLoading(false)
-                setIsPlay(true)
-                setSize(buffer.byteLength)
-                setMeta(player.metadata())
-                // setDuration(player.duration());
+
+                setDuration(player.duration())
             })
             .catch(() => {
                 setIsLoading(false)
@@ -140,8 +143,8 @@ function App() {
                     meta={meta}
                     togglePlay={togglePlay}
                     isPlay={isPlay}
-                    size={size}
                     setIsPlay={setIsPlay}
+                    size={size}
                     setVolume={setPlayerVolume}
                     volume={volume}
                 />

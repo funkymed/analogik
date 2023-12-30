@@ -4,9 +4,9 @@
         "moduleResolution": "node",
         "module": "esnext",
         "jsx": "react-jsx",
-        "strict": true,
+        "strict": false,
         "allowImportingTsExtensions": true,
         "noEmit": true
     },
-    "include": ["**/*.js", "**/*.ts", "**/*.tsx"]
+    "include": [ "**/*.ts", "**/*.tsx"]
 }

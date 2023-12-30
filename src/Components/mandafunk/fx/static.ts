@@ -124,6 +124,7 @@ export class StaticItems {
     }
     setAnalyser(analyser: AnalyserNode) {
         this.analyser = analyser
+        console.log(analyser)
     }
 
     update(config: ConfigType) {

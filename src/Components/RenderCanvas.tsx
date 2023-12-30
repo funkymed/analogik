@@ -32,7 +32,10 @@ function RenderCanvas(props: any): JSX.Element {
     let scene: Scene
     let currentConfig: ConfigType
     let clock: Clock
+    let isinit: boolean = false
+
     const init = (canvas: any) => {
+        console.log('init canvas')
         // init
         const w = window,
             d = document,
@@ -66,7 +69,7 @@ function RenderCanvas(props: any): JSX.Element {
             currentConfig,
             props.player,
             props.audioContext,
-            analyser,
+            props.analyser,
             scene
         )
         manda_scene.setStatic(staticItems)
@@ -80,12 +83,12 @@ function RenderCanvas(props: any): JSX.Element {
         camera.layers.enable(1)
 
         // Renderer
-        const renderer = new WebGLRenderer({
+        renderer = new WebGLRenderer({
             antialias: true,
             alpha: false,
             powerPreference: 'high-performance',
             preserveDrawingBuffer: false,
-            precision: 'mediump',
+            precision: 'highp',
             canvas: canvasRef.current,
         })
         renderer.debug.checkShaderErrors = true
@@ -94,10 +97,10 @@ function RenderCanvas(props: any): JSX.Element {
         renderer.setPixelRatio(window.devicePixelRatio)
         // document.body.appendChild(renderer.domElement)
 
-        scene.background = new Color('red')
-
         // Composer
         composer = new Composer(renderer, manda_scene, camera)
+
+        handleResize()
     }
 
     const loadConfig = () => {
@@ -113,7 +116,6 @@ function RenderCanvas(props: any): JSX.Element {
 
     const render = (time: number) => {
         // renderer.render(scene, camera)
-        // console.log(time)
         composer.rendering(time)
     }
 
@@ -122,13 +124,7 @@ function RenderCanvas(props: any): JSX.Element {
         const H = window.innerHeight
         camera.aspect = W / H
         camera.updateProjectionMatrix()
-        // if (canvasRef.current) {
-        //     canvasRef.current.width = W
-        //     canvasRef.current.height = H
-        // }
-
-        // renderer.setSize(W, H)
-
+        renderer.setSize(W, H)
         render(time)
     }
 
@@ -144,26 +140,33 @@ function RenderCanvas(props: any): JSX.Element {
     }
 
     useEffect(() => {
-        init(canvasRef.current)
-        loadConfig()
-        window.addEventListener('resize', handleResize)
-        animate()
+        if (!isinit) {
+            isinit = true
+            init(canvasRef.current)
+            loadConfig()
+            window.addEventListener('resize', handleResize)
+            animate()
+        }
         return () => {
             window.removeEventListener('resize', handleResize)
         }
     }, [])
 
     useEffect(() => {
-        setPlaying(props.isPlay)
+        setPlaying(true)
+        analyser = props.analyser
+        console.log(playing, props.isPlay)
     }, [props.isPlay])
 
     useEffect(() => {
         analyser = props.analyser
         staticItems.setAnalyser(props.analyser)
+        console.log(analyser)
     }, [props.analyser])
 
     useEffect(() => {
         setPlayer(props.player)
+        console.log(player)
     }, [props.player])
 
     return <canvas className="canvasStyle" ref={canvasRef} />
