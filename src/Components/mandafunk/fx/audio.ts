@@ -8,12 +8,12 @@ export class Audio {
     constructor(config: ConfigType) {
         this.config = config
         this.audio = document.createElement('audio')
-        const context: any = new window.AudioContext()
+        const context: AudioContext = new window.AudioContext()
         this.analyser = context.createAnalyser()
         this.analyser.fftSize = 2048
         this.analyser.maxDecibels = -10
         this.analyser.minDecibels = -90
-        this.analyser.smoothingTimeConstant = 0.05;
+        this.analyser.smoothingTimeConstant = 0.05
         const source = context.createMediaElementSource(this.audio)
         source.connect(this.analyser)
         this.analyser.connect(context.destination)

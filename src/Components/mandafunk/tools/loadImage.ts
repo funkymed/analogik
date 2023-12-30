@@ -1,8 +1,9 @@
 import { Scene, TextureLoader } from 'three'
-import { createMesh } from './createMesh'
+import { createMesh } from './createMesh.ts'
 
 export const loadImage = function (name: string, file: string, options: any, scene: Scene) {
-    const texture = new TextureLoader().load(
+    // const texture = 
+    new TextureLoader().load(
         file,
         (image) => {
             console.log(image, options)

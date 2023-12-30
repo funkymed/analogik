@@ -1,5 +1,5 @@
-import { createMesh } from './createMesh'
-import { fillText } from './fillText'
+import { createMesh } from './createMesh.ts'
+import { fillText } from './fillText.ts'
 
 export const writeText = function (name: string, text: string, options: any) {
     const texture = fillText(

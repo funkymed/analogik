@@ -3,7 +3,7 @@
         "target": "ES6",
         "moduleResolution": "node",
         "module": "esnext",
-
+        "jsx": "react-jsx",
         "strict": true,
         "allowImportingTsExtensions": true,
         "noEmit": true

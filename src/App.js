@@ -35,7 +35,8 @@ function App() {
     const [meta, setMeta] = useState(0)
     // const [duration, setDuration] = useState(0);
     const [isLoading, setIsLoading] = useState(0)
-    const [open, setOpen] = useState(true)
+    const [analyser, setAnalyser] = useState(0)
+    const [open, setOpen] = useState(false)
     const [volume, setVolume] = useState(90)
     const [selection, setSelection] = useState('all')
     const [mods, setMods] = useState(getTracks(year, author, selection))
@@ -51,14 +52,14 @@ function App() {
         setMods(getTracks(year, author, selection))
     }
 
-    const filterSelection = (value, val) => {
+    const filterSelection = (value) => {
         setSelection(value)
         setMods(getTracks(year, author, value))
     }
 
-    function loadTrack(track) {
+    const loadTrack = (track) => {
         setIsLoading(true)
-        // setOpen(false);
+        setOpen(false)
         player
             .load(`./mods/${track.url}`)
             .then((buffer) => {
@@ -67,6 +68,20 @@ function App() {
                 player.play(buffer)
                 player.seek(0)
 
+                const _analyser = context.createAnalyser()
+
+                _analyser.fftSize = 2048
+                _nalyser.maxDecibels = -10
+                _analyser.minDecibels = -90
+                _analyser.smoothingTimeConstant = 0.05
+
+                // const audio = document.createElement('audio')
+                // const source = context.createMediaElementSource(audio)
+                // source.connect(analyser)
+                _analyser.connect(Audio.destination)
+
+                setAnalyser(_analyser)
+                
                 setIsLoading(false)
                 setIsPlay(true)
                 setSize(buffer.byteLength)
@@ -78,7 +93,7 @@ function App() {
                 setIsPlay(false)
             })
     }
-    function setPlayerVolume(value) {
+    const setPlayerVolume = (value) => {
         setVolume(value)
         player.setVolume(value)
     }
@@ -90,7 +105,6 @@ function App() {
 
     return (
         <CustomProvider theme="dark">
-            <RenderCanvas />
             <Drawer size="sm" placement="right" open={open} onClose={() => setOpen(false)}>
                 <Drawer.Header>
                     <Drawer.Title>Tracks</Drawer.Title>
@@ -142,6 +156,14 @@ function App() {
                 circle
                 size="lg"
             ></IconButton>
+            <RenderCanvas
+                player={player}
+                audioContext={Audio}
+                isPlay={isPlay}
+                currentTrack={currentTrack}
+                isLoading={isLoading}
+                analyser={analyser}
+            />
         </CustomProvider>
     )
 }

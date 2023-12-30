@@ -1,9 +1,15 @@
 import { hextoRGB } from '../tools/color.ts'
 import { ConfigType } from '../types/config.ts'
-import { Audio } from './audio.ts'
 import { canvas2texture, canvasTexture } from '../tools/canvas2texture.ts'
 import { createMesh } from '../tools/createMesh.ts'
-import { AdditiveBlending, Mesh, MeshBasicMaterial, NormalBlending, PlaneGeometry, Scene } from 'three'
+import {
+    AdditiveBlending,
+    Mesh,
+    MeshBasicMaterial,
+    NormalBlending,
+    PlaneGeometry,
+    Scene,
+} from 'three'
 import { spectrum } from './spectrum.ts'
 import { oscillo } from './osciloscope.ts'
 import { progressbar } from './progressbar.ts'
@@ -11,7 +17,7 @@ import { progresstimer } from './progresstimer.ts'
 
 export class StaticItems {
     config: ConfigType
-    audio: Audio
+    audio: AudioContext
     analyser: AnalyserNode
     textureSpectrum: canvas2texture
     textureOscillo: canvas2texture
@@ -22,12 +28,21 @@ export class StaticItems {
     timerObj: Mesh
     progressbarObj: Mesh
     scene: Scene
+    player: any
+    time: number
 
-    constructor(config: ConfigType, audio: Audio, scene: Scene) {
+    constructor(
+        config: ConfigType,
+        player: any,
+        audio: AudioContext,
+        analyser: AnalyserNode,
+        scene: Scene
+    ) {
         this.config = config
         this.audio = audio
-        this.analyser = this.audio.getAnalyser()
+        this.analyser = analyser
         this.scene = scene
+        this.player = player
 
         // Spectrum
         this.textureSpectrum = canvasTexture(
@@ -107,6 +122,9 @@ export class StaticItems {
 
         this.update(config)
     }
+    setAnalyser(analyser: AnalyserNode) {
+        this.analyser = analyser
+    }
 
     update(config: ConfigType) {
         this.config = config
@@ -120,7 +138,7 @@ export class StaticItems {
         const material = mesh.material as MeshBasicMaterial
         material.blending = option.motionBlur ? AdditiveBlending : NormalBlending
         mesh.material = material
-        
+
         mesh.position.set(option.x || 0, option.y || 0, option.z || 0)
         mesh.rotation.set(option.rotationX || 0, option.rotationY || 0, option.rotationZ || 0)
         mesh.renderOrder = option.order || 0
@@ -130,19 +148,17 @@ export class StaticItems {
         const height: number = option.height ?? material.map?.image.height ?? 1
 
         const plane: PlaneGeometry = new PlaneGeometry(width * zoom, height * zoom)
-        mesh.geometry = plane;
+        mesh.geometry = plane
     }
 
     rendering(time: number) {
-        const _audio = this.audio.getAudio()
-        this.analyser = this.audio.getAnalyser()
-
+        this.time = time
         this.vumeterObj.visible = this.config.vumeters.spectrum.show
         this.oscilloObj.visible = this.config.vumeters.oscilloscop.show
         this.timerObj.visible = this.config.timer.show
         this.progressbarObj.visible = this.config.progressbar.show
 
-        if (this.textureSpectrum && this.textureSpectrum.context) {
+        if (this.textureSpectrum && this.textureSpectrum.context && this.analyser) {
             // if (this.config.vumeters.spectrum.show) {
             spectrum(this.textureSpectrum.context, this.config.vumeters.spectrum, this.analyser)
             this.textureSpectrum.texture.needsUpdate = true
@@ -157,8 +173,9 @@ export class StaticItems {
                 this.textureOscillo.texture.needsUpdate = true
             }
         }
+
         if (this.config.progressbar.show) {
-            const progressAudio = (_audio.currentTime / _audio.duration) * 100
+            const progressAudio = 0 //(this.player.context.currentTime / this.player.duration()) * 100
             progressbar(
                 this.textureProgress.context,
                 hextoRGB(this.config.progressbar.color),
@@ -177,8 +194,8 @@ export class StaticItems {
                 this.config.timer.opacity,
                 this.config.timer.size,
                 this.config.timer.font,
-                _audio.currentTime,
-                _audio.duration,
+                this.time, //this.player.getPosition(),
+                0, //this.player.duration(),
                 this.config.timer.align ?? 'center'
             )
             this.textureTimer.texture.needsUpdate = true

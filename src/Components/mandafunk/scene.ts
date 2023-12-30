@@ -4,7 +4,6 @@ import { ConfigType } from './types/config.ts'
 import { configDefault } from './config.ts'
 import { deepClone } from './tools/deepClone.ts'
 import { shaders } from './fx/shaders/background/index.ts'
-import { Audio } from './fx/audio.ts'
 import { StaticItems } from './fx/static.ts'
 
 export class MandaScene {
@@ -12,15 +11,13 @@ export class MandaScene {
     background: HTMLImageElement
     config: ConfigType
     shader: any
-    audio: Audio
     staticItems: StaticItems | false
 
-    constructor(audio: Audio) {
+    constructor() {
         this.scene = new Scene()
         this.config = deepClone(configDefault)
         this.background = new Image()
         this.shader = false
-        this.audio = audio
         this.staticItems = false
     }
 
