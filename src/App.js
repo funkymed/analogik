@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getTracks, getAuthors, getYears } from "./tracks";
 import PlayerControl from "./Components/PlayerControl";
 import TracksList from "./Components/TrackList";
@@ -98,6 +98,11 @@ function App() {
     setIsPlay(!isPlay);
     player.togglePause();
   };
+
+  useEffect(() => {
+    var item = mods[Math.floor(Math.random()*mods.length)];
+    loadTrack(item);
+  }, []);
 
   return (
     <CustomProvider theme="dark">
