@@ -64,8 +64,6 @@ export abstract class ShaderAbstract implements BackgroundShader {
 
         // this.uniforms.diffuse.value = {r:1,g:.2,b:.2}
         if (config.scene.background) {
-            const self = this
-
             const loader = new TextureLoader()
             const background = loader.load(this.config.scene.background)
             background.minFilter = NearestFilter

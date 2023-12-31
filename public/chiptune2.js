@@ -6,20 +6,17 @@ libopenmpt.locateFile = function (name) {
   return `../bin/${name}`;
 };
 
-let ChiptuneAudioContext = {};
-
-ChiptuneAudioContext = window.AudioContext || window.webkitAudioContext;
-
 function ChiptuneJsConfig(config) {
   this.repeatCount = config.repeatCount || 0;
   this.volume = config.volume || 100;
-  this.context = config.context || new ChiptuneAudioContext();
+  this.context = config.context;
 }
 
 function ChiptuneJsPlayer(config) {
   this.context = config.context;
   this.config = config;
   this.currentPlayingNode = null;
+  this.analyser = null;
   this.handlers = [];
   this.touchLocked = true;
 }
@@ -155,6 +152,18 @@ ChiptuneJsPlayer.prototype.play = function (buffer) {
   );
   this.currentPlayingNode = processNode;
   processNode.connect(this.context.destination);
+
+  this.analyser = this.context.createAnalyser();
+
+  processNode.connect(this.analyser);
+
+  this.analyser.fftsize = 256;
+  this.analyser.minDecibels = -90;
+  this.analyser.maxDecibels = -10;
+  this.analyser.smoothingTimeConstant = 0.85;
+};
+ChiptuneJsPlayer.prototype.getAnalyser = function () {
+  return this.analyser;
 };
 
 /**
@@ -176,6 +185,7 @@ ChiptuneJsPlayer.prototype.stop = function () {
   if (this.currentPlayingNode != null) {
     this.currentPlayingNode.disconnect();
     this.currentPlayingNode.cleanup();
+    this.analyser.disconnect();
     this.currentPlayingNode = null;
   }
 };

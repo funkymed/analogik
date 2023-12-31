@@ -1,5 +1,6 @@
 body {
-  overflow: hidden;
+  /* overflow: hidden; */
+  background: black;
 }
 
 .rs-btn {
@@ -28,6 +29,13 @@ body {
 
 * {
   z-index: 1;
+}
+
+audio {
+  position: absolute;
+  top: 0;
+  left: 0;
+
 }
 
 canvas {

@@ -1,12 +1,15 @@
 {
-    "compilerOptions": {
-        "target": "ES6",
-        "moduleResolution": "node",
-        "module": "esnext",
-        "jsx": "react-jsx",
-        "strict": false,
-        "allowImportingTsExtensions": true,
-        "noEmit": true
-    },
-    "include": [ "**/*.ts", "**/*.tsx"]
+  "compilerOptions": {
+    "target": "ES6",
+    "moduleResolution": "node",
+    "module": "esnext",
+    "jsx": "react-jsx",
+    "strict": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "sourceMap": true
+  },
+  "include": ["src/**/*"]
 }
