@@ -7,12 +7,17 @@ import { updateTexts } from "./mandafunk/fx/text.ts";
 import { StaticItems } from "./mandafunk/fx/static.ts";
 import { Composer } from "./mandafunk/fx/composer.ts";
 import testConfig from "../config.ts";
+import { Editor } from "./mandafunk/gui/editor.ts";
+
+const isEditor = true;
 
 function RenderCanvas(props: any): JSX.Element {
   let canvasRef = useRef<HTMLCanvasElement>();
   let isInit = useRef<boolean>();
   let clock = useRef<Clock>();
   let staticItems = useRef<StaticItems>();
+  let editorGui = useRef<Editor>();
+
   const [playing, setPlaying] = useState<boolean>();
   const [player, setPlayer] = useState<any>();
 
@@ -72,20 +77,39 @@ function RenderCanvas(props: any): JSX.Element {
     // Composer
     composer = new Composer(renderer, manda_scene, camera);
 
+    if (isEditor) {
+      editorGui.current = new Editor(
+        currentConfig,
+        manda_scene,
+        composer,
+        staticItems.current,
+        loadConfig
+      );
+      if (isEditor) {
+        editorGui.current.show(true);
+      } else {
+        editorGui.current.show(false);
+      }
+    }
+
     handleResize();
   };
 
-  const loadConfig = () => {
+  const loadConfig = (config: ConfigType) => {
     //Config Init
-    manda_scene.updateSceneBackground(currentConfig);
+    manda_scene.updateSceneBackground(config);
     manda_scene.clearScene();
-    updateImages(scene, currentConfig);
-    updateTexts(scene, currentConfig);
+    updateImages(scene, config);
+    updateTexts(scene, config);
     if (staticItems.current) {
-      staticItems.current.update(currentConfig);
+      staticItems.current.update(config);
     }
-    updateImageAnimation(scene, currentConfig, time);
-    composer.updateComposer(currentConfig);
+    updateImageAnimation(scene, config, time);
+    composer.updateComposer(config);
+
+    if (editorGui.current) {
+      editorGui.current.updateGui(config);
+    }
   };
 
   const render = (time: number) => {
@@ -120,7 +144,7 @@ function RenderCanvas(props: any): JSX.Element {
     if (!isInit.current) {
       isInit.current = true;
       init();
-      loadConfig();
+      loadConfig(currentConfig);
       window.addEventListener("resize", handleResize);
       animate();
     }

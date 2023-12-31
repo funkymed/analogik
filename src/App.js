@@ -24,7 +24,7 @@ const context = new AudioContext();
 
 const config = new ChiptuneJsConfig({
   repeatCount: -1,
-  volume: 90,
+  volume: 100,
   context: context,
 });
 
@@ -43,7 +43,7 @@ function App() {
   const [duration, setDuration] = useState(0);
   const [isLoading, setIsLoading] = useState(0);
   const [open, setOpen] = useState(false);
-  const [volume, setVolume] = useState(90);
+  const [volume, setVolume] = useState(100);
   const [selection, setSelection] = useState("all");
   const [mods, setMods] = useState(getTracks(year, author, selection));
 

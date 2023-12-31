@@ -1,4 +1,4 @@
-import { shaders } from '../fx/shaders/background'
+import { shaders } from '../fx/shaders/background/index.ts'
 
 export const selectImagesPochette: string[] = [
     '',
