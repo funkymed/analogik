@@ -1,18 +1,18 @@
 {
-  "name": "med-ummd",
+  "name": "analogik-musicdisk",
   "author": {
-    "name": "med/mandarine",
+    "name": "med/analogik",
     "email": "cyril.pereira@gmail.com"
   },
-  "homepage": "https://mandarine.planet-d.net",
-  "description": "Ultimate Med's MusicDisk",
+  "homepage": "http://analo0gik.free.fr",
+  "description": "Analogik MusicDisk",
   "license": "UNLICENSED",
   "version": "1.0.1",
   "main": "main.js",
   "devDependencies": {
-    "electron": "^23.1.4",
-    "electron-builder": "^23.6.0",
-    "electron-packager": "^17.1.1"
+    "electron": "^28.1.0",
+    "electron-builder": "24.9.1",
+    "electron-packager": "17.1.2"
   },
   "scripts": {
     "postinstall": "./node_modules/.bin/electron-builder install-app-deps",
@@ -26,21 +26,29 @@
     "pack-linux": "./node_modules/.bin/electron-packager . med-umd --platform=linux"
   },
   "build": {
-    "appId": "com.mandarine.medummd",
-    "productName": "med-ummd",
+    "appId": "com.analogik.musicdisk",
+    "productName": "analogik-musicdisk",
     "mac": {
-      "icon": "logo512.png"
+      "icon": "build/logo512.png",
+      "mergeASARs": true
     },
-    "dmg": {},
-    "mas": {},
+    "dmg": {
+      "icon": "build/logo512.png"
+    },
+    "mas": {
+      "icon": "build/logo512.png"
+    },
     "win": {
-      "icon": "logo512.png",
-      "publisherName": "Mandarine"
+      "icon": "build/logo512.png",
+      "publisherName": "Analogik MusicDisk"
     },
     "appx": {},
     "portable": {},
-    "linux": {},
+    "linux": {
+      "icon": "build/logo512.png"
+    },
     "files": [
+      "build/logo512.png",
       "logo512.png",
       "main.js",
       "build/**/*",
@@ -49,6 +57,7 @@
     ]
   },
   "files": [
+    "build/logo512.png",
     "logo512.png",
     "main.js",
     "build/**/*",
