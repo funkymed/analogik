@@ -3,7 +3,7 @@ const OPENMPT_MODULE_RENDER_MASTERGAIN_MILLIBEL = 1;
 var libopenmpt = {};
 
 libopenmpt.locateFile = function (name) {
-  return `../bin/${name}`;
+  return `./bin/${name}`;
 };
 
 function ChiptuneJsConfig(config) {

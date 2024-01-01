@@ -24,6 +24,26 @@ yarn build
 
 The result will be available in `dist/`
 
-## WIP
+### Build Electron version
 
-An electron version
+```bash
+$ yarn build
+$ cp -r build/* electron
+```
+
+edit the index.html and replace `/static` by `./static`   
+edit the css file, replace `/static/` by `../`
+
+#### Preview 
+
+```bash
+$ cd electron
+$ yarn start
+```
+
+#### Build a release
+
+```bash
+$ cd electron
+$ yarn build-mac # build-win or build-linux
+```
