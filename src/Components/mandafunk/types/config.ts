@@ -125,6 +125,7 @@ export interface ConfigType {
             color: string | boolean
             bgColor: string | boolean
             multiColor: boolean
+            centerSpectrum: boolean
             motionBlur: boolean
             motionBlurLength: number
             opacity: number
@@ -135,6 +136,7 @@ export interface ConfigType {
             x: number
             y: number
             z: number
+            zoom: number
             rotationX: number
             rotationY: number
             rotationZ: number

@@ -1,12 +1,14 @@
-const testConfig: any = {
+import { ConfigType } from "./Components/mandafunk/types/config";
+
+const testConfig: ConfigType = {
   scene: {
     bgColor: "#000000",
     background: "./images/w1.jpg",
     blur: 30,
     brightness: 20,
     shader: "Med1",
-    shader_speed: .65,
-    shader_opacity: .8,
+    shader_speed: 0.65,
+    shader_opacity: 0.8,
   },
   music: "",
   timer: {
@@ -101,8 +103,6 @@ const testConfig: any = {
       height: 1,
     },
   },
-  images: {},
-  texts: {},
 };
 
 export default testConfig;
