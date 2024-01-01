@@ -17,6 +17,7 @@ import {
 } from "rsuite";
 import PlayIcon from "@rsuite/icons/legacy/Play";
 import "./App.css";
+
 const ChiptuneJsPlayer = window["ChiptuneJsPlayer"];
 const ChiptuneJsConfig = window["ChiptuneJsConfig"];
 
@@ -82,7 +83,6 @@ function App() {
         setMeta(player.metadata());
 
         setDuration(player.duration());
-        console.log(duration);
       })
       .catch(() => {
         setIsLoading(false);
@@ -100,7 +100,7 @@ function App() {
   };
 
   useEffect(() => {
-    var item = mods[Math.floor(Math.random()*mods.length)];
+    var item = mods[Math.floor(Math.random() * mods.length)];
     loadTrack(item);
   }, []);
 

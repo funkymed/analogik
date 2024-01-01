@@ -17,17 +17,16 @@ function RenderCanvas(props: any): JSX.Element {
   let clock = useRef<Clock>();
   let staticItems = useRef<StaticItems>();
   let editorGui = useRef<Editor>();
+  let currentConfig = useRef<ConfigType>();
+  let manda_scene = useRef<MandaScene>();
+  let renderer = useRef<WebGLRenderer>();
+  let composer = useRef<Composer>();
 
   const [playing, setPlaying] = useState<boolean>();
   const [player, setPlayer] = useState<any>();
 
   let camera: PerspectiveCamera;
-  let manda_scene: MandaScene;
-  let renderer: WebGLRenderer;
-  let composer: Composer;
   let time: number = 0;
-  let scene: Scene;
-  let currentConfig: ConfigType;
 
   const init = () => {
     // init
@@ -38,29 +37,28 @@ function RenderCanvas(props: any): JSX.Element {
     clock.current = new Clock();
 
     // Scene
-    currentConfig = testConfig;
+    currentConfig.current = testConfig;
 
-    manda_scene = new MandaScene();
-    scene = manda_scene.getScene();
+    manda_scene.current = new MandaScene();
     staticItems.current = new StaticItems(
-      currentConfig,
+      currentConfig.current,
       props.player,
       props.audioContext,
       props.analyser,
-      scene
+      manda_scene.current.getScene()
     );
-    manda_scene.setStatic(staticItems.current);
+    manda_scene.current.setStatic(staticItems.current);
 
     // Camera
     camera = new PerspectiveCamera(60, W / H, 0.1, 2000);
     camera.aspect = W / H;
     camera.updateProjectionMatrix();
     camera.position.set(0, 0, 0);
-    camera.lookAt(scene.position);
+    camera.lookAt(manda_scene.current.getScene().position);
     camera.layers.enable(1);
 
     // Renderer
-    renderer = new WebGLRenderer({
+    renderer.current = new WebGLRenderer({
       antialias: true,
       alpha: false,
       powerPreference: "high-performance",
@@ -68,20 +66,24 @@ function RenderCanvas(props: any): JSX.Element {
       precision: "highp",
       canvas: canvasRef.current,
     });
-    renderer.debug.checkShaderErrors = true;
-    renderer.autoClear = false;
-    renderer.autoClearColor = true;
-    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.current.debug.checkShaderErrors = true;
+    renderer.current.autoClear = false;
+    renderer.current.autoClearColor = true;
+    renderer.current.setPixelRatio(window.devicePixelRatio);
     // document.body.appendChild(renderer.domElement)
 
     // Composer
-    composer = new Composer(renderer, manda_scene, camera);
+    composer.current = new Composer(
+      renderer.current,
+      manda_scene.current,
+      camera
+    );
 
     if (isEditor) {
       editorGui.current = new Editor(
-        currentConfig,
-        manda_scene,
-        composer,
+        currentConfig.current,
+        manda_scene.current,
+        composer.current,
         staticItems.current,
         loadConfig
       );
@@ -97,15 +99,19 @@ function RenderCanvas(props: any): JSX.Element {
 
   const loadConfig = (config: ConfigType) => {
     //Config Init
-    manda_scene.updateSceneBackground(config);
-    manda_scene.clearScene();
-    updateImages(scene, config);
-    updateTexts(scene, config);
+    var shaders = ["Med1", "Med2", "Med3", "Med4"];
+    var shader = shaders[Math.floor(Math.random() * shaders.length)];
+    config.scene.shader = shader;
+
+    manda_scene.current.updateSceneBackground(config);
+    manda_scene.current.clearScene();
+    updateImages(manda_scene.current.getScene(), config);
+    updateTexts(manda_scene.current.getScene(), config);
     if (staticItems.current) {
       staticItems.current.update(config);
     }
-    updateImageAnimation(scene, config, time);
-    composer.updateComposer(config);
+    updateImageAnimation(manda_scene.current.getScene(), config, time);
+    composer.current.updateComposer(config);
 
     if (editorGui.current) {
       editorGui.current.updateGui(config);
@@ -114,7 +120,7 @@ function RenderCanvas(props: any): JSX.Element {
 
   const render = (time: number) => {
     // renderer.render(scene, camera)
-    composer.rendering(time);
+    composer.current.rendering(time);
   };
 
   const handleResize = () => {
@@ -122,7 +128,7 @@ function RenderCanvas(props: any): JSX.Element {
     const H = window.innerHeight;
     camera.aspect = W / H;
     camera.updateProjectionMatrix();
-    renderer.setSize(W, H);
+    renderer.current.setSize(W, H);
     render(time);
   };
 
@@ -132,7 +138,11 @@ function RenderCanvas(props: any): JSX.Element {
     // time = playing && player ? player.getPosition() : 0
     // console.log(playing, props.isPlay, time)
 
-    updateImageAnimation(scene, currentConfig, time);
+    updateImageAnimation(
+      manda_scene.current.getScene(),
+      currentConfig.current,
+      time
+    );
     if (staticItems.current) {
       staticItems.current.rendering(time);
     }
@@ -144,7 +154,7 @@ function RenderCanvas(props: any): JSX.Element {
     if (!isInit.current) {
       isInit.current = true;
       init();
-      loadConfig(currentConfig);
+      loadConfig(currentConfig.current);
       window.addEventListener("resize", handleResize);
       animate();
     }
@@ -160,6 +170,7 @@ function RenderCanvas(props: any): JSX.Element {
 
     if (staticItems.current && props.isPlay) {
       staticItems.current.setAnalyser(props.player.getAnalyser());
+      loadConfig(currentConfig.current);
     }
   }, [props.player.currentPlayingNode]);
 

@@ -130,7 +130,6 @@ export class StaticItems {
     this.update(config);
   }
   setAnalyser(analyser: AnalyserNode) {
-    console.log(analyser);
     this.analyser = analyser;
   }
 
