@@ -9,6 +9,8 @@ import { Composer } from "./mandafunk/fx/composer.ts";
 import testConfig from "../config.ts";
 import { Editor } from "./mandafunk/gui/editor.ts";
 import { getHttpParam } from "./mandafunk/tools/http.ts";
+import { deepMergeObjects } from "../tools.js";
+import { ConfigVariations } from "./ConfigVariations.js";
 
 const isEditor = getHttpParam("editor");
 
@@ -99,22 +101,11 @@ function RenderCanvas(props: any): JSX.Element {
   };
 
   const loadConfig = (config: ConfigType) => {
-    //Config Init
-    var shaders = [
-      { shader: "Med1", shader_speed: 1 },
-      { shader: "Med2", shader_speed: 1 },
-      { shader: "Med3", shader_speed: 1 },
-      { shader: "Med4", shader_speed: 1 },
-      { shader: "Color2", shader_speed: 5 },
-      { shader: "Cloud2", shader_speed: 5 },
-      { shader: "PolarViz", shader_speed: 3 },
-      { shader: "Cube2", shader_speed: 2 },
-      { shader: "Galaxy", shader_speed: 0.05 },
-    ];
+    const newConfig =
+      ConfigVariations[Math.floor(Math.random() * ConfigVariations.length)];
 
-    var shader = shaders[Math.floor(Math.random() * shaders.length)];
-    config.scene.shader = shader.shader;
-    config.scene.shader_speed = shader.shader_speed;
+    deepMergeObjects(newConfig, config);
+
     if (manda_scene.current && staticItems.current && composer.current) {
       manda_scene.current.updateSceneBackground(config);
       manda_scene.current.clearScene();
@@ -151,8 +142,17 @@ function RenderCanvas(props: any): JSX.Element {
   const animate = () => {
     requestAnimationFrame(animate);
     time = clock.current ? clock.current.getElapsedTime() : 0;
-    // time = playing && player ? player.getPosition() : 0
-    // console.log(playing, props.isPlay, time)
+
+    // let position = 0;
+    // if (props.player.currentPlayingNode) {
+    //   position = props.player.currentPlayingNode
+    //     ? props.player.getPosition() < props.player.duration()
+    //       ? props.player.getPosition()
+    //       : props.player.duration()
+    //     : 0;
+    // }
+    // time = position;
+
     if (manda_scene.current && currentConfig.current && staticItems.current) {
       updateImageAnimation(
         manda_scene.current.getScene(),

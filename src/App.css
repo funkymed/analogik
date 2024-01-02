@@ -27,10 +27,6 @@ body {
   border-color: red !important;
 }
 
-* {
-  z-index: 1;
-}
-
 audio {
   position: absolute;
   top: 0;
@@ -48,4 +44,17 @@ canvas {
   z-index: -1;
   width: 100%;
   height: 100%;
+}
+
+.dg .main,
+.dg .ac {
+  z-index: 100;
+}
+
+.cr .color>.selector {
+  z-index: 1000;
+}
+
+.dg .c input[type=text] {
+  height: 12px;
 }

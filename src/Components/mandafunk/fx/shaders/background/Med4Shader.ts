@@ -46,7 +46,7 @@ export class Med4Shader extends ShaderAbstract {
         void main(void)
         {
             
-            vec2 uv = (gl_FragCoord.xy - iResolution.xy) / iResolution.y;
+            vec2 uv = ((vUv.xy*iResolution.xy) *2.0 - iResolution.xy) / min(iResolution.x, iResolution.y);
             vec2 uv0 = uv;
             vec3 finaleColor = vec3(0.0);
     

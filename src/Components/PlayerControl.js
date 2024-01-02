@@ -78,6 +78,8 @@ function PlayerControl({
           display: "flex",
           height: window.innerHeight,
           opacity: 0.5,
+          zIndex: 2,
+          pointerEvents: "none",
         }}
       >
         <FlexboxGrid.Item colspan={12}>

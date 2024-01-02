@@ -143,6 +143,6 @@ export interface ConfigType {
         }
     }
     composer: any
-    images: ImageType[]
-    texts: TextType[]
+    images?: ImageType[]
+    texts?: TextType[]
 }
