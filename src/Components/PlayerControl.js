@@ -83,7 +83,7 @@ function PlayerControl({
       >
         <FlexboxGrid.Item colspan={10}>
           <BackdropFilter
-            filter={"blur(10px) opacity(95%) brightness(160%)"}
+            filter={"blur(15px) brightness(120%)"}
             canvasFallback={true}
             html2canvasOpts={{
               allowTaint: true,

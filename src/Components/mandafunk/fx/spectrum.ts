@@ -28,8 +28,8 @@ function drawGradiant(
     var gradient = ctx.createLinearGradient(w, 0, w, h);
 
     gradient.addColorStop(0, `#FF0000${opacity}`);
-    gradient.addColorStop(0.25, `#FFFF00${opacity}`);
-    gradient.addColorStop(0.5, `#55FF55${opacity}`);
+    gradient.addColorStop(0.40, `#FFFF00${opacity}`);
+    gradient.addColorStop(0.55, `#00FF00${opacity}`);
     gradient.addColorStop(1, `#0000FF${opacity}`);
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, w, h);
@@ -72,7 +72,7 @@ export const spectrum = function (
   BAR_WIDTH = BAR_WIDTH < 1 ? 1 : BAR_WIDTH;
 
   const fb = analyser.frequencyBinCount;
-  
+
   const freqByteData = new Uint8Array(fb);
   analyser.getByteFrequencyData(freqByteData);
 
