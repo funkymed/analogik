@@ -77,23 +77,42 @@ function PlayerControl({
         style={{
           display: "flex",
           height: window.innerHeight,
-          opacity: 0.5,
           zIndex: 2,
           pointerEvents: "none",
+          opacity: 0.89,
+          boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
         }}
       >
-        <FlexboxGrid.Item colspan={12}>
+        <FlexboxGrid.Item colspan={10}>
           <Panel
             shaded
             bordered
             style={{
               textAlign: "center",
+              borderRadius: 20,
+              backdropFilter: "blur(10px)",
+              "-webkit-backdrop-filter": "blur(10px)",
+              border: "2px solid rgba(255, 255, 255, 0.15)",
+              fontFamily: "Kdam Thmor Pro",
+              boxShadow: "0 10px 40px 0 rgba(0, 0, 0, 0.37)",
             }}
           >
-            <h4 style={{ color: "red" }}>
+            <h4
+              style={{
+                color: "#00BBFF",
+                fontSize: 40,
+                fontFamily: "Permanent Marker",
+              }}
+            >
               {meta.title ? meta.title : currentTrack.filename}
             </h4>
-            <b>
+            <b
+              style={{
+                fontFamily: "Lobster",
+                fontSize: 25,
+                color: "#FF5555",
+              }}
+            >
               by{" "}
               {currentTrack.author.map(function (a, i, row) {
                 let t = Capitalize(a);
@@ -111,9 +130,12 @@ function PlayerControl({
             <Panel
               style={{
                 whiteSpace: "pre-wrap",
-                maxHeight: 110,
+                maxHeight: 150,
                 overflowY: "overlay",
+                pointerEvents: "auto",
                 scrollbarColor: "red",
+                fontSize: 15,
+                color: "gray",
               }}
             >
               {meta.message}

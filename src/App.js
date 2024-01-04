@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { getTracks, getAuthors, getYears } from "./tracks";
 import PlayerControl from "./Components/PlayerControl";
 import TracksList from "./Components/TrackList";
@@ -24,7 +24,7 @@ const ChiptuneJsConfig = window["ChiptuneJsConfig"];
 const context = new AudioContext();
 
 const config = new ChiptuneJsConfig({
-  repeatCount: -1,
+  repeatCount: 0,
   volume: 100,
   context: context,
 });
@@ -46,22 +46,30 @@ function App() {
   const [open, setOpen] = useState(false);
   const [volume, setVolume] = useState(100);
   const [selection, setSelection] = useState("all");
-  const [mods, setMods] = useState(getTracks(year, author, selection));
+  const mods = useRef(getTracks(year, author, selection));
 
   function filterYear(year) {
     setYear(year);
     setAuthors(getAuthors(year));
-    setMods(getTracks(year, author, selection));
+    mods.current = getTracks(year, author, selection);
   }
 
   function filterAuthor(author) {
     setAuthor(author);
-    setMods(getTracks(year, author, selection));
+    mods.current = getTracks(year, author, selection);
   }
 
   const filterSelection = (value) => {
     setSelection(value);
-    setMods(getTracks(year, author, value));
+    mods.current = getTracks(year, author, selection);
+  };
+
+  const getPosTrack = (track, arr) => {
+    for (let t in arr) {
+      if (track.url === arr[t].url) {
+        return t;
+      }
+    }
   };
 
   const loadTrack = (track) => {
@@ -75,13 +83,21 @@ function App() {
         player.pause();
         player.play(buffer);
         player.seek(0);
+        const currentPost = getPosTrack(track, mods.current);
+        const nextTrack = mods.current[parseInt(currentPost) + 1] ?? false;
+        player.onEnded(() => {
+          console.log(nextTrack);
+          if (nextTrack) {
+            loadTrack(nextTrack);
+          } else {
+            player.pause();
+          }
+        });
 
         setIsPlay(true);
-
         setCurrentTrack(track);
         setSize(buffer.byteLength);
         setMeta(player.metadata());
-
         setDuration(player.duration());
       })
       .catch(() => {
@@ -100,14 +116,14 @@ function App() {
   };
 
   useEffect(() => {
-    var item = mods[Math.floor(Math.random() * mods.length)];
+    var item = mods.current[Math.floor(Math.random() * mods.current.length)];
     loadTrack(item);
   }, []);
 
   return (
     <CustomProvider theme="dark">
       <Drawer
-        size="sm"
+        size="lg"
         placement="right"
         open={open}
         onClose={() => setOpen(false)}
@@ -139,7 +155,7 @@ function App() {
           />
           <br />
           <TracksList
-            mods={mods}
+            mods={mods.current}
             currentTrack={currentTrack}
             load={loadTrack}
           />
