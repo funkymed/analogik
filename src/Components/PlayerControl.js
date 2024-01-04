@@ -11,6 +11,7 @@ import PauseIcon from "@rsuite/icons/legacy/Pause";
 import PlayIcon from "@rsuite/icons/legacy/Play";
 import StopIcon from "@rsuite/icons/legacy/Stop";
 import { Capitalize } from "../utils";
+import BackdropFilter from "react-backdrop-filter";
 
 function PlayerControl({
   player,
@@ -77,70 +78,81 @@ function PlayerControl({
         style={{
           display: "flex",
           height: window.innerHeight,
-          zIndex: 2,
           pointerEvents: "none",
-          opacity: 0.89,
-          boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
         }}
       >
         <FlexboxGrid.Item colspan={10}>
-          <Panel
-            shaded
-            bordered
-            style={{
-              textAlign: "center",
-              borderRadius: 20,
-              backdropFilter: "blur(10px)",
-              "-webkit-backdrop-filter": "blur(10px)",
-              border: "2px solid rgba(255, 255, 255, 0.15)",
-              fontFamily: "Kdam Thmor Pro",
-              boxShadow: "0 10px 40px 0 rgba(0, 0, 0, 0.37)",
+          <BackdropFilter
+            filter={"blur(10px) opacity(95%) brightness(160%)"}
+            canvasFallback={true}
+            html2canvasOpts={{
+              allowTaint: true,
             }}
           >
-            <h4
+            <div
               style={{
-                color: "#00BBFF",
-                fontSize: 40,
-                fontFamily: "Permanent Marker",
+                border: "2px solid rgba(255, 255, 255, 0.15)",
+                fontFamily: "Kdam Thmor Pro",
+                textAlign: "center",
+                padding: 20,
+                // borderRadius: 20,
               }}
             >
-              {meta.title ? meta.title : currentTrack.filename}
-            </h4>
-            <b
-              style={{
-                fontFamily: "Lobster",
-                fontSize: 25,
-                color: "#FF5555",
-              }}
-            >
-              by{" "}
-              {currentTrack.author.map(function (a, i, row) {
-                let t = Capitalize(a);
-                if (i + 1 !== row.length) {
-                  t += " & ";
-                }
-                return t;
-              })}{" "}
-              in {currentTrack.year}
-            </b>
-            <br />
-            <p>{size.toLocaleString()} octets</p>
-            <br />
-            <Divider>Message</Divider>
-            <Panel
-              style={{
-                whiteSpace: "pre-wrap",
-                maxHeight: 150,
-                overflowY: "overlay",
-                pointerEvents: "auto",
-                scrollbarColor: "red",
-                fontSize: 15,
-                color: "gray",
-              }}
-            >
-              {meta.message}
-            </Panel>
-          </Panel>
+              <h4
+                style={{
+                  color: "#00BBFF",
+                  fontSize: 40,
+                  fontFamily: "Permanent Marker",
+                }}
+              >
+                {meta.title ? meta.title : currentTrack.filename}
+              </h4>
+              <b
+                style={{
+                  fontFamily: "Lobster",
+                  fontSize: 25,
+                  color: "#FF5555",
+                }}
+              >
+                by{" "}
+                {currentTrack.author.map(function (a, i, row) {
+                  let t = Capitalize(a);
+                  if (i + 1 !== row.length) {
+                    t += " & ";
+                  }
+                  return t;
+                })}{" "}
+                in {currentTrack.year}
+              </b>
+              <br />
+              <p>{size.toLocaleString()} octets</p>
+              {meta.message ? (
+                <>
+                  <hr
+                    style={{
+                      border: "1px white solid",
+                      opacity: 0.1,
+                    }}
+                  />
+                  <div
+                    style={{
+                      whiteSpace: "pre-wrap",
+                      maxHeight: 150,
+                      overflowY: "overlay",
+                      pointerEvents: "auto",
+                      scrollbarColor: "red",
+                      fontSize: 15,
+                      color: "black",
+                    }}
+                  >
+                    {meta.message}
+                  </div>
+                </>
+              ) : (
+                ""
+              )}
+            </div>
+          </BackdropFilter>
         </FlexboxGrid.Item>
       </FlexboxGrid>
     </>
