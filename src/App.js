@@ -15,8 +15,10 @@ import {
   Radio,
   RadioGroup,
 } from "rsuite";
-import PlayIcon from "@rsuite/icons/legacy/Play";
+import PlusIcon from "@rsuite/icons/legacy/Plus";
+import QuestionIcon from "@rsuite/icons/legacy/Question";
 import "./App.css";
+import AboutDrawer from "./Components/AboutDrawer.js";
 
 const ChiptuneJsPlayer = window["ChiptuneJsPlayer"];
 const ChiptuneJsConfig = window["ChiptuneJsConfig"];
@@ -33,35 +35,46 @@ const player = new ChiptuneJsPlayer(config);
 player.pause();
 
 function App() {
-  const [currentTrack, setCurrentTrack] = useState(0);
-  const [year, setYear] = useState(0);
-  const [author, setAuthor] = useState(0);
   const years = getYears();
-  const [authors, setAuthors] = useState(getAuthors());
+
+  const [open, setOpen] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
+  const [volume, setVolume] = useState(90);
+
+  // tracks
   const [isPlay, setIsPlay] = useState(0);
+  const [currentTrack, setCurrentTrack] = useState(0);
   const [size, setSize] = useState(0);
   const [meta, setMeta] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isLoading, setIsLoading] = useState(0);
-  const [open, setOpen] = useState(false);
-  const [volume, setVolume] = useState(90);
+
+  // filters
+  const [year, setYear] = useState(0);
+  const [author, setAuthor] = useState(0);
+  const [authors, setAuthors] = useState(getAuthors(year));
   const [selection, setSelection] = useState("all");
-  const mods = useRef(getTracks(year, author, selection));
+  // tracks
+  const [mods, setMods] = useState(getTracks(year, author, selection));
 
-  function filterYear(year) {
-    setYear(year);
-    setAuthors(getAuthors(year));
-    mods.current = getTracks(year, author, selection);
-  }
+  const filterYear = (y) => {
+    setYear(y);
+    updateFilers(y, author, selection);
+  };
 
-  function filterAuthor(author) {
-    setAuthor(author);
-    mods.current = getTracks(year, author, selection);
-  }
+  const filterAuthor = (a) => {
+    setAuthor(a);
+    updateFilers(year, a, selection);
+  };
 
-  const filterSelection = (value) => {
-    setSelection(value);
-    mods.current = getTracks(year, author, selection);
+  const filterSelection = (s) => {
+    setSelection(s);
+    updateFilers(year, author, s);
+  };
+
+  const updateFilers = (y, a, s) => {
+    setAuthors(getAuthors(y));
+    setMods(getTracks(y, a, s));
   };
 
   const getPosTrack = (track, arr) => {
@@ -83,8 +96,8 @@ function App() {
         player.pause();
         player.play(buffer);
         player.seek(0);
-        const currentPost = getPosTrack(track, mods.current);
-        const nextTrack = mods.current[parseInt(currentPost) + 1] ?? false;
+        const currentPost = getPosTrack(track, mods);
+        const nextTrack = mods[parseInt(currentPost) + 1] ?? false;
         player.onEnded(() => {
           console.log(nextTrack);
           if (nextTrack) {
@@ -105,6 +118,7 @@ function App() {
         setIsPlay(false);
       });
   };
+
   const setPlayerVolume = (value) => {
     setVolume(value);
     player.setVolume(value);
@@ -116,7 +130,7 @@ function App() {
   };
 
   useEffect(() => {
-    var item = mods.current[Math.floor(Math.random() * mods.current.length)];
+    var item = mods[Math.floor(Math.random() * mods.length)];
     loadTrack(item);
   }, []);
 
@@ -127,9 +141,10 @@ function App() {
         placement="right"
         open={open}
         onClose={() => setOpen(false)}
+        // backdrop={false}
       >
         <Drawer.Header>
-          <Drawer.Title>Tracks</Drawer.Title>
+          <Drawer.Title>Analogik MusicDisk</Drawer.Title>
         </Drawer.Header>
         <Drawer.Body>
           <h3>Selection</h3>
@@ -155,7 +170,7 @@ function App() {
           />
           <br />
           <TracksList
-            mods={mods.current}
+            mods={mods}
             currentTrack={currentTrack}
             load={loadTrack}
           />
@@ -180,12 +195,35 @@ function App() {
       )}
       <IconButton
         appearance="primary"
-        icon={<PlayIcon />}
-        style={{ position: "absolute", bottom: 15, right: 15 }}
+        icon={<PlusIcon />}
+        style={{
+          position: "absolute",
+          bottom: 15,
+          right: 15,
+          // zoom: 1.4,
+          filter: "drop-shadow(0px 0px 20px #000000)",
+        }}
         onClick={() => setOpen(true)}
         circle
         size="lg"
-      ></IconButton>
+      />
+
+      <AboutDrawer open={aboutOpen} setOpen={setAboutOpen} />
+
+      <IconButton
+        appearance="primary"
+        icon={<QuestionIcon />}
+        style={{
+          position: "absolute",
+          top: 15,
+          right: 15,
+          // zoom: 1.4,
+          filter: "drop-shadow(0px 0px 20px #000000)",
+        }}
+        onClick={() => setAboutOpen(true)}
+        circle
+        size="sm"
+      />
       <RenderCanvas
         player={player}
         context={context}

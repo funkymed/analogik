@@ -45,7 +45,12 @@ function PlayerControl({
       </div>
 
       <div style={{ position: "absolute", top: 15, left: 15 }}>
-        <ButtonGroup size="sm">
+        <ButtonGroup
+          size="sm"
+          style={{
+            filter: "drop-shadow(0px 1px 18px #000000)",
+          }}
+        >
           {isPlay ? (
             <IconButton
               icon={<PauseIcon />}
@@ -83,7 +88,7 @@ function PlayerControl({
       >
         <FlexboxGrid.Item colspan={10}>
           <BackdropFilter
-            filter={"blur(15px) brightness(120%)"}
+            filter={"blur(16px) brightness(120%)"}
             canvasFallback={true}
             html2canvasOpts={{
               allowTaint: true,
@@ -91,9 +96,11 @@ function PlayerControl({
           >
             <div
               style={{
+                background: "rgba(64, 64, 64, 0.15)",
                 border: "2px solid rgba(255, 255, 255, 0.15)",
                 fontFamily: "Kdam Thmor Pro",
                 textAlign: "center",
+
                 padding: 20,
                 // borderRadius: 20,
               }}
@@ -103,6 +110,7 @@ function PlayerControl({
                   color: "#00BBFF",
                   fontSize: 40,
                   fontFamily: "Permanent Marker",
+                  filter: "drop-shadow(0px 0px 20px #000000)",
                 }}
               >
                 {meta.title ? meta.title : currentTrack.filename}

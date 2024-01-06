@@ -1,11 +1,10 @@
 import { Button } from "rsuite";
 
 function AuthorList(props) {
-  const color = 0 === props.author ? "primary" : "default"; 
+  const color = 0 === props.author ? "primary" : "default";
   return (
     <>
       <h3>Authors ({props.authors.length})</h3>
-
       <Button
         appearance={color}
         size="xs"
@@ -13,14 +12,14 @@ function AuthorList(props) {
       >
         All
       </Button>
-      {props.authors.map(function (_author) {
+      {props.authors.map((_author) => {
         const color = _author === props.author ? "primary" : "default";
         return (
           <Button
             key={_author}
             appearance={color}
             onClick={() => props.filterAuthor(_author)}
-            size="xs"
+            size="sm"
           >
             {_author}
           </Button>

@@ -29,7 +29,7 @@ export const oscillo = function (
   }
 
   ctx.fillStyle = `rgba(${oscillocolor},${opacity ?? 1})`;
-  
+
   const fb = analyser.frequencyBinCount;
   const freqByteData = new Uint8Array(fb);
   analyser.getByteTimeDomainData(freqByteData);
@@ -37,16 +37,19 @@ export const oscillo = function (
   ctx.lineWidth = 2;
   ctx.strokeStyle = `rgba(${oscillocolor},${opacity ?? 1})`;
 
-  for (let i = 0; i < fb; i++) {
-    const value_old = freqByteData[i - 1];
+  const thresold = 2;
+  const maxValue = 256 / thresold;
 
-    const percent_old: number = value_old / 256;
+  for (let i = 0; i < fb; i++) {
+    const value_old = freqByteData[i - 1] / thresold;
+
+    const percent_old: number = value_old / maxValue;
     const height_old: number = cH * percent_old;
     const offset_old: number = cH - height_old - 1;
     const barWidth_old: number = cW / analyser.frequencyBinCount;
 
-    const value: number = freqByteData[i];
-    const percent: number = value / 256;
+    const value: number = freqByteData[i] / thresold;
+    const percent: number = value / maxValue;
     const height: number = cH * percent;
     const offset: number = cH - height - 1;
     const barWidth: number = cW / analyser.frequencyBinCount;

@@ -13,7 +13,8 @@ export const ConfigVariations = [
       oscilloscop: {
         color: "#ff006f",
         show: true,
-        motionBlur: false,
+        motionBlur: true,
+        motionBlurLength:.09,
         z: -244,
       },
     },
@@ -53,6 +54,13 @@ export const ConfigVariations = [
       brightness: 50,
       bgColor: "#000000",
     },
+    vumeters: {
+      oscilloscop: {
+        show: true,
+        motionBlur: true,
+        motionBlurLength:.09,
+      },
+    },
   },
   {
     scene: {
@@ -63,6 +71,15 @@ export const ConfigVariations = [
       blur: 20,
       brightness: 50,
       bgColor: "#000000",
+    },
+    vumeters: {
+      oscilloscop: {
+        color: "#ff006f",
+        show: true,
+        motionBlur: true,
+        motionBlurLength:.09,
+        z: -244,
+      },
     },
   },
   {

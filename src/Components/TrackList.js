@@ -13,7 +13,7 @@ function TracksList(props) {
             key={`track-${b}`}
             onClick={() => props.load(a)}
             appearance={color}
-            size="xs"
+            size="sm"
           >{`${a.author.join(" & ")} : ${a.filename} (${a.year})`}</Button>
         );
       })}

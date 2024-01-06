@@ -8,14 +8,14 @@ function YearList(props) {
       <Button appearance={color} size="xs" onClick={() => props.filterYear(0)}>
         All
       </Button>
-      {props.years.map(function (_year) {
+      {props.years.map((_year) => {
         const color = _year === props.year ? "primary" : "default";
         return (
           <Button
             key={_year}
             appearance={color}
             onClick={() => props.filterYear(_year)}
-            size="xs"
+            size="sm"
           >
             {_year}
           </Button>
