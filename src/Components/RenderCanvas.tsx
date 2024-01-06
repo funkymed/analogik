@@ -1,5 +1,5 @@
-import { Clock, PerspectiveCamera, Scene, WebGLRenderer } from "three";
-import { useEffect, useRef, JSX, useState } from "react";
+import { Clock, PerspectiveCamera, WebGLRenderer } from "three";
+import { useEffect, useRef, JSX, useCallback } from "react";
 import { ConfigType } from "./mandafunk/types/config.ts";
 import { MandaScene } from "./mandafunk/scene.ts";
 import { updateImageAnimation, updateImages } from "./mandafunk/fx/image.ts";
@@ -25,13 +25,9 @@ function RenderCanvas(props: any): JSX.Element {
   const renderer = useRef<WebGLRenderer>();
   const composer = useRef<Composer>();
   const camera = useRef<PerspectiveCamera>();
+  const time = useRef<number>(0);
 
-  const [playing, setPlaying] = useState<boolean>();
-  const [player, setPlayer] = useState<any>();
-
-  let time: number = 0;
-
-  const handleResize = () => {
+  const handleResize = useCallback(() => {
     const W = window.innerWidth;
     const H = window.innerHeight;
     if (camera.current) {
@@ -44,11 +40,40 @@ function RenderCanvas(props: any): JSX.Element {
     if (manda_scene.current) {
       // manda_scene.current.updateAfterResize();
     }
+    time.current = clock.current ? clock.current.getElapsedTime() : 0;
 
-    render(time);
-  };
+    render(time.current);
+  }, [time]);
 
-  const init = () => {
+  const loadConfig = useCallback(
+    (config: ConfigType) => {
+      const newConfig =
+        ConfigVariations[Math.floor(Math.random() * ConfigVariations.length)];
+
+      deepMergeObjects(newConfig, config);
+
+      if (manda_scene.current && staticItems.current && composer.current) {
+        manda_scene.current.updateSceneBackground(config);
+        manda_scene.current.clearScene();
+        updateImages(manda_scene.current.getScene(), config);
+        updateTexts(manda_scene.current.getScene(), config);
+        staticItems.current.update(config);
+        updateImageAnimation(
+          manda_scene.current.getScene(),
+          config,
+          time.current
+        );
+        composer.current.updateComposer(config);
+
+        if (editorGui.current) {
+          editorGui.current.updateGui(config);
+        }
+      }
+    },
+    [time]
+  );
+
+  const init = useCallback(() => {
     // init
 
     let W = window.innerWidth;
@@ -115,28 +140,13 @@ function RenderCanvas(props: any): JSX.Element {
     }
 
     handleResize();
-  };
-
-  const loadConfig = (config: ConfigType) => {
-    const newConfig =
-      ConfigVariations[Math.floor(Math.random() * ConfigVariations.length)];
-
-    deepMergeObjects(newConfig, config);
-
-    if (manda_scene.current && staticItems.current && composer.current) {
-      manda_scene.current.updateSceneBackground(config);
-      manda_scene.current.clearScene();
-      updateImages(manda_scene.current.getScene(), config);
-      updateTexts(manda_scene.current.getScene(), config);
-      staticItems.current.update(config);
-      updateImageAnimation(manda_scene.current.getScene(), config, time);
-      composer.current.updateComposer(config);
-
-      if (editorGui.current) {
-        editorGui.current.updateGui(config);
-      }
-    }
-  };
+  }, [
+    handleResize,
+    loadConfig,
+    props.analyser,
+    props.audioContext,
+    props.player,
+  ]);
 
   const render = (time: number) => {
     // renderer.render(scene, camera)
@@ -145,9 +155,9 @@ function RenderCanvas(props: any): JSX.Element {
     }
   };
 
-  const animate = () => {
+  const animate = useCallback(() => {
     requestAnimationFrame(animate);
-    time = clock.current ? clock.current.getElapsedTime() : 0;
+    time.current = clock.current ? clock.current.getElapsedTime() : 0;
 
     // let position = 0;
     // if (props.player.currentPlayingNode) {
@@ -163,13 +173,13 @@ function RenderCanvas(props: any): JSX.Element {
       updateImageAnimation(
         manda_scene.current.getScene(),
         currentConfig.current,
-        time
+        time.current
       );
-      staticItems.current.rendering(time);
+      staticItems.current.rendering(time.current);
     }
 
-    render(time);
-  };
+    render(time.current);
+  }, [time]);
 
   useEffect(() => {
     if (!isInit.current) {
@@ -186,18 +196,16 @@ function RenderCanvas(props: any): JSX.Element {
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, [loadConfig, animate, isInit, canvasRef, handleResize, init]);
+  }, [loadConfig, animate, isInit, handleResize, init]);
 
   useEffect(() => {
-    setPlayer(props.player);
-    setPlaying(props.player.currentPlayingNode ? true : false);
     props.setIsPlay(props.player.currentPlayingNode ? true : false);
 
     if (staticItems.current && props.isPlay && currentConfig.current) {
       staticItems.current.setAnalyser(props.player.getAnalyser());
       loadConfig(currentConfig.current);
     }
-  }, [props.player.currentPlayingNode]);
+  }, [props.player.currentPlayingNode, loadConfig]);
 
   return <canvas className="canvasStyle" ref={canvasRef} />;
 }

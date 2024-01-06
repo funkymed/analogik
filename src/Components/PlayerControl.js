@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { IconButton, ButtonGroup, Slider, FlexboxGrid } from "rsuite";
 import PauseIcon from "@rsuite/icons/legacy/Pause";
 import PlayIcon from "@rsuite/icons/legacy/Play";
@@ -20,11 +20,11 @@ function PlayerControl({
   const [playing, setPlaying] = useState(false);
   const FlexContent = useRef();
 
-  const handleResize = () => {
+  const handleResize = useCallback(() => {
     if (FlexContent.current) {
       FlexContent.current.style.height = `${window.innerHeight}px`;
     }
-  };
+  }, []);
 
   useEffect(() => {
     setPlaying(isPlay);
