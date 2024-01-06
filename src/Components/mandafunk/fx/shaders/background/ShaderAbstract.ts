@@ -87,7 +87,7 @@ export abstract class ShaderAbstract implements BackgroundShader {
         })
 
         this.mesh = new Mesh(geometry, this.shaderMaterial)
-        this.mesh.position.z = -650
+        this.mesh.position.z = -500
         this.scene.add(this.mesh)
         this.afterInit()
     }

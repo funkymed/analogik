@@ -24,12 +24,29 @@ function RenderCanvas(props: any): JSX.Element {
   const manda_scene = useRef<MandaScene>();
   const renderer = useRef<WebGLRenderer>();
   const composer = useRef<Composer>();
+  const camera = useRef<PerspectiveCamera>();
 
   const [playing, setPlaying] = useState<boolean>();
   const [player, setPlayer] = useState<any>();
 
-  let camera: PerspectiveCamera;
   let time: number = 0;
+
+  const handleResize = () => {
+    const W = window.innerWidth;
+    const H = window.innerHeight;
+    if (camera.current) {
+      camera.current.aspect = W / H;
+      camera.current.updateProjectionMatrix();
+    }
+    if (renderer.current) {
+      renderer.current.setSize(W, H);
+    }
+    if (manda_scene.current) {
+      // manda_scene.current.updateAfterResize();
+    }
+
+    render(time);
+  };
 
   const init = () => {
     // init
@@ -53,12 +70,12 @@ function RenderCanvas(props: any): JSX.Element {
     manda_scene.current.setStatic(staticItems.current);
 
     // Camera
-    camera = new PerspectiveCamera(60, W / H, 0.1, 2000);
-    camera.aspect = W / H;
-    camera.updateProjectionMatrix();
-    camera.position.set(0, 0, 0);
-    camera.lookAt(manda_scene.current.getScene().position);
-    camera.layers.enable(1);
+    camera.current = new PerspectiveCamera(60, W / H, 0.1, 2000);
+    camera.current.aspect = W / H;
+    camera.current.updateProjectionMatrix();
+    camera.current.position.set(0, 0, 0);
+    camera.current.lookAt(manda_scene.current.getScene().position);
+    camera.current.layers.enable(1);
 
     // Renderer
     renderer.current = new WebGLRenderer({
@@ -79,7 +96,7 @@ function RenderCanvas(props: any): JSX.Element {
     composer.current = new Composer(
       renderer.current,
       manda_scene.current,
-      camera
+      camera.current
     );
 
     if (isEditor) {
@@ -128,17 +145,6 @@ function RenderCanvas(props: any): JSX.Element {
     }
   };
 
-  const handleResize = () => {
-    const W = window.innerWidth;
-    const H = window.innerHeight;
-    camera.aspect = W / H;
-    camera.updateProjectionMatrix();
-    if (renderer.current) {
-      renderer.current.setSize(W, H);
-    }
-    render(time);
-  };
-
   const animate = () => {
     requestAnimationFrame(animate);
     time = clock.current ? clock.current.getElapsedTime() : 0;
@@ -173,9 +179,10 @@ function RenderCanvas(props: any): JSX.Element {
         loadConfig(currentConfig.current);
       }
 
-      window.addEventListener("resize", handleResize);
       animate();
     }
+
+    window.addEventListener("resize", handleResize);
     return () => {
       window.removeEventListener("resize", handleResize);
     };

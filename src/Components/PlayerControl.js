@@ -1,12 +1,5 @@
-import { useEffect, useState } from "react";
-import {
-  IconButton,
-  ButtonGroup,
-  Panel,
-  Slider,
-  FlexboxGrid,
-  Divider,
-} from "rsuite";
+import { useEffect, useRef, useState } from "react";
+import { IconButton, ButtonGroup, Slider, FlexboxGrid } from "rsuite";
 import PauseIcon from "@rsuite/icons/legacy/Pause";
 import PlayIcon from "@rsuite/icons/legacy/Play";
 import StopIcon from "@rsuite/icons/legacy/Stop";
@@ -25,10 +18,24 @@ function PlayerControl({
   size,
 }) {
   const [playing, setPlaying] = useState(false);
+  const FlexContent = useRef();
+
+  const handleResize = () => {
+    if (FlexContent.current) {
+      FlexContent.current.style.height = `${window.innerHeight}px`;
+    }
+  };
 
   useEffect(() => {
     setPlaying(isPlay);
   }, [isPlay, setIsPlay, playing]);
+
+  useEffect(() => {
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   return (
     <>
@@ -80,6 +87,7 @@ function PlayerControl({
       <FlexboxGrid
         justify="space-around"
         align="middle"
+        ref={FlexContent}
         style={{
           display: "flex",
           height: window.innerHeight,
@@ -100,7 +108,6 @@ function PlayerControl({
                 border: "2px solid rgba(255, 255, 255, 0.15)",
                 fontFamily: "Kdam Thmor Pro",
                 textAlign: "center",
-
                 padding: 20,
                 // borderRadius: 20,
               }}
