@@ -42,14 +42,14 @@ export class Med2Shader extends ShaderAbstract {
         
         void main( )
         {
-            vec2 uv = ((vUv.xy*iResolution.xy) *2.0 - iResolution.xy) / min(iResolution.x, iResolution.y);
+            vec2 uv = ((vUv.xy*iResolution.xy) * 2.0 - iResolution.xy) / min(iResolution.x, iResolution.y);
             vec2 uv0 = uv;
             vec3 finaleColor = vec3(0.0);
             
             uv = rotateUv(uv, vec2(0.), -iTime*0.3);
             uv0 = rotateUv(uv0, vec2(0.), -iTime*0.3);
         
-            for(float i = 0.0; i < 6.0; i++){
+            for(float i = 0.0; i < 2.0; i++){
                 
                 float x = 1.5+sin(iTime/2.)*.5;
                 uv = fract(uv*x) - 0.5;

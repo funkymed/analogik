@@ -86,6 +86,7 @@ function App() {
   };
 
   const loadTrack = (track) => {
+    console.log("load", track);
     setIsLoading(true);
     setOpen(false);
     player
@@ -98,12 +99,13 @@ function App() {
         player.seek(0);
         const currentPost = getPosTrack(track, mods);
         const nextTrack = mods[parseInt(currentPost) + 1] ?? false;
+        console.log("next track in queue", nextTrack);
         player.onEnded(() => {
-          console.log(nextTrack);
           if (nextTrack) {
             loadTrack(nextTrack);
           } else {
             player.pause();
+            player.seek(0);
           }
         });
 

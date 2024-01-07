@@ -1,12 +1,10 @@
-import { Scene, PlaneGeometry, ShaderMaterial, Mesh, ImageUtils } from 'three'
-import { ConfigType } from '../../../types/config'
-import { ShaderAbstract } from './ShaderAbstract.ts'
+import { ShaderAbstract } from "./ShaderAbstract.ts";
 
 export class SpaceShader extends ShaderAbstract {
-    constructor() {
-        super()
-        
-        this.fshader += `
+  constructor() {
+    super();
+
+    this.fshader += `
             // Star Nest by Pablo RomÃ¡n Andrioli
 
             // This content is under the MIT License.
@@ -99,6 +97,6 @@ export class SpaceShader extends ShaderAbstract {
                     gl_FragColor = C;	
                 
             }
-        `
-    }
+        `;
+  }
 }

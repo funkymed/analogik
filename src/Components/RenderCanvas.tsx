@@ -21,6 +21,7 @@ function RenderCanvas(props: any): JSX.Element {
   const staticItems = useRef<StaticItems>();
   const editorGui = useRef<Editor>();
   const currentConfig = useRef<ConfigType>();
+  const newConfig = useRef<any>();
   const manda_scene = useRef<MandaScene>();
   const renderer = useRef<WebGLRenderer>();
   const composer = useRef<Composer>();
@@ -47,10 +48,12 @@ function RenderCanvas(props: any): JSX.Element {
 
   const loadConfig = useCallback(
     (config: ConfigType) => {
-      const newConfig =
+      newConfig.current =
         ConfigVariations[Math.floor(Math.random() * ConfigVariations.length)];
 
-      deepMergeObjects(newConfig, config);
+      deepMergeObjects(newConfig.current, config);
+
+      console.log("load config", config);
 
       if (manda_scene.current && staticItems.current && composer.current) {
         manda_scene.current.updateSceneBackground(config);
@@ -74,6 +77,7 @@ function RenderCanvas(props: any): JSX.Element {
   );
 
   const init = useCallback(() => {
+    console.log("init mandfunk");
     // init
 
     let W = window.innerWidth;
