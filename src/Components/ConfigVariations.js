@@ -2,10 +2,10 @@ export const ConfigVariations = [
   {
     scene: {
       shader: "Med2",
-      background: "./images/w6.jpg",
+      background: "./images/w11.jpg",
       shader_speed: 0.8,
       shader_opacity: 0.15,
-      blur: 15,
+      blur: 0,
       brightness: 50,
       bgColor: "#000000",
     },
@@ -20,15 +20,16 @@ export const ConfigVariations = [
     },
     composer: {
       bloom: { show: true, strength: 0.13, threshold: 0.49, radius: 4 },
+      film: { show: false },
     },
   },
   {
     scene: {
       shader: "Med2",
       background: "./images/w8.jpg",
-      shader_speed: .6,
-      shader_opacity: -.86,
-      blur: 35,
+      shader_speed: 0.6,
+      shader_opacity: -1,
+      blur: 0,
       brightness: 60,
       bgColor: "#000000",
     },
@@ -42,16 +43,17 @@ export const ConfigVariations = [
     },
     composer: {
       bloom: { show: true, strength: 0.13, threshold: 0.49, radius: 4 },
+      film: { show: false },
     },
   },
   {
     scene: {
       shader: "Med1",
-      shader_speed: 0.2,
-      shader_opacity: -1,
-      background: "./images/w3.jpg",
-      blur: 10,
-      brightness: 30,
+      shader_speed: 0.55,
+      shader_opacity: -2.25,
+      background: "./images/w9.jpg",
+      blur: 0,
+      brightness: 90,
       bgColor: "#000000",
     },
     vumeters: {
@@ -59,10 +61,13 @@ export const ConfigVariations = [
         color: "#FFAA99",
         show: true,
         motionBlur: true,
-        opacity: .25,
+        opacity: 0.25,
         motionBlurLength: 0.19,
         z: -650,
       },
+    },
+    composer: {
+      film: { show: false },
     },
   },
   {
@@ -80,16 +85,19 @@ export const ConfigVariations = [
         color: "#ff006f",
         show: true,
         motionBlur: true,
-        motionBlurLength:.09,
+        motionBlurLength: 0.09,
         z: -300,
       },
+    },
+    composer: {
+      film: { show: false },
     },
   },
   {
     scene: {
       shader: "Med4",
       shader_speed: 0.25,
-      shader_opacity: 0.10,
+      shader_opacity: 0.1,
       background: "./images/w8.jpg",
       blur: 15,
       brightness: 100,
@@ -105,6 +113,9 @@ export const ConfigVariations = [
         rgb: { show: true, amount: 0.016, angle: 0.65 },
       },
     },
+    composer: {
+      film: { show: false },
+    },
   },
   {
     scene: {
@@ -119,7 +130,7 @@ export const ConfigVariations = [
       },
       composer: {
         film: {
-          show: true,
+          show: false,
           count: 1000,
           sIntensity: 1.11,
           nIntensity: 0.34,
@@ -134,7 +145,7 @@ export const ConfigVariations = [
     scene: {
       shader: "Med3",
       shader_speed: 0.15,
-      shader_opacity: .2,
+      shader_opacity: 0.2,
       background: "./images/w10.jpg",
       blur: 0,
       brightness: 10,
@@ -143,7 +154,7 @@ export const ConfigVariations = [
       osciloscop: { show: false, motionBlur: 0.15 },
     },
     composer: {
-      film: { show: false},
+      film: { show: false },
     },
   },
 ];
