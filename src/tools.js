@@ -1,4 +1,4 @@
-export function deepMergeObjects(obj1, obj2) {
+export const deepMergeObjects = (obj1, obj2) => {
   for (const key in obj1) {
     if (obj1.hasOwnProperty(key)) {
       if (typeof obj1[key] === "object") {
@@ -11,4 +11,13 @@ export function deepMergeObjects(obj1, obj2) {
       }
     }
   }
-}
+};
+
+export const getRandomOffset = (arr, current) => {
+  const off = Math.floor(Math.random() * arr.length);
+  return off !== current ? off : getRandomOffset(arr, current);
+};
+
+export const geetRandomItem = (arr) => {
+  return arr[getRandomOffset(arr)];
+};

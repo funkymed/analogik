@@ -9,14 +9,14 @@ import { Composer } from "./mandafunk/fx/composer.ts";
 import testConfig from "../config.ts";
 import { Editor } from "./mandafunk/gui/editor.ts";
 import { getHttpParam } from "./mandafunk/tools/http.ts";
-import { deepMergeObjects } from "../tools.js";
+import { deepMergeObjects, getRandomOffset } from "../tools.js";
 import { ConfigVariations } from "./ConfigVariations.js";
 
 const isEditor = getHttpParam("editor");
 
 function RenderCanvas(props: any): JSX.Element {
   const canvasRef = useRef<HTMLCanvasElement>();
-  const isInit = useRef<boolean>();
+  const isInit = useRef<boolean>(false);
   const clock = useRef<Clock>();
   const staticItems = useRef<StaticItems>();
   const editorGui = useRef<Editor>();
@@ -27,6 +27,7 @@ function RenderCanvas(props: any): JSX.Element {
   const composer = useRef<Composer>();
   const camera = useRef<PerspectiveCamera>();
   const time = useRef<number>(0);
+  const shaderOffset = useRef<number>(0);
 
   const handleResize = useCallback(() => {
     const W = window.innerWidth;
@@ -48,12 +49,18 @@ function RenderCanvas(props: any): JSX.Element {
 
   const loadConfig = useCallback(
     (config: ConfigType) => {
-      newConfig.current =
-        ConfigVariations[Math.floor(Math.random() * ConfigVariations.length)];
+      if (!isInit.current) {
+        shaderOffset.current = props.shader;
+      } else {
+        shaderOffset.current = getRandomOffset(ConfigVariations);
+        props.setShader(shaderOffset.current);
+      }
+
+      props.updateRouteHttp(shaderOffset.current);
+
+      newConfig.current = ConfigVariations[shaderOffset.current];
 
       deepMergeObjects(newConfig.current, config);
-
-      console.log("load config", config);
 
       if (manda_scene.current && staticItems.current && composer.current) {
         manda_scene.current.updateSceneBackground(config);
@@ -75,7 +82,6 @@ function RenderCanvas(props: any): JSX.Element {
     },
     [time]
   );
-
   const init = useCallback(() => {
     console.log("init mandfunk");
     // init
@@ -187,12 +193,12 @@ function RenderCanvas(props: any): JSX.Element {
 
   useEffect(() => {
     if (!isInit.current) {
-      isInit.current = true;
       init();
       if (currentConfig.current) {
         loadConfig(currentConfig.current);
       }
 
+      isInit.current = true;
       animate();
     }
 
@@ -205,7 +211,12 @@ function RenderCanvas(props: any): JSX.Element {
   useEffect(() => {
     props.setIsPlay(props.player.currentPlayingNode ? true : false);
 
-    if (staticItems.current && props.isPlay && currentConfig.current) {
+    if (
+      staticItems.current &&
+      props.isPlay &&
+      currentConfig.current &&
+      isInit.current
+    ) {
       staticItems.current.setAnalyser(props.player.getAnalyser());
       loadConfig(currentConfig.current);
     }

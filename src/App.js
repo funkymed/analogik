@@ -1,12 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
-import { getTracks, getAuthors, getYears } from "./tracks";
+import {
+  getTracks,
+  getAuthors,
+  getYears,
+  getPosTrack,
+  getTrackByUrl,
+} from "./tracks";
 import PlayerControl from "./Components/PlayerControl";
 import TracksList from "./Components/TrackList";
 import AuthorList from "./Components/AuthorList";
 import YearList from "./Components/YearList";
 import RenderCanvas from "./Components/RenderCanvas.tsx";
 import "rsuite/dist/rsuite.min.css";
-
 import {
   Drawer,
   IconButton,
@@ -19,6 +24,7 @@ import PlusIcon from "@rsuite/icons/legacy/Plus";
 import QuestionIcon from "@rsuite/icons/legacy/Question";
 import "./App.css";
 import AboutDrawer from "./Components/AboutDrawer.js";
+import { getHttpParam } from "./Components/mandafunk/tools/http.ts";
 
 const ChiptuneJsPlayer = window["ChiptuneJsPlayer"];
 const ChiptuneJsConfig = window["ChiptuneJsConfig"];
@@ -36,89 +42,73 @@ player.pause();
 
 function App() {
   const years = getYears();
-
+  const render = useRef();
   const [open, setOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
   const [volume, setVolume] = useState(90);
 
   // tracks
   const [isPlay, setIsPlay] = useState(0);
-  const [currentTrack, setCurrentTrack] = useState(0);
+  const [currentTrack, setCurrentTrack] = useState(
+    getTrackByUrl(getHttpParam("track"))
+  );
   const [size, setSize] = useState(0);
   const [meta, setMeta] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isLoading, setIsLoading] = useState(0);
+  const [shader, setShader] = useState(getHttpParam("shader") || 0);
 
   // filters
-  const [year, setYear] = useState(0);
-  const [author, setAuthor] = useState(0);
-  const [authors, setAuthors] = useState(getAuthors(year));
-  const [selection, setSelection] = useState("all");
+
+  const [year, setYear] = useState(getHttpParam("year") || 0);
+  const [author, setAuthor] = useState(getHttpParam("author") || 0);
+  const [authors, setAuthors] = useState(getAuthors(getHttpParam("year") || 0));
+  const [selection, setSelection] = useState(
+    getHttpParam("selection") || "all"
+  );
+
   // tracks
   const [mods, setMods] = useState(getTracks(year, author, selection));
 
+  const updateRouteHttp = (s) => {
+    var url = new URL(window.location.origin);
+    var search_params = url.searchParams;
+
+    if (year) {
+      search_params.append("year", year);
+    }
+    if (author) {
+      search_params.append("author", author);
+    }
+
+    if (selection !== "all") {
+      search_params.append("selection", selection);
+    }
+
+    if (currentTrack) {
+      search_params.append("track", currentTrack.url);
+    }
+
+    if (s) {
+      search_params.append("shader", s);
+    }
+
+    url.search = search_params.toString();
+
+    window.history.pushState(null, null, `?${search_params.toString()}`);
+  };
+
   const filterYear = (y) => {
     setYear(y);
-    updateFilers(y, author, selection);
+    setAuthors(getAuthors(y));
   };
 
   const filterAuthor = (a) => {
     setAuthor(a);
-    updateFilers(year, a, selection);
   };
 
   const filterSelection = (s) => {
     setSelection(s);
-    updateFilers(year, author, s);
-  };
-
-  const updateFilers = (y, a, s) => {
-    setAuthors(getAuthors(y));
-    setMods(getTracks(y, a, s));
-  };
-
-  const getPosTrack = (track, arr) => {
-    for (let t in arr) {
-      if (track.url === arr[t].url) {
-        return t;
-      }
-    }
-  };
-
-  const loadTrack = (track) => {
-    console.log("load", track);
-    setIsLoading(true);
-    setOpen(false);
-    player
-      .load(`./mods/${track.url}`)
-      .then((buffer) => {
-        setIsLoading(false);
-
-        player.pause();
-        player.play(buffer);
-        player.seek(0);
-        const currentPost = getPosTrack(track, mods);
-        const nextTrack = mods[parseInt(currentPost) + 1] ?? false;
-        console.log("next track in queue", nextTrack);
-        player.onEnded(() => {
-          if (nextTrack) {
-            loadTrack(nextTrack);
-          } else {
-            player.pause();
-            player.seek(0);
-          }
-        });
-
-        setIsPlay(true);
-        setCurrentTrack(track);
-        setSize(buffer.byteLength);
-        setMeta(player.metadata());
-        setDuration(player.duration());
-      })
-      .catch(() => {
-        setIsLoading(false);
-        setIsPlay(false);
-      });
   };
 
   const setPlayerVolume = (value) => {
@@ -131,10 +121,64 @@ function App() {
     player.togglePause();
   };
 
+  const onPop = (e) => {
+    console.log("updated history");
+  };
+
   useEffect(() => {
-    var item = mods[Math.floor(Math.random() * mods.length)];
-    loadTrack(item);
+    window.addEventListener("popstate", onPop);
+
+    // const trackUrl = getHttpParam("track");
+    // let item;
+    // if (trackUrl) {
+    //
+    return () => window.removeEventListener("popstate", onPop);
   }, []);
+
+  useEffect(() => {
+    const modsList = getTracks(year, author, selection);
+    setMods(modsList);
+    updateRouteHttp(shader);
+  }, [year, author, selection, shader, getTracks]);
+
+  useEffect(() => {
+    setIsLoading(true);
+    setOpen(false);
+
+    updateRouteHttp(shader);
+
+    player
+      .load(`./mods/${currentTrack.url}`)
+      .then((buffer) => {
+        setIsLoading(false);
+
+        player.pause();
+        player.play(buffer);
+        player.seek(0);
+
+        const currentPost = getPosTrack(currentTrack);
+        const nextTrack = mods[parseInt(currentPost) + 1] ?? false;
+        console.log("next track in queue", nextTrack);
+        player.onEnded(() => {
+          if (nextTrack) {
+            setCurrentTrack(nextTrack);
+          } else {
+            player.pause();
+            player.seek(0);
+          }
+        });
+
+        setIsPlay(true);
+
+        setSize(buffer.byteLength);
+        setMeta(player.metadata());
+        setDuration(player.duration());
+      })
+      .catch(() => {
+        setIsLoading(false);
+        setIsPlay(false);
+      });
+  }, [currentTrack, setIsLoading, setIsPlay, player]);
 
   return (
     <CustomProvider theme="dark">
@@ -174,7 +218,7 @@ function App() {
           <TracksList
             mods={mods}
             currentTrack={currentTrack}
-            load={loadTrack}
+            load={setCurrentTrack}
           />
           <br />
         </Drawer.Body>
@@ -228,11 +272,13 @@ function App() {
       />
       <RenderCanvas
         player={player}
-        context={context}
+        audioContext={context}
         isPlay={isPlay}
         setIsPlay={setIsPlay}
-        currentTrack={currentTrack}
-        isLoading={isLoading}
+        shader={shader}
+        setShader={setShader}
+        updateRouteHttp={updateRouteHttp}
+        ref={render}
       />
     </CustomProvider>
   );

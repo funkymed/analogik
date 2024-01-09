@@ -19,8 +19,11 @@ export const ConfigVariations = [
       },
     },
     composer: {
-      bloom: { show: true, strength: 0.13, threshold: 0.49, radius: 4 },
+      bloom: { show: true, strength: 0.34, threshold: 0.43, radius: 3.1 },
       film: { show: false },
+      static: { show: false },
+      rgb: { show: false },
+      hue: { show: false },
     },
   },
   {
@@ -43,30 +46,45 @@ export const ConfigVariations = [
     },
     composer: {
       bloom: { show: true, strength: 0.13, threshold: 0.49, radius: 4 },
-      film: { show: false },
+      film: {
+        show: true,
+        count: 3000,
+        sIntensity: 5,
+        nIntensity: 0.2,
+        grayscale: false,
+      },
+      hue: { show: false },
+      rgb: { show: false },
+      static: { show: true },
     },
   },
   {
     scene: {
       shader: "Med1",
       shader_speed: 0.55,
-      shader_opacity: -2.25,
-      background: "./images/w9.jpg",
+      shader_opacity: 0.9,
+      background: "./images/w6.jpg",
       blur: 0,
-      brightness: 90,
+      brightness: 20,
       bgColor: "#000000",
     },
     vumeters: {
       oscilloscop: {
-        color: "#FFAA99",
-        show: true,
-        motionBlur: true,
-        opacity: 0.25,
-        motionBlurLength: 0.19,
-        z: -650,
+        show: false,
       },
     },
     composer: {
+      film: {
+        show: true,
+        count: 1000,
+        sIntensity: 2,
+        nIntensity: 0.2,
+        grayscale: false,
+      },
+      bloom: { show: true, strength: 0.38, threshold: 0.88, radius: 1.4 },
+      static: { show: true, amount: 0.03, size: 15 },
+      rgb: { show: false, amount: 0.016, angle: 0.65 },
+      hue: { show: true, hue: 0.77, saturation: 0 },
       film: { show: false },
     },
   },
@@ -76,8 +94,8 @@ export const ConfigVariations = [
       shader_speed: 0.2,
       shader_opacity: 0.4,
       background: "./images/w1.jpg",
-      blur: 10,
-      brightness: 50,
+      blur: 0,
+      brightness: 150,
       bgColor: "#000000",
     },
     vumeters: {
@@ -90,7 +108,17 @@ export const ConfigVariations = [
       },
     },
     composer: {
-      film: { show: false },
+      bloom: { show: true, strength: 0.28, threshold: 0.89, radius: 2.3 },
+      film: {
+        show: true,
+        count: 1000,
+        sIntensity: 1,
+        nIntensity: 0.34,
+        grayscale: false,
+      },
+      static: { show: false },
+      rgb: { show: false },
+      hue: { show: false },
     },
   },
   {
@@ -101,20 +129,19 @@ export const ConfigVariations = [
       background: "./images/w8.jpg",
       blur: 15,
       brightness: 100,
-      composer: {
-        film: {
-          show: true,
-          count: 1000,
-          sIntensity: 1.11,
-          nIntensity: 0.34,
-          grayscale: false,
-        },
-        static: { show: true, amount: 0.097, size: 10 },
-        rgb: { show: true, amount: 0.016, angle: 0.65 },
-      },
     },
     composer: {
-      film: { show: false },
+      bloom: { show: true, strength: 0.25, threshold: 0.31, radius: 0.5 },
+      film: {
+        show: true,
+        count: 2000,
+        sIntensity: 2,
+        nIntensity: 0.34,
+        grayscale: false,
+      },
+      static: { show: true, amount: 0.03, size: 15 },
+      rgb: { show: false, amount: 0.016, angle: 0.65 },
+      hue: { show: false },
     },
   },
   {
@@ -125,20 +152,22 @@ export const ConfigVariations = [
       background: "./images/w9.jpg",
       blur: 5,
       brightness: 30,
-      vumeters: {
-        osciloscop: { show: false },
+    },
+    vumeters: {
+      oscilloscop: { show: false },
+    },
+    composer: {
+      bloom: { show: false },
+      film: {
+        show: false,
+        count: 1000,
+        sIntensity: 1.11,
+        nIntensity: 0.34,
+        grayscale: false,
       },
-      composer: {
-        film: {
-          show: false,
-          count: 1000,
-          sIntensity: 1.11,
-          nIntensity: 0.34,
-          grayscale: false,
-        },
-        static: { show: true, amount: 0.097, size: 10 },
-        rgb: { show: true, amount: 0.016, angle: 0.65 },
-      },
+      static: { show: true, amount: 0.097, size: 10 },
+      rgb: { show: true, amount: 0.01, angle: 0.6 },
+      hue: { show: false },
     },
   },
   {
@@ -151,10 +180,20 @@ export const ConfigVariations = [
       brightness: 10,
     },
     vumeters: {
-      osciloscop: { show: false, motionBlur: 0.15 },
+      oscilloscop: {
+        color: "#9c8969",
+        show: true,
+        motionBlur: true,
+        z: -650,
+        motionBlurLength: 0.15,
+      },
     },
     composer: {
+      bloom: { show: true, strength: 0.19, threshold: 0.77, radius: 3.5 },
       film: { show: false },
+      hue: { show: false },
+      rgb: { show: false },
+      static: { show: false },
     },
   },
 ];

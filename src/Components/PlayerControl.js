@@ -109,6 +109,7 @@ function PlayerControl({
                 fontFamily: "Kdam Thmor Pro",
                 textAlign: "center",
                 padding: 20,
+                height: 320,
                 // borderRadius: 20,
               }}
             >

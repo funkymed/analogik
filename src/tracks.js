@@ -366,6 +366,12 @@ export const tracks = [
     filename: "earth.xm",
   },
   {
+    url: "2001/med_offline.xm",
+    year: "2001",
+    author: ["med"],
+    filename: "offline.xm",
+  },
+  {
     url: "2001/med_health.xm",
     year: "2001",
     author: ["med"],
@@ -912,3 +918,24 @@ export function getTracks(year, author, selection) {
 
   return selectedTracks;
 }
+
+export const getPosTrack = (track, arr) => {
+  for (let t in arr) {
+    if (track.url === arr[t].url) {
+      return t;
+    }
+  }
+};
+
+export const getTrackByUrl = (url) => {
+  if (!url) {
+    return false;
+  }
+  for (let t of tracks) {
+    if (t.url === url) {
+      return t;
+      break;
+    }
+  }
+  return false;
+};
