@@ -1,4 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
+import "rsuite/dist/rsuite.min.css";
+import {
+  Drawer,
+  IconButton,
+  CustomProvider,
+  Loader,
+  Radio,
+  RadioGroup,
+} from "rsuite";
 import {
   tracks,
   getTracks,
@@ -12,21 +21,13 @@ import TracksList from "./Components/TrackList";
 import AuthorList from "./Components/AuthorList";
 import YearList from "./Components/YearList";
 import RenderCanvas from "./Components/RenderCanvas.tsx";
-import "rsuite/dist/rsuite.min.css";
-import {
-  Drawer,
-  IconButton,
-  CustomProvider,
-  Loader,
-  Radio,
-  RadioGroup,
-} from "rsuite";
 import PlusIcon from "@rsuite/icons/legacy/Plus";
 import QuestionIcon from "@rsuite/icons/legacy/Question";
-import "./App.css";
 import AboutDrawer from "./Components/AboutDrawer.js";
 import { getHttpParam } from "./Components/mandafunk/tools/http.ts";
 import { getRandomItem, getRandomOffset } from "./tools.js";
+import { ConfigVariations } from "./Components/ConfigVariations.js";
+import "./App.css";
 
 const ChiptuneJsPlayer = window["ChiptuneJsPlayer"];
 const ChiptuneJsConfig = window["ChiptuneJsConfig"];
@@ -44,7 +45,6 @@ player.pause();
 
 function App() {
   const years = getYears();
-  const render = useRef();
   const [open, setOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
   const [volume, setVolume] = useState(90);
@@ -58,7 +58,10 @@ function App() {
   const [meta, setMeta] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isLoading, setIsLoading] = useState(0);
-  const shader = useRef(getHttpParam("shader") || 0);
+  const [newConfig, setNewConfig] = useState(null);
+  const [newconfigOffset, setNewconfigOffset] = useState(
+    getHttpParam("config") || null
+  );
 
   // filters
   const [year, setYear] = useState(getHttpParam("year") || 0);
@@ -91,8 +94,8 @@ function App() {
       search_params.append("track", currentTrack.url);
     }
 
-    if (shader.current) {
-      search_params.append("shader", shader.current);
+    if (newconfigOffset) {
+      search_params.append("config", newconfigOffset);
     }
 
     url.search = search_params.toString();
@@ -135,24 +138,51 @@ function App() {
   useEffect(() => {
     window.addEventListener("popstate", onPop);
 
-    return () => window.removeEventListener("popstate", onPop);
+    let confOffset;
+    for (let t in tracks) {
+      confOffset = getRandomOffset(
+        ConfigVariations,
+        tracks[t - 1] ? tracks[t - 1].shader : -1
+      );
+
+      tracks[t].shader = confOffset;
+      setMods(tracks);
+    }
+
+    if (!currentTrack) {
+      const item = getRandomItem(tracks);
+
+      item.shader = confOffset;
+
+      setCurrentTrack(item);
+    } else {
+      confOffset = newconfigOffset
+        ? newconfigOffset
+        : getRandomOffset(ConfigVariations, -1);
+
+      currentTrack.shader = confOffset;
+    }
+
+    return () => {
+      player.pause();
+      window.removeEventListener("popstate", onPop);
+    };
   }, []);
 
   useEffect(() => {
     const modsList = getTracks(year, author, selection);
     setMods(modsList);
-
-    if (!currentTrack) {
-      const item = getRandomItem(modsList);
-      setCurrentTrack(item);
-    }
-
     updateRouteHttp();
-  }, [year, author, selection, getTracks]);
+  }, [year, author, selection, getTracks, newconfigOffset]);
 
   useEffect(() => {
     setIsLoading(true);
     setOpen(false);
+
+    if (currentTrack.shader) {
+      setNewconfigOffset(currentTrack.shader);
+      setNewConfig(ConfigVariations[currentTrack.shader]);
+    }
 
     updateRouteHttp();
 
@@ -285,15 +315,14 @@ function App() {
         circle
         size="sm"
       />
-      {currentTrack && !isLoading && player.currentPlayingNode ? (
+
+      {currentTrack && !isLoading && player.currentPlayingNode && newConfig ? (
         <RenderCanvas
           player={player}
           audioContext={context}
           isPlay={isPlay}
           setIsPlay={setIsPlay}
-          shader={shader}
-          updateRouteHttp={updateRouteHttp}
-          ref={render}
+          newConfig={newConfig}
         />
       ) : (
         ""

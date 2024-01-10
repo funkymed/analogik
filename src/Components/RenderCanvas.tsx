@@ -10,7 +10,6 @@ import testConfig from "../config.ts";
 import { Editor } from "./mandafunk/gui/editor.ts";
 import { getHttpParam } from "./mandafunk/tools/http.ts";
 import { deepMergeObjects, getRandomOffset } from "../tools.js";
-import { ConfigVariations } from "./ConfigVariations.js";
 
 const isEditor = getHttpParam("editor");
 
@@ -28,6 +27,7 @@ function RenderCanvas(props: any): JSX.Element {
   const camera = useRef<PerspectiveCamera>();
   const time = useRef<number>(0);
   const shaderOffset = useRef<number>(0);
+  const animateId = useRef<number>();
 
   const handleResize = useCallback(() => {
     const W = window.innerWidth;
@@ -49,23 +49,7 @@ function RenderCanvas(props: any): JSX.Element {
 
   const loadConfig = useCallback(
     (config: ConfigType) => {
-      console.log("isInit.current", isInit.current);
-      if (!isInit.current) {
-        shaderOffset.current = props.shader.current;
-        isInit.current = true;
-      } else {
-        shaderOffset.current = getRandomOffset(
-          ConfigVariations,
-          shaderOffset.current
-        );
-        props.shader.current = shaderOffset.current;
-      }
-
-      props.updateRouteHttp();
-
-      newConfig.current = ConfigVariations[shaderOffset.current];
-
-      deepMergeObjects(newConfig.current, config);
+      deepMergeObjects(props.newConfig, config);
 
       if (manda_scene.current && staticItems.current && composer.current) {
         manda_scene.current.updateSceneBackground(config);
@@ -88,7 +72,6 @@ function RenderCanvas(props: any): JSX.Element {
     [time]
   );
   const init = useCallback(() => {
-    console.log("init mandfunk");
     // init
 
     let W = window.innerWidth;
@@ -171,7 +154,7 @@ function RenderCanvas(props: any): JSX.Element {
   };
 
   const animate = useCallback(() => {
-    requestAnimationFrame(animate);
+    animateId.current = requestAnimationFrame(animate);
     time.current = clock.current ? clock.current.getElapsedTime() : 0;
 
     // let position = 0;
@@ -198,22 +181,20 @@ function RenderCanvas(props: any): JSX.Element {
 
   useEffect(() => {
     window.addEventListener("resize", handleResize);
-    console.log("ok");
     init();
-    animate();
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
-  useEffect(() => {
-    props.setIsPlay(props.player.currentPlayingNode ? true : false);
-
-    if (staticItems.current && props.isPlay && currentConfig.current) {
+    if (staticItems.current && currentConfig.current) {
       staticItems.current.setAnalyser(props.player.getAnalyser());
       loadConfig(currentConfig.current);
     }
-  }, [props.player.currentPlayingNode, loadConfig]);
+
+    animate();
+    return () => {
+      if (animateId.current) {
+        cancelAnimationFrame(animateId.current);
+      }
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   return <canvas className="canvasStyle" ref={canvasRef} />;
 }
