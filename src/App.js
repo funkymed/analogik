@@ -33,10 +33,10 @@ const ChiptuneJsPlayer = window["ChiptuneJsPlayer"];
 const ChiptuneJsConfig = window["ChiptuneJsConfig"];
 
 const context = new AudioContext();
-
+const defaultVolume = 50;
 const config = new ChiptuneJsConfig({
   repeatCount: 0,
-  volume: 90,
+  volume: defaultVolume,
   context: context,
 });
 
@@ -47,7 +47,7 @@ function App() {
   const years = getYears();
   const [open, setOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
-  const [volume, setVolume] = useState(90);
+  const [volume, setVolume] = useState(defaultVolume);
 
   // tracks
   const [isPlay, setIsPlay] = useState(0);
