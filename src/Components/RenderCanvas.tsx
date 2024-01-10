@@ -49,14 +49,19 @@ function RenderCanvas(props: any): JSX.Element {
 
   const loadConfig = useCallback(
     (config: ConfigType) => {
+      console.log("isInit.current", isInit.current);
       if (!isInit.current) {
-        shaderOffset.current = props.shader;
+        shaderOffset.current = props.shader.current;
+        isInit.current = true;
       } else {
-        shaderOffset.current = getRandomOffset(ConfigVariations);
-        props.setShader(shaderOffset.current);
+        shaderOffset.current = getRandomOffset(
+          ConfigVariations,
+          shaderOffset.current
+        );
+        props.shader.current = shaderOffset.current;
       }
 
-      props.updateRouteHttp(shaderOffset.current);
+      props.updateRouteHttp();
 
       newConfig.current = ConfigVariations[shaderOffset.current];
 
@@ -192,31 +197,19 @@ function RenderCanvas(props: any): JSX.Element {
   }, [time]);
 
   useEffect(() => {
-    if (!isInit.current) {
-      init();
-      if (currentConfig.current) {
-        loadConfig(currentConfig.current);
-      }
-
-      isInit.current = true;
-      animate();
-    }
-
     window.addEventListener("resize", handleResize);
+    console.log("ok");
+    init();
+    animate();
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, [loadConfig, animate, isInit, handleResize, init]);
+  }, []);
 
   useEffect(() => {
     props.setIsPlay(props.player.currentPlayingNode ? true : false);
 
-    if (
-      staticItems.current &&
-      props.isPlay &&
-      currentConfig.current &&
-      isInit.current
-    ) {
+    if (staticItems.current && props.isPlay && currentConfig.current) {
       staticItems.current.setAnalyser(props.player.getAnalyser());
       loadConfig(currentConfig.current);
     }

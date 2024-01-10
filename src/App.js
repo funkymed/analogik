@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
+  tracks,
   getTracks,
   getAuthors,
   getYears,
@@ -25,6 +26,7 @@ import QuestionIcon from "@rsuite/icons/legacy/Question";
 import "./App.css";
 import AboutDrawer from "./Components/AboutDrawer.js";
 import { getHttpParam } from "./Components/mandafunk/tools/http.ts";
+import { getRandomItem, getRandomOffset } from "./tools.js";
 
 const ChiptuneJsPlayer = window["ChiptuneJsPlayer"];
 const ChiptuneJsConfig = window["ChiptuneJsConfig"];
@@ -56,12 +58,12 @@ function App() {
   const [meta, setMeta] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isLoading, setIsLoading] = useState(0);
-  const [shader, setShader] = useState(getHttpParam("shader") || 0);
+  const shader = useRef(getHttpParam("shader") || 0);
 
   // filters
-
   const [year, setYear] = useState(getHttpParam("year") || 0);
   const [author, setAuthor] = useState(getHttpParam("author") || 0);
+  const [nextTrack, setnextTrack] = useState();
   const [authors, setAuthors] = useState(getAuthors(getHttpParam("year") || 0));
   const [selection, setSelection] = useState(
     getHttpParam("selection") || "all"
@@ -70,7 +72,7 @@ function App() {
   // tracks
   const [mods, setMods] = useState(getTracks(year, author, selection));
 
-  const updateRouteHttp = (s) => {
+  const updateRouteHttp = () => {
     var url = new URL(window.location.origin);
     var search_params = url.searchParams;
 
@@ -89,8 +91,8 @@ function App() {
       search_params.append("track", currentTrack.url);
     }
 
-    if (s) {
-      search_params.append("shader", s);
+    if (shader.current) {
+      search_params.append("shader", shader.current);
     }
 
     url.search = search_params.toString();
@@ -125,27 +127,34 @@ function App() {
     console.log("updated history");
   };
 
+  const getNexTrack = () => {
+    const currentPost = getPosTrack(currentTrack, mods);
+    return mods[parseInt(currentPost) + 1] ?? false;
+  };
+
   useEffect(() => {
     window.addEventListener("popstate", onPop);
 
-    // const trackUrl = getHttpParam("track");
-    // let item;
-    // if (trackUrl) {
-    //
     return () => window.removeEventListener("popstate", onPop);
   }, []);
 
   useEffect(() => {
     const modsList = getTracks(year, author, selection);
     setMods(modsList);
-    updateRouteHttp(shader);
-  }, [year, author, selection, shader, getTracks]);
+
+    if (!currentTrack) {
+      const item = getRandomItem(modsList);
+      setCurrentTrack(item);
+    }
+
+    updateRouteHttp();
+  }, [year, author, selection, getTracks]);
 
   useEffect(() => {
     setIsLoading(true);
     setOpen(false);
 
-    updateRouteHttp(shader);
+    updateRouteHttp();
 
     player
       .load(`./mods/${currentTrack.url}`)
@@ -156,12 +165,12 @@ function App() {
         player.play(buffer);
         player.seek(0);
 
-        const currentPost = getPosTrack(currentTrack);
-        const nextTrack = mods[parseInt(currentPost) + 1] ?? false;
-        console.log("next track in queue", nextTrack);
         player.onEnded(() => {
-          if (nextTrack) {
-            setCurrentTrack(nextTrack);
+          const next = getNexTrack();
+          console.log("next track in queue", next);
+
+          if (next) {
+            setCurrentTrack(next);
           } else {
             player.pause();
             player.seek(0);
@@ -224,7 +233,7 @@ function App() {
         </Drawer.Body>
       </Drawer>
 
-      {currentTrack && !isLoading ? (
+      {currentTrack && !isLoading && player.currentPlayingNode ? (
         <PlayerControl
           player={player}
           currentTrack={currentTrack}
@@ -237,7 +246,13 @@ function App() {
           volume={volume}
         />
       ) : (
-        <Loader backdrop content="loading..." vertical />
+        <Loader
+          speed="fast"
+          center={true}
+          vertical={true}
+          size="lg"
+          content="Loading ..."
+        />
       )}
       <IconButton
         appearance="primary"
@@ -270,16 +285,19 @@ function App() {
         circle
         size="sm"
       />
-      <RenderCanvas
-        player={player}
-        audioContext={context}
-        isPlay={isPlay}
-        setIsPlay={setIsPlay}
-        shader={shader}
-        setShader={setShader}
-        updateRouteHttp={updateRouteHttp}
-        ref={render}
-      />
+      {currentTrack && !isLoading && player.currentPlayingNode ? (
+        <RenderCanvas
+          player={player}
+          audioContext={context}
+          isPlay={isPlay}
+          setIsPlay={setIsPlay}
+          shader={shader}
+          updateRouteHttp={updateRouteHttp}
+          ref={render}
+        />
+      ) : (
+        ""
+      )}
     </CustomProvider>
   );
 }

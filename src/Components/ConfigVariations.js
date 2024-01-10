@@ -12,9 +12,9 @@ export const ConfigVariations = [
     vumeters: {
       oscilloscop: {
         color: "#06F0ff",
-        show: true,
+        show: false,
         motionBlur: true,
-        motionBlurLength: 0.15,
+        motionBlurLength: 0.25,
         z: -244,
       },
     },
@@ -48,8 +48,8 @@ export const ConfigVariations = [
       bloom: { show: true, strength: 0.13, threshold: 0.49, radius: 4 },
       film: {
         show: true,
-        count: 3000,
-        sIntensity: 5,
+        count: 2000,
+        sIntensity: 1,
         nIntensity: 0.2,
         grayscale: false,
       },
@@ -111,9 +111,9 @@ export const ConfigVariations = [
       bloom: { show: true, strength: 0.28, threshold: 0.89, radius: 2.3 },
       film: {
         show: true,
-        count: 1000,
-        sIntensity: 1,
-        nIntensity: 0.34,
+        count: 814,
+        sIntensity: 0.08,
+        nIntensity: 0.64,
         grayscale: false,
       },
       static: { show: false },

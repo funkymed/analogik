@@ -18,6 +18,6 @@ export const getRandomOffset = (arr, current) => {
   return off !== current ? off : getRandomOffset(arr, current);
 };
 
-export const geetRandomItem = (arr) => {
-  return arr[getRandomOffset(arr)];
+export const getRandomItem = (arr) => {
+  return arr[getRandomOffset(arr, -1)];
 };
