@@ -138,16 +138,9 @@ function App() {
   useEffect(() => {
     window.addEventListener("popstate", onPop);
 
-    let confOffset;
-    for (let t in tracks) {
-      confOffset = getRandomOffset(
-        ConfigVariations,
-        tracks[t - 1] ? tracks[t - 1].shader : -1
-      );
-
-      tracks[t].shader = confOffset;
-      setMods(tracks);
-    }
+    const confOffset = newconfigOffset
+      ? newconfigOffset
+      : getRandomOffset(ConfigVariations, -1);
 
     if (!currentTrack) {
       const item = getRandomItem(tracks);
@@ -156,10 +149,6 @@ function App() {
 
       setCurrentTrack(item);
     } else {
-      confOffset = newconfigOffset
-        ? newconfigOffset
-        : getRandomOffset(ConfigVariations, -1);
-
       currentTrack.shader = confOffset;
     }
 

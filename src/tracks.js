@@ -1,4 +1,7 @@
-export const tracks = [
+import { ConfigVariations } from "./Components/ConfigVariations";
+import { getRandomOffset } from "./tools";
+
+const tracks = [
   {
     url: "2001/bacter-dna_emotions.it",
     year: "2001",
@@ -807,6 +810,16 @@ export const tracks = [
     filename: "jaipas.it",
   },
 ];
+
+for (let t in tracks) {
+  const confOffset = getRandomOffset(
+    ConfigVariations,
+    tracks[t - 1] ? tracks[t - 1].shader : -1
+  );
+  tracks[t].shader = confOffset;
+}
+
+export { tracks };
 
 export function getAuthors(year) {
   const authors = [];
