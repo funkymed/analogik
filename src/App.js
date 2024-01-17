@@ -127,7 +127,7 @@ function App() {
   };
 
   const onPop = (e) => {
-    console.log("updated history");
+    console.log("updated history", e);
   };
 
   const getNexTrack = () => {
@@ -135,9 +135,14 @@ function App() {
     return mods[parseInt(currentPost) + 1] ?? false;
   };
 
+  const onClickCanvas = (e) => {
+    const pos = e.screenX / window.innerWidth;
+    console.log(e);
+    player.seek(pos * player.duration());
+  };
+
   useEffect(() => {
     window.addEventListener("popstate", onPop);
-
     const confOffset = newconfigOffset
       ? newconfigOffset
       : getRandomOffset(ConfigVariations, -1);
@@ -155,6 +160,7 @@ function App() {
     return () => {
       player.pause();
       window.removeEventListener("popstate", onPop);
+      // window.removeEventListener("mouseup", onClickCanvas);
     };
   }, []);
 
@@ -186,8 +192,6 @@ function App() {
 
         player.onEnded(() => {
           const next = getNexTrack();
-          console.log("next track in queue", next);
-
           if (next) {
             setCurrentTrack(next);
           } else {
@@ -312,6 +316,7 @@ function App() {
           isPlay={isPlay}
           setIsPlay={setIsPlay}
           newConfig={newConfig}
+          onClickCanvas={onClickCanvas}
         />
       ) : (
         ""

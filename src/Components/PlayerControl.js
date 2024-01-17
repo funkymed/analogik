@@ -94,22 +94,22 @@ function PlayerControl({
           pointerEvents: "none",
         }}
       >
-        <FlexboxGrid.Item colspan={10}>
-          <BackdropFilter
-            filter={"blur(16px) brightness(120%)"}
-            canvasFallback={true}
-            html2canvasOpts={{
-              allowTaint: true,
+        <FlexboxGrid.Item colspan={10} style={{ pointerEvents: "none" }}>
+          <div
+            style={{
+              backdropFilter: "blur(16px) brightness(120%)",
+              borderRadius: 30,
+              border: "2px solid rgba(255, 255, 255, 0.15)",
+              background: "rgba(255, 255, 255, 0.15)",
             }}
           >
             <div
               style={{
-                background: "rgba(64, 64, 64, 0.15)",
-                border: "2px solid rgba(255, 255, 255, 0.15)",
                 fontFamily: "Kdam Thmor Pro",
                 textAlign: "center",
                 padding: 20,
                 height: 320,
+                pointerEvents: "none",
                 // borderRadius: 20,
               }}
             >
@@ -168,7 +168,7 @@ function PlayerControl({
                 ""
               )}
             </div>
-          </BackdropFilter>
+          </div>
         </FlexboxGrid.Item>
       </FlexboxGrid>
     </>

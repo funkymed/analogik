@@ -157,16 +157,6 @@ function RenderCanvas(props: any): JSX.Element {
     animateId.current = requestAnimationFrame(animate);
     time.current = clock.current ? clock.current.getElapsedTime() : 0;
 
-    // let position = 0;
-    // if (props.player.currentPlayingNode) {
-    //   position = props.player.currentPlayingNode
-    //     ? props.player.getPosition() < props.player.duration()
-    //       ? props.player.getPosition()
-    //       : props.player.duration()
-    //     : 0;
-    // }
-    // time = position;
-
     if (manda_scene.current && currentConfig.current && staticItems.current) {
       updateImageAnimation(
         manda_scene.current.getScene(),
@@ -181,6 +171,7 @@ function RenderCanvas(props: any): JSX.Element {
 
   useEffect(() => {
     window.addEventListener("resize", handleResize);
+
     init();
     if (staticItems.current && currentConfig.current) {
       staticItems.current.setAnalyser(props.player.getAnalyser());
@@ -196,7 +187,22 @@ function RenderCanvas(props: any): JSX.Element {
     };
   }, []);
 
-  return <canvas className="canvasStyle" ref={canvasRef} />;
+  useEffect(() => {
+    if (canvasRef.current) {
+      canvasRef.current.addEventListener("mouseup", props.onClickCanvas);
+    }
+  }, [canvasRef.current]);
+
+  return (
+    <canvas
+      onClick={props.onClickCanvas}
+      className="canvasStyle"
+      style={{
+        pointerEvents: "auto",
+      }}
+      ref={canvasRef}
+    />
+  );
 }
 
 export default RenderCanvas;
