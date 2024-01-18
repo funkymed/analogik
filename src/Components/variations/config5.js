@@ -20,7 +20,5 @@ export default {
       grayscale: false,
     },
     static: { show: true, amount: 0.03, size: 15 },
-    rgb: { show: false, amount: 0.016, angle: 0.65 },
-    hue: { show: false },
   },
 };

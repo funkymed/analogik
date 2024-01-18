@@ -13,10 +13,7 @@ export default {
   },
   vumeters: {
     oscilloscop: {
-      color: "#00BBFF",
       show: false,
-      motionBlur: false,
-      z: -244,
     },
   },
   composer: {

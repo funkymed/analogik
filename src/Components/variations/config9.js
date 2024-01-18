@@ -10,26 +10,6 @@ export default {
     shader_speed: 0.25,
     shader_opacity: 0.5,
   },
-
-  vumeters: {
-    oscilloscop: {
-      order: 1,
-      show: true,
-      color: "#00fff0",
-      bgColor: false,
-      motionBlur: true,
-      motionBlurLength: 0.3899999999999999,
-      opacity: 1,
-      width: 2048,
-      height: 90,
-      x: 0,
-      y: 0,
-      z: -217.70000000000002,
-      rotationX: 0,
-      rotationY: 0,
-      rotationZ: 0,
-    },
-  },
   composer: {
     bloom: { show: true, strength: 0.28, threshold: 0.73, radius: 1.5 },
     rgb: { show: false, amount: 0.003, angle: 0.7 },

@@ -29,8 +29,5 @@ export default {
       nIntensity: 0.64,
       grayscale: false,
     },
-    static: { show: false },
-    rgb: { show: false },
-    hue: { show: false },
   },
 };

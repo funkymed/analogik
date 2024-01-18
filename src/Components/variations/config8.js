@@ -15,7 +15,7 @@ export default {
     opacity: 0.2,
   },
   composer: {
-    bloom: { show: true, strength: 0.19, threshold: 0.3, radius: 1.5 },
+    bloom: { show: true, strength: 0.28, threshold: 0.73, radius: 1.5 },
     rgb: { show: false, amount: 0.003, angle: 0.7 },
     film: {
       show: true,

@@ -23,7 +23,7 @@ export default {
       grayscale: false,
     },
     static: { show: true, amount: 0.097, size: 10 },
-    rgb: { show: true, amount: 0.01, angle: 0.6 },
+    rgb: { show: true, amount: 0.006, angle: 0.6 },
     hue: { show: false },
   },
 };
