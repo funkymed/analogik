@@ -3,40 +3,40 @@ import clean from "./clean";
 export default {
   ...clean,
   scene: {
-    shader: "Med3",
-    background: "./images/w6.jpg",
-    shader_speed: 0.0025,
-    shader_opacity: -0.15,
-    blur: 0,
-    brightness: 40,
+    shader: "Ice",
+    background: "./images/w13.jpg",
+    shader_speed: .75 ,
+    shader_opacity: .75,
+    blur: 1,
+    brightness: 100,
     bgColor: "#000000",
   },
   timer: {
-    opacity: 0.2,
+    opacity: 0.52,
   },
   vumeters: {
     oscilloscop: {
       show: true,
-      color: "#55bb55",
+      color: "#2596be",
     },
   },
   composer: {
-    bloom: { show: true, strength: 0.74, threshold: 0.43, radius: 1 },
+    bloom: { show: true, strength: 0.43, threshold: 0.3, radius: 1 },
     film: {
       show: true,
-      count: 2000,
+      count: 1500,
       sIntensity: 1,
-      nIntensity: 0.2,
+      nIntensity: .2,
       grayscale: false,
     },
     hue: { show: false },
     rgb: { show: false },
-    static: { show: true, amount: 0.065, size: 3 },
+    static: { show: false},
   },
   texts: {
     title: {
       show: true,
-      order: 5,
+      order: 0,
       text: "Analogik",
       font: "Lobster",
       x: 0,
@@ -46,7 +46,7 @@ export default {
       rotationY: 0,
       rotationZ: 0,
       size: 150,
-      color: "#55bb55",
+      color: "#3352b9",
     },
   },
 };

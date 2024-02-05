@@ -33,7 +33,7 @@ const ChiptuneJsPlayer = window["ChiptuneJsPlayer"];
 const ChiptuneJsConfig = window["ChiptuneJsConfig"];
 
 const context = new AudioContext();
-const defaultVolume = 50;
+const defaultVolume = 80;
 const config = new ChiptuneJsConfig({
   repeatCount: 0,
   volume: defaultVolume,
@@ -108,7 +108,11 @@ function App() {
     setAuthors(getAuthors(y));
   };
 
-  const filterAuthor = (a) => {
+  const filterAuthor = (a, reset) => {
+    if (reset) {
+      filterYear(0);
+      filterSelection("all");
+    }
     setAuthor(a);
   };
 
@@ -292,7 +296,12 @@ function App() {
         size="lg"
       />
 
-      <AboutDrawer open={aboutOpen} setOpen={setAboutOpen} />
+      <AboutDrawer
+        aboutOpen={aboutOpen}
+        setAboutOpen={setAboutOpen}
+        filterAuthor={filterAuthor}
+        setTrackDrawerOpen={setOpen}
+      />
 
       <IconButton
         appearance="primary"

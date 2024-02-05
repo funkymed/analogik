@@ -5,13 +5,13 @@ export default {
   scene: {
     shader: "Med4",
     shader_speed: 0.25,
-    shader_opacity: 0.1,
+    shader_opacity: 0.15,
     background: "./images/w8.jpg",
-    blur: 15,
-    brightness: 100,
+    blur: 5,
+    brightness: 35,
   },
   composer: {
-    bloom: { show: true, strength: 0.25, threshold: 0.31, radius: 0.5 },
+    bloom: { show: true, strength: 0.78, threshold: 0.57, radius: 0.5 },
     film: {
       show: true,
       count: 2000,
@@ -20,5 +20,21 @@ export default {
       grayscale: false,
     },
     static: { show: true, amount: 0.03, size: 15 },
+  },
+  texts: {
+    title: {
+      show: true,
+      order: 5,
+      text: "Analogik",
+      font: "Lobster",
+      x: 0,
+      y: 130,
+      z: -650,
+      rotationX: 0,
+      rotationY: 0,
+      rotationZ: 0,
+      size: 150,
+      color: "#ff66ff",
+    },
   },
 };

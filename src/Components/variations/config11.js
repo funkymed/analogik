@@ -4,31 +4,33 @@ export default {
   ...clean,
   scene: {
     shader: "Med2",
-    shader_speed: 0.25,
+    background: "./images/w5.jpg",
+    shader_speed: 0.5,
     shader_opacity: 0.5,
-    background: "./images/w7.jpg",
-    blur: 5,
-    brightness: 60,
+    blur: 0,
+    brightness: 40,
     bgColor: "#000000",
+  },
+  timer: {
+    opacity: 0.2,
   },
   vumeters: {
     oscilloscop: {
-      show: true,
+      show: false,
     },
   },
   composer: {
+    bloom: { show: true, strength: 0.74, threshold: 0.43, radius: 1.5 },
     film: {
       show: true,
-      count: 1000,
-      sIntensity: 1.05,
-      nIntensity: 0.15,
+      count: 2000,
+      sIntensity: 1,
+      nIntensity: 0.2,
       grayscale: false,
     },
-    bloom: { show: true, strength: 0.74, threshold: 0.43, radius: 1 },
-    static: { show: true, amount: 0.03, size: 15 },
-    rgb: { show: false, amount: 0.016, angle: 0.65 },
-    // hue: { show: true, hue: 0.77, saturation: 0 },
-    // film: { show: false },
+    hue: { show: false },
+    rgb: { show: false },
+    static: { show: true, amount: 0.065, size: 3 },
   },
   texts: {
     title: {
@@ -43,7 +45,7 @@ export default {
       rotationY: 0,
       rotationZ: 0,
       size: 150,
-      color: "#bb8833",
+      color: "#88bbff",
     },
   },
 };

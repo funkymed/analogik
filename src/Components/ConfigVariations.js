@@ -1,4 +1,10 @@
 import config1 from "./variations/config1";
+import config10 from "./variations/config10";
+import config11 from "./variations/config11";
+import config12 from "./variations/config12";
+import config13 from "./variations/config13";
+import config14 from "./variations/config14";
+import config15 from "./variations/config15";
 import config2 from "./variations/config2";
 import config3 from "./variations/config3";
 import config4 from "./variations/config4";
@@ -18,4 +24,10 @@ export const ConfigVariations = [
   config7,
   config8,
   config9,
+  config10,
+  config11,
+  config12,
+  config13,
+  config14,
+  config15,
 ];

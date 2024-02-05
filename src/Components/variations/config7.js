@@ -10,6 +10,9 @@ export default {
     blur: 0,
     brightness: 10,
   },
+  timer: {
+    opacity: 0.25,
+  },
   vumeters: {
     oscilloscop: {
       color: "#9c8969",
@@ -20,10 +23,32 @@ export default {
     },
   },
   composer: {
-    bloom: { show: true, strength: 0.19, threshold: 0.77, radius: 3.5 },
-    film: { show: false },
+    bloom: { show: true, strength: 0.74, threshold: 0.43, radius: 1 },
+    film: {
+      show: true,
+      count: 1000,
+      sIntensity: 1.05,
+      nIntensity: 0.15,
+      grayscale: false,
+    },
     hue: { show: false },
     rgb: { show: false },
-    static: { show: false },
+    static: { show: true, amount: 0.03, size: 15 },
+  },
+  texts: {
+    title: {
+      show: true,
+      order: 5,
+      text: "Analogik",
+      font: "Lobster",
+      x: 0,
+      y: 130,
+      z: -650,
+      rotationX: 0,
+      rotationY: 0,
+      rotationZ: 0,
+      size: 150,
+      color: "#AAFF55",
+    },
   },
 };

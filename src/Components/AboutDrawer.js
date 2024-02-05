@@ -48,9 +48,9 @@ function AboutDrawer(props) {
     <Drawer
       size="lg"
       placement="right"
-      open={props.open}
+      open={props.aboutOpen}
       //   open={true}
-      onClose={() => props.setOpen(false)}
+      onClose={() => props.setAboutOpen(false)}
       //   backdrop={false}
     >
       <Drawer.Header>
@@ -121,6 +121,11 @@ function AboutDrawer(props) {
                 <Button
                   key={`button-author-${k}`}
                   appearance="ghost"
+                  onClick={() => {
+                    props.filterAuthor(author.nickname, true);
+                    props.setAboutOpen(false);
+                    props.setTrackDrawerOpen(true);
+                  }}
                   style={{
                     display: "inline-block",
                     width: 128,

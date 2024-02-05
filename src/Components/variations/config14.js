@@ -3,32 +3,35 @@ import clean from "./clean";
 export default {
   ...clean,
   scene: {
-    shader: "Med2",
-    shader_speed: 0.25,
-    shader_opacity: 0.5,
-    background: "./images/w7.jpg",
-    blur: 5,
+    shader: "Plasma3",
+    background: "./images/w12.jpg",
+    shader_speed: 1,
+    shader_opacity: .08,
+    blur: 2,
     brightness: 60,
     bgColor: "#000000",
+  },
+  timer: {
+    opacity: 0.2,
   },
   vumeters: {
     oscilloscop: {
       show: true,
+      color: "#aa8833",
     },
   },
   composer: {
+    bloom: { show: true, strength: 0.43, threshold: 0.3, radius: 1 },
     film: {
       show: true,
-      count: 1000,
-      sIntensity: 1.05,
-      nIntensity: 0.15,
+      count: 1500,
+      sIntensity: 1,
+      nIntensity: .2,
       grayscale: false,
     },
-    bloom: { show: true, strength: 0.74, threshold: 0.43, radius: 1 },
-    static: { show: true, amount: 0.03, size: 15 },
-    rgb: { show: false, amount: 0.016, angle: 0.65 },
-    // hue: { show: true, hue: 0.77, saturation: 0 },
-    // film: { show: false },
+    hue: { show: false },
+    rgb: { show: false },
+    static: { show: false},
   },
   texts: {
     title: {
@@ -43,7 +46,7 @@ export default {
       rotationY: 0,
       rotationZ: 0,
       size: 150,
-      color: "#bb8833",
+      color: "#aa8833",
     },
   },
 };

@@ -4,7 +4,7 @@ export default {
   ...clean,
   scene: {
     shader: "Med3",
-    background: "./images/w6.jpg",
+    background: "./images/w7.jpg",
     shader_speed: 0.0025,
     shader_opacity: -0.15,
     blur: 0,
@@ -14,14 +14,8 @@ export default {
   timer: {
     opacity: 0.2,
   },
-  vumeters: {
-    oscilloscop: {
-      show: true,
-      color: "#55bb55",
-    },
-  },
   composer: {
-    bloom: { show: true, strength: 0.74, threshold: 0.43, radius: 1 },
+    bloom: { show: true, strength: 0.74, threshold: 0.43, radius: 1.5 },
     film: {
       show: true,
       count: 2000,
@@ -46,7 +40,7 @@ export default {
       rotationY: 0,
       rotationZ: 0,
       size: 150,
-      color: "#55bb55",
+      color: "#FF8800",
     },
   },
 };

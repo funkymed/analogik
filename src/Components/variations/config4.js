@@ -5,11 +5,14 @@ export default {
   scene: {
     shader: "Med1",
     shader_speed: 0.2,
-    shader_opacity: 0.4,
+    shader_opacity: 0.1,
     background: "./images/w1.jpg",
-    blur: 0,
-    brightness: 150,
+    blur: 3,
+    brightness: 50,
     bgColor: "#000000",
+  },
+  timer: {
+    opacity: 0.5,
   },
   vumeters: {
     oscilloscop: {
@@ -21,13 +24,29 @@ export default {
     },
   },
   composer: {
-    bloom: { show: true, strength: 0.28, threshold: 0.89, radius: 2.3 },
+    bloom: { show: true, strength: 0.74, threshold: 0.43, radius: 1 },
     film: {
       show: true,
       count: 814,
       sIntensity: 0.08,
       nIntensity: 0.64,
       grayscale: false,
+    },
+  },
+  texts: {
+    title: {
+      show: true,
+      order: 5,
+      text: "Analogik",
+      font: "Lobster",
+      x: 0,
+      y: 130,
+      z: -650,
+      rotationX: 0,
+      rotationY: 0,
+      rotationZ: 0,
+      size: 150,
+      color: "#3388Ff",
     },
   },
 };

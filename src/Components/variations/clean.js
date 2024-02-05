@@ -36,4 +36,20 @@ export default {
     rgb: { show: false },
     hue: { show: false },
   },
+  texts: {
+    title: {
+      show: true,
+      order: 5,
+      text: "Analogik",
+      font: "Lobster",
+      x: 0,
+      y: 130,
+      z: -650,
+      rotationX: 0,
+      rotationY: 0,
+      rotationZ: 0,
+      size: 150,
+      color: "#ffffff",
+    },
+  },
 };

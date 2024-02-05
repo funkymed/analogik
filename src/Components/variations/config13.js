@@ -3,12 +3,12 @@ import clean from "./clean";
 export default {
   ...clean,
   scene: {
-    shader: "Med3",
-    background: "./images/w6.jpg",
-    shader_speed: 0.0025,
-    shader_opacity: -0.15,
-    blur: 0,
-    brightness: 40,
+    shader: "Plasma",
+    background: "./images/w3.jpg",
+    shader_speed: 2,
+    shader_opacity: .25,
+    blur: 2,
+    brightness: 100,
     bgColor: "#000000",
   },
   timer: {
@@ -17,11 +17,11 @@ export default {
   vumeters: {
     oscilloscop: {
       show: true,
-      color: "#55bb55",
+      color: "#55bb88",
     },
   },
   composer: {
-    bloom: { show: true, strength: 0.74, threshold: 0.43, radius: 1 },
+    bloom: { show: true, strength: 0.72, threshold: 0.77, radius: 1.5 },
     film: {
       show: true,
       count: 2000,
@@ -46,7 +46,7 @@ export default {
       rotationY: 0,
       rotationZ: 0,
       size: 150,
-      color: "#55bb55",
+      color: "#FFAA55",
     },
   },
 };

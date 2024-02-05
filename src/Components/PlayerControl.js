@@ -4,7 +4,6 @@ import PauseIcon from "@rsuite/icons/legacy/Pause";
 import PlayIcon from "@rsuite/icons/legacy/Play";
 import StopIcon from "@rsuite/icons/legacy/Stop";
 import { Capitalize } from "../utils";
-import BackdropFilter from "react-backdrop-filter";
 
 function PlayerControl({
   player,
@@ -37,6 +36,23 @@ function PlayerControl({
     };
   }, []);
 
+  const getTitle = () => {
+    return (meta.title ? meta.title : currentTrack.filename).toUpperCase();
+  };
+  const getAuthors = () => {
+    const a = currentTrack.author;
+
+    for (let c in a) {
+      a[c] = Capitalize(a[c]);
+    }
+
+    return a.join(" & ");
+  };
+
+  const getOctets = (n) => {
+    return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  };
+
   return (
     <>
       <div style={{ width: 250, position: "absolute", bottom: 15, left: 15 }}>
@@ -49,6 +65,25 @@ function PlayerControl({
             setVolume(value);
           }}
         />
+      </div>
+
+      <div
+        style={{
+          width: window.innerWidth,
+          position: "absolute",
+          fontFamily: "Kdam Thmor Pro",
+          bottom: 15,
+          left: 0,
+          opacity: 0.85,
+          textAlign: "center",
+          filter: "drop-shadow(0px 0px 5px #000000FF)",
+          fontSize: 15,
+          color: "#FFF",
+          pointerEvents: "none",
+        }}
+      >
+        <b>{getTitle()}</b> by {getAuthors()} in {currentTrack.year} (
+        {getOctets(size)} octets)
       </div>
 
       <div style={{ position: "absolute", top: 15, left: 15 }}>
@@ -85,7 +120,7 @@ function PlayerControl({
       </div>
 
       <FlexboxGrid
-        justify="space-around"
+        // justify="space-around"
         align="middle"
         ref={FlexContent}
         style={{
@@ -96,53 +131,58 @@ function PlayerControl({
       >
         <FlexboxGrid.Item colspan={10} style={{ pointerEvents: "none" }}>
           <div
+            className="fade-in"
             style={{
+              opacity: 0,
+              width: window.innerWidth,
               backdropFilter: "blur(16px) brightness(120%)",
-              borderRadius: 30,
-              border: "2px solid rgba(255, 255, 255, 0.15)",
-              background: "rgba(255, 255, 255, 0.15)",
+              filter: "drop-shadow(0px 0px 5px #FFFFFF88)",
+              border: "5px solid rgba(255, 255, 255, 0.15)",
+              borderLeft: "none",
+              borderRight: "none",
+              background: "rgba(255,255,255, 0.05)",
             }}
           >
             <div
               style={{
                 fontFamily: "Kdam Thmor Pro",
                 textAlign: "center",
+                margin: 50,
                 padding: 20,
-                height: 320,
                 pointerEvents: "none",
-                // borderRadius: 20,
               }}
             >
               <h4
                 style={{
-                  color: "#00BBFF",
+                  color: "#000",
                   fontSize: 40,
                   fontFamily: "Permanent Marker",
-                  filter: "drop-shadow(0px 0px 20px #000000)",
+                  filter: "drop-shadow(0px 0px 5px #17467aAA)",
                 }}
               >
-                {meta.title ? meta.title : currentTrack.filename}
+                {getTitle()}
               </h4>
               <b
                 style={{
                   fontFamily: "Lobster",
                   fontSize: 25,
-                  color: "#FF5555",
+                  color: "#555555",
+                  filter: "drop-shadow(0px 0px 5px #FFFFFF88)",
+                  fontStyle: "italic",
                 }}
               >
-                by{" "}
-                {currentTrack.author.map(function (a, i, row) {
-                  let t = Capitalize(a);
-                  if (i + 1 !== row.length) {
-                    t += " & ";
-                  }
-                  return t;
-                })}{" "}
-                in {currentTrack.year}
+                by {getAuthors()} in {currentTrack.year}
               </b>
               <br />
-              <p>{size.toLocaleString()} octets</p>
-              {meta.message ? (
+              <p
+                style={{
+                  color: "#333",
+                  filter: "drop-shadow(0px 0px 2px #000000EE)",
+                }}
+              >
+                {getOctets(size)} octets
+              </p>
+              {/* {meta.message ? (
                 <>
                   <hr
                     style={{
@@ -166,7 +206,7 @@ function PlayerControl({
                 </>
               ) : (
                 ""
-              )}
+              )} */}
             </div>
           </div>
         </FlexboxGrid.Item>

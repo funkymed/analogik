@@ -70,3 +70,38 @@ canvas {
   border-radius: 20px;
   text-align: "center";
 }
+
+
+@keyframes fadeIn {
+  100% {
+    opacity: 0;
+  }
+
+  95% {
+    opacity: 0;
+  }
+
+  90% {
+    opacity: 100;
+  }
+
+  50% {
+    opacity: 100;
+  }
+
+  25% {
+    opacity: 50;
+  }
+
+  10% {
+    opacity: 25;
+  }
+
+  1% {
+    opacity: 0;
+  }
+}
+
+.fade-in {
+  animation: fadeIn 5s;
+}

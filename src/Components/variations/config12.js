@@ -3,13 +3,12 @@ import clean from "./clean";
 export default {
   ...clean,
   scene: {
-    shader: "Med3",
-    background: "./images/w6.jpg",
-    shader_speed: 0.0025,
-    shader_opacity: -0.15,
-    blur: 0,
-    brightness: 40,
-    bgColor: "#000000",
+    shader: "Vortex",
+    background: "./images/w2.jpg",
+    shader_speed: 3,
+    shader_opacity: .07,
+    blur: 2,
+    brightness: 70,
   },
   timer: {
     opacity: 0.2,
@@ -17,11 +16,11 @@ export default {
   vumeters: {
     oscilloscop: {
       show: true,
-      color: "#55bb55",
+      color: "#FFBB00",
     },
   },
   composer: {
-    bloom: { show: true, strength: 0.74, threshold: 0.43, radius: 1 },
+    bloom: { show: true, strength: 0.74, threshold: 0.43, radius: 1.5 },
     film: {
       show: true,
       count: 2000,
@@ -36,7 +35,7 @@ export default {
   texts: {
     title: {
       show: true,
-      order: 5,
+      order: 0,
       text: "Analogik",
       font: "Lobster",
       x: 0,
@@ -46,7 +45,7 @@ export default {
       rotationY: 0,
       rotationZ: 0,
       size: 150,
-      color: "#55bb55",
+      color: "#a85",
     },
   },
 };

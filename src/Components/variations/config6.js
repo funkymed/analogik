@@ -7,8 +7,11 @@ export default {
     shader_speed: 0.65,
     shader_opacity: -0.6,
     background: "./images/w9.jpg",
-    blur: 5,
-    brightness: 30,
+    blur: 1,
+    brightness: 50,
+  },
+  timer: {
+    opacity: 0.5,
   },
   vumeters: {
     oscilloscop: { show: false },
@@ -25,5 +28,21 @@ export default {
     static: { show: true, amount: 0.097, size: 10 },
     rgb: { show: true, amount: 0.006, angle: 0.6 },
     hue: { show: false },
+  },
+  texts: {
+    title: {
+      show: true,
+      order: 5,
+      text: "Analogik",
+      font: "Lobster",
+      x: 0,
+      y: 130,
+      z: -650,
+      rotationX: 0,
+      rotationY: 0,
+      rotationZ: 0,
+      size: 150,
+      color: "#AA00AA",
+    },
   },
 };
