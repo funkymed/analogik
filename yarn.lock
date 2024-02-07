@@ -9532,6 +9532,11 @@ wbuf@^1.1.0, wbuf@^1.7.3:
   dependencies:
     minimalistic-assert "^1.0.0"
 
+web-audio-touch-unlock@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/web-audio-touch-unlock/-/web-audio-touch-unlock-1.0.1.tgz#98162e3898a51bc5a4f407354ea9305113feb032"
+  integrity sha512-Rx3B/KydujLJGu/qD7UEOBk27zAZmFeM8A6U7Tso5xqVqCiIC8vMbmVxXViVUfOBi/lGcNiOpIgjY7CCT/slCw==
+
 web-vitals@^2.1.4:
   version "2.1.4"
   resolved "https://registry.yarnpkg.com/web-vitals/-/web-vitals-2.1.4.tgz#76563175a475a5e835264d373704f9dde718290c"

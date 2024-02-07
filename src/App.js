@@ -29,21 +29,12 @@ import { getRandomItem, getRandomOffset } from "./tools.js";
 import { ConfigVariations } from "./Components/ConfigVariations.js";
 import "./App.css";
 
-const ChiptuneJsPlayer = window["ChiptuneJsPlayer"];
-const ChiptuneJsConfig = window["ChiptuneJsConfig"];
+function App(props) {
+  const ChiptuneJsPlayer = window["ChiptuneJsPlayer"];
+  const ChiptuneJsConfig = window["ChiptuneJsConfig"];
 
-const context = new AudioContext();
-const defaultVolume = 80;
-const config = new ChiptuneJsConfig({
-  repeatCount: 0,
-  volume: defaultVolume,
-  context: context,
-});
-
-const player = new ChiptuneJsPlayer(config);
-player.pause();
-
-function App() {
+  const defaultVolume = 80;
+  const player = useRef();
   const years = getYears();
   const [open, setOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
@@ -122,12 +113,12 @@ function App() {
 
   const setPlayerVolume = (value) => {
     setVolume(value);
-    player.setVolume(value);
+    player.current.setVolume(value);
   };
 
   const togglePlay = () => {
     setIsPlay(!isPlay);
-    player.togglePause();
+    player.current.togglePause();
   };
 
   const onPop = (e) => {
@@ -142,11 +133,19 @@ function App() {
   const onClickCanvas = (e) => {
     const pos = e.screenX / window.innerWidth;
     console.log(e);
-    player.seek(pos * player.duration());
+    player.current.seek(pos * player.current.duration());
   };
 
   useEffect(() => {
-    window.addEventListener("popstate", onPop);
+    const config = new ChiptuneJsConfig({
+      repeatCount: 0,
+      volume: defaultVolume,
+      context: props.context,
+    });
+    player.current = new ChiptuneJsPlayer(config);
+    player.current.pause();
+
+    // window.addEventListener("popstate", onPop);
     const confOffset = newconfigOffset
       ? newconfigOffset
       : getRandomOffset(ConfigVariations, -1);
@@ -162,8 +161,8 @@ function App() {
     }
 
     return () => {
-      player.pause();
-      window.removeEventListener("popstate", onPop);
+      player.current.pause();
+      // window.removeEventListener("popstate", onPop);
       // window.removeEventListener("mouseup", onClickCanvas);
     };
   }, []);
@@ -185,32 +184,33 @@ function App() {
 
     updateRouteHttp();
 
-    player
+    player.current
       .load(`./mods/${currentTrack.url}`)
       .then((buffer) => {
         setIsLoading(false);
 
-        player.pause();
-        player.play(buffer);
-        player.seek(0);
+        player.current.pause();
+        player.current.play(buffer);
+        player.current.seek(0);
 
-        player.onEnded(() => {
+        player.current.onEnded(() => {
           const next = getNexTrack();
           if (next) {
             setCurrentTrack(next);
           } else {
-            player.pause();
-            player.seek(0);
+            player.current.pause();
+            player.current.seek(0);
           }
         });
 
         setIsPlay(true);
 
         setSize(buffer.byteLength);
-        setMeta(player.metadata());
-        setDuration(player.duration());
+        setMeta(player.current.metadata());
+        setDuration(player.current.duration());
       })
-      .catch(() => {
+      .catch((e) => {
+        console.log(e);
         setIsLoading(false);
         setIsPlay(false);
       });
@@ -260,9 +260,12 @@ function App() {
         </Drawer.Body>
       </Drawer>
 
-      {currentTrack && !isLoading && player.currentPlayingNode ? (
+      {currentTrack &&
+      !isLoading &&
+      player.current &&
+      player.current.currentPlayingNode ? (
         <PlayerControl
-          player={player}
+          player={player.current}
           currentTrack={currentTrack}
           meta={meta}
           togglePlay={togglePlay}
@@ -318,10 +321,14 @@ function App() {
         size="sm"
       />
 
-      {currentTrack && !isLoading && player.currentPlayingNode && newConfig ? (
+      {player.current &&
+      currentTrack &&
+      !isLoading &&
+      player.current.currentPlayingNode &&
+      newConfig ? (
         <RenderCanvas
-          player={player}
-          audioContext={context}
+          player={player.current}
+          audioContext={props.context}
           isPlay={isPlay}
           setIsPlay={setIsPlay}
           newConfig={newConfig}
