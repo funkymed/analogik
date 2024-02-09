@@ -55,6 +55,15 @@ export class MandaScene {
     }
     texture.texture.minFilter = LinearFilter;
     this.scene.background = texture.texture;
+
+    // fixed streched background
+    const targetAspect = window.innerWidth / window.innerHeight;
+    const imageAspect = 1920 / 1080;
+    const factor = imageAspect / targetAspect;
+    this.scene.background.offset.x = factor > 1 ? (1 - 1 / factor) / 2 : 0;
+    this.scene.background.repeat.x = factor > 1 ? 1 / factor : 1;
+    this.scene.background.offset.y = factor > 1 ? 0 : (1 - factor) / 2;
+    this.scene.background.repeat.y = factor > 1 ? 1 : factor;
   }
 
   updateSceneBackground(config: ConfigType) {
