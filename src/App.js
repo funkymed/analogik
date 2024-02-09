@@ -25,7 +25,11 @@ import PlusIcon from "@rsuite/icons/legacy/Plus";
 import QuestionIcon from "@rsuite/icons/legacy/Question";
 import AboutDrawer from "./Components/AboutDrawer.js";
 import { getHttpParam } from "./Components/mandafunk/tools/http.ts";
-import { getRandomItem, getRandomOffset } from "./tools.js";
+import {
+  getRandomItem,
+  getRandomOffset,
+  mobileAndTabletCheck,
+} from "./tools.js";
 import { ConfigVariations } from "./Components/ConfigVariations.js";
 import "./App.css";
 
@@ -219,7 +223,7 @@ function App(props) {
   return (
     <CustomProvider theme="dark">
       <Drawer
-        size="lg"
+        size={mobileAndTabletCheck() ? "full" : "lg"}
         placement="right"
         open={open}
         onClose={() => setOpen(false)}
@@ -296,7 +300,7 @@ function App(props) {
         }}
         onClick={() => setOpen(true)}
         circle
-        size="lg"
+        size={mobileAndTabletCheck() ? "sm" : "lg"}
       />
 
       <AboutDrawer
@@ -318,7 +322,7 @@ function App(props) {
         }}
         onClick={() => setAboutOpen(true)}
         circle
-        size="sm"
+        size={mobileAndTabletCheck() ? "sm" : "lg"}
       />
 
       {player.current &&

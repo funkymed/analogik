@@ -9,13 +9,18 @@ import { Composer } from "./mandafunk/fx/composer.ts";
 import testConfig from "../config.ts";
 import { Editor } from "./mandafunk/gui/editor.ts";
 import { getHttpParam } from "./mandafunk/tools/http.ts";
-import { deepMergeObjects, getRandomOffset } from "../tools.js";
+import {
+  deepMergeObjects,
+  getRandomOffset,
+  mobileAndTabletCheck,
+} from "../tools.js";
 
 const isEditor = getHttpParam("editor");
 
 function RenderCanvas(props: any): JSX.Element {
   const canvasRef = useRef<HTMLCanvasElement>();
   const isInit = useRef<boolean>(false);
+  const portrait = useRef<boolean>(false);
   const clock = useRef<Clock>();
   const staticItems = useRef<StaticItems>();
   const editorGui = useRef<Editor>();
@@ -32,10 +37,21 @@ function RenderCanvas(props: any): JSX.Element {
   const handleResize = useCallback(() => {
     const W = window.innerWidth;
     const H = window.innerHeight;
+
     if (camera.current) {
       camera.current.aspect = W / H;
+      portrait.current = camera.current.aspect < 1 ? true : false;
+
       camera.current.updateProjectionMatrix();
+      if (mobileAndTabletCheck()) {
+        if (portrait.current === true) {
+          camera.current.position.set(0, 0, 500);
+        } else {
+          camera.current.position.set(0, 0, 70);
+        }
+      }
     }
+
     if (renderer.current) {
       renderer.current.setSize(W, H);
     }
@@ -136,15 +152,8 @@ function RenderCanvas(props: any): JSX.Element {
         editorGui.current.show(false);
       }
     }
-
-    handleResize();
-  }, [
-    handleResize,
-    loadConfig,
-    props.analyser,
-    props.audioContext,
-    props.player,
-  ]);
+    console.log("init");
+  }, [props.analyser, props.audioContext, props.player]);
 
   const render = (time: number) => {
     // renderer.render(scene, camera)
@@ -170,20 +179,25 @@ function RenderCanvas(props: any): JSX.Element {
   }, [time]);
 
   useEffect(() => {
-    window.addEventListener("resize", handleResize);
+    const resizeHandler = () => {
+      handleResize();
+    };
+    window.addEventListener("resize", resizeHandler);
 
     init();
+
     if (staticItems.current && currentConfig.current) {
       staticItems.current.setAnalyser(props.player.getAnalyser());
       loadConfig(currentConfig.current);
     }
 
     animate();
+    handleResize();
     return () => {
+      window.removeEventListener("resize", resizeHandler);
       if (animateId.current) {
         cancelAnimationFrame(animateId.current);
       }
-      window.removeEventListener("resize", handleResize);
     };
   }, []);
 

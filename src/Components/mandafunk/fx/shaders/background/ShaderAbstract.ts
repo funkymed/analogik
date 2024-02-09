@@ -12,6 +12,7 @@ import { BackgroundShader } from "../BackgroundShader.ts";
 import { ConfigType } from "../../../types/config.ts";
 import { configDefault } from "../../../config.ts";
 import { StaticItems } from "../../static.ts";
+import { mobileAndTabletCheck } from "../../../../../tools.js";
 
 export abstract class ShaderAbstract implements BackgroundShader {
   uniforms: any;
@@ -87,7 +88,7 @@ export abstract class ShaderAbstract implements BackgroundShader {
     });
 
     this.mesh = new Mesh(geometry, this.shaderMaterial);
-    this.mesh.position.z = -500;
+    this.mesh.position.z = mobileAndTabletCheck() ? -200 : -500;
     this.scene.add(this.mesh);
     this.afterInit();
   }

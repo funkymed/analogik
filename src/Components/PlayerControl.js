@@ -4,6 +4,7 @@ import PauseIcon from "@rsuite/icons/legacy/Pause";
 import PlayIcon from "@rsuite/icons/legacy/Play";
 import StopIcon from "@rsuite/icons/legacy/Stop";
 import { Capitalize } from "../utils";
+import { mobileAndTabletCheck } from "../tools";
 
 function PlayerControl({
   player,
@@ -55,17 +56,22 @@ function PlayerControl({
 
   return (
     <>
-      <div style={{ width: 250, position: "absolute", bottom: 15, left: 15 }}>
-        <label>Volume </label>
-        <Slider
-          progress={true}
-          defaultValue={volume}
-          value={volume}
-          onChange={(value) => {
-            setVolume(value);
-          }}
-        />
-      </div>
+      {!mobileAndTabletCheck() ? (
+        <div style={{ width: 250, position: "absolute", bottom: 15, left: 15 }}>
+          <label>Volume </label>
+
+          <Slider
+            progress={true}
+            defaultValue={volume}
+            value={volume}
+            onChange={(value) => {
+              setVolume(value);
+            }}
+          />
+        </div>
+      ) : (
+        ""
+      )}
 
       <div
         style={{
