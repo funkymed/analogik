@@ -1,11 +1,6 @@
-import {
-  Container,
-  Content,
-  Whisper,
-  Popover,
-  FlexboxGrid,
-  Panel,
-} from "rsuite";
+import { Container, Content, Whisper, Popover, FlexboxGrid } from "rsuite";
+import authors from "./authors";
+import { Capitalize } from "./utils";
 
 function ActivateAudio(props) {
   return (
@@ -29,9 +24,9 @@ function ActivateAudio(props) {
               >
                 <img
                   src="./images/analogik.jpg"
-                  height="512"
                   onClick={props.unlockAudio}
                   style={{
+                    height: "512px",
                     filter: "drop-shadow(0px 0px 25px #000000AA)",
                     cursor: "pointer",
                   }}
@@ -40,10 +35,24 @@ function ActivateAudio(props) {
             </FlexboxGrid.Item>
             <FlexboxGrid.Item colspan={24} style={{ textAlign: "center" }}>
               <br />
+              <p>
+                Click on the image bellow to enter
+                <br /> the wonderfull world of the Analogik's Chiptune.
+              </p>
               <br />
+              <p>Code by Med</p>
+              <p>
+                Musics by
+                <br />
+                {authors.map((a, c) => {
+                  return (
+                    Capitalize(a.nickname) +
+                    (c + 1 < authors.length ? ", " : "")
+                  );
+                })}{" "}
+              </p>
               <br />
-              Click on the image bellow to enter
-              <br /> the wonderfull world of the Analogik's Chiptune.
+              <p>Analogik 2000 - 2002</p>
             </FlexboxGrid.Item>
           </FlexboxGrid>
         </FlexboxGrid>
