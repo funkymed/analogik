@@ -5,7 +5,7 @@ import ActivateAudio from "./ActivateAudio";
 function AppAudio() {
   const ctx = new (window.AudioContext || window.webkitAudioContext)();
   const state = ctx.state === "running";
-  const [audioLock, setAudioLock] = useState(!state);
+  const [audioLock, setAudioLock] = useState(true); //!state);
   const [context, setContext] = useState(audioLock ? false : ctx);
 
   const updatedContext = () => {
@@ -16,17 +16,20 @@ function AppAudio() {
   const unlockAudio = () => {
     ctx.createGain();
     ctx.resume();
-
-    ctx.onstatechange = () => {
+    if (ctx.state === "running") {
       updatedContext();
-    };
+    } else {
+      ctx.onstatechange = () => {
+        updatedContext();
+      };
+    }
   };
 
-  useEffect(() => {
-    if (state) {
-      updatedContext();
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (state) {
+  //     // updatedContext();
+  //   }
+  // }, []);
 
   return audioLock ? (
     <ActivateAudio unlockAudio={unlockAudio} />
