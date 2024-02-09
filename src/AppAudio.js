@@ -21,6 +21,7 @@ function AppAudio() {
       updatedContext();
     };
   };
+
   useEffect(() => {
     if (state) {
       updatedContext();

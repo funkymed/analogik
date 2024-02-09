@@ -4,7 +4,6 @@ import reportWebVitals from "./reportWebVitals";
 import AppAudio from "./AppAudio";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
-
 root.render(
   <>
     <AppAudio />
