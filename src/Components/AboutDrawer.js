@@ -52,7 +52,7 @@ function AboutDrawer(props) {
       open={props.aboutOpen}
       //   open={true}
       onClose={() => props.setAboutOpen(false)}
-      //   backdrop={false}
+        backdrop={false}
     >
       <Drawer.Header>
         <Drawer.Title>About Analogik</Drawer.Title>

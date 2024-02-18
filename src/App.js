@@ -227,7 +227,7 @@ function App(props) {
         placement="right"
         open={open}
         onClose={() => setOpen(false)}
-        // backdrop={false}
+        backdrop={false}
       >
         <Drawer.Header>
           <Drawer.Title>Analogik MusicDisk</Drawer.Title>

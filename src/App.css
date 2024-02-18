@@ -105,3 +105,11 @@ canvas {
 .fade-in {
   animation: fadeIn 5s;
 }
+
+.rs-drawer-content {
+  background-color: rgba(255, 255, 255, 0);
+}
+
+.rs-drawer-right {
+  backdrop-filter: blur(25px) brightness(50%);
+}
