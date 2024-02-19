@@ -88,7 +88,7 @@ export abstract class ShaderAbstract implements BackgroundShader {
     });
 
     this.mesh = new Mesh(geometry, this.shaderMaterial);
-    this.mesh.position.z = mobileAndTabletCheck() ? -200 : -500;
+    this.mesh.position.z = mobileAndTabletCheck() ? -0 : -500;
     this.scene.add(this.mesh);
     this.afterInit();
   }

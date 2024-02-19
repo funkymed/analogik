@@ -52,7 +52,7 @@ function AboutDrawer(props) {
       open={props.aboutOpen}
       //   open={true}
       onClose={() => props.setAboutOpen(false)}
-        backdrop={false}
+      // backdrop={false}
     >
       <Drawer.Header>
         <Drawer.Title>About Analogik</Drawer.Title>
@@ -97,15 +97,12 @@ function AboutDrawer(props) {
           {authors.map((author, k) => {
             return (
               <Whisper
-                placement="auto"
                 key={`whishper-author-${k}`}
-                trigger="hover"
+                enterable
+                placement="top"
+                // followCursor={true}
                 speaker={
                   <Popover title={author.name}>
-                    {author.country || ""}
-                    <br />
-                    {author.member ? "Member" : "Guest"}
-                    <br />
                     {getMessageTrack(author.nickname)}
                     {getMessageCoop(author.nickname)}
                     {author.url ? (
@@ -117,11 +114,11 @@ function AboutDrawer(props) {
                     )}
                   </Popover>
                 }
-                enterable
               >
                 <Button
                   key={`button-author-${k}`}
-                  appearance="ghost"
+                  appearance="subtle"
+                  className="btn-glass"
                   onClick={() => {
                     props.filterAuthor(author.nickname, true);
                     props.setAboutOpen(false);
@@ -134,7 +131,17 @@ function AboutDrawer(props) {
                     padding: 10,
                   }}
                 >
-                  <div>{Capitalize(author.nickname)}</div>
+                  <div>
+                    {Capitalize(author.nickname)}
+                    <br />
+                    <span className="guest">{author.country || ""}</span>
+                    <br />
+                    {author.member ? (
+                      <>&nbsp;</>
+                    ) : (
+                      <span className="guest">Guest</span>
+                    )}
+                  </div>
                 </Button>
               </Whisper>
             );

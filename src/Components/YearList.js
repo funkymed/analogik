@@ -1,19 +1,23 @@
 import { Button } from "rsuite";
 
 function YearList(props) {
-  const color = 0 === props.year ? "primary" : "default";
   return (
     <>
       <h3>Years</h3>
-      <Button appearance={color} size="xs" onClick={() => props.filterYear(0)}>
-        All
+      <Button
+        className={0 === props.year ? "btn-glass selected" : "btn-glass"}
+        size="xs"
+        onClick={() => props.filterYear(0)}
+      >
+        ALL
       </Button>
       {props.years.map((_year) => {
-        const color = _year === props.year ? "primary" : "default";
         return (
           <Button
+            className={
+              _year === props.year ? "btn-glass selected" : "btn-glass"
+            }
             key={_year}
-            appearance={color}
             onClick={() => props.filterYear(_year)}
             size="sm"
           >

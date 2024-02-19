@@ -1,23 +1,24 @@
 import { Button } from "rsuite";
 
 function AuthorList(props) {
-  const color = 0 === props.author ? "primary" : "default";
   return (
     <>
       <h3>Authors ({props.authors.length})</h3>
       <Button
-        appearance={color}
+        className={0 === props.author ? "btn-glass selected" : "btn-glass"}
+        // appearance={color}
         size="xs"
         onClick={() => props.filterAuthor(0)}
       >
-        All
+        ALL
       </Button>
       {props.authors.map((_author) => {
-        const color = _author === props.author ? "primary" : "default";
         return (
           <Button
+            className={
+              _author === props.author ? "btn-glass selected" : "btn-glass"
+            }
             key={_author}
-            appearance={color}
             onClick={() => props.filterAuthor(_author)}
             size="sm"
           >

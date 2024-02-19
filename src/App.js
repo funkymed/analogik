@@ -61,7 +61,8 @@ function App(props) {
   // filters
   const [year, setYear] = useState(getHttpParam("year") || 0);
   const [author, setAuthor] = useState(getHttpParam("author") || 0);
-  const [nextTrack, setnextTrack] = useState();
+  const [prevTrack, setPrevTrack] = useState(false);
+  const [nextTrack, setNextTrack] = useState(false);
   const [authors, setAuthors] = useState(getAuthors(getHttpParam("year") || 0));
   const [selection, setSelection] = useState(
     getHttpParam("selection") || "all"
@@ -227,7 +228,7 @@ function App(props) {
         placement="right"
         open={open}
         onClose={() => setOpen(false)}
-        backdrop={false}
+        // backdrop={false}
       >
         <Drawer.Header>
           <Drawer.Title>Analogik MusicDisk</Drawer.Title>
@@ -245,22 +246,23 @@ function App(props) {
             <Radio value="selecta">Selecta</Radio>
             <Radio value="bleep">Bleep</Radio>
           </RadioGroup>
-          <br />
-          <br />
-          <YearList year={year} years={years} filterYear={filterYear} />
-          <br />
-          <AuthorList
-            author={author}
-            authors={authors}
-            filterAuthor={filterAuthor}
-          />
-          <br />
-          <TracksList
-            mods={mods}
-            currentTrack={currentTrack}
-            load={setCurrentTrack}
-          />
-          <br />
+          <div style={{ marginTop: 25 }}>
+            <YearList year={year} years={years} filterYear={filterYear} />
+          </div>
+          <div style={{ marginTop: 25 }}>
+            <AuthorList
+              author={author}
+              authors={authors}
+              filterAuthor={filterAuthor}
+            />
+          </div>
+          <div style={{ marginTop: 25 }}>
+            <TracksList
+              mods={mods}
+              currentTrack={currentTrack}
+              load={setCurrentTrack}
+            />
+          </div>
         </Drawer.Body>
       </Drawer>
 

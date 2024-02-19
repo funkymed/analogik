@@ -1,3 +1,7 @@
+:root {
+  --main-bg-color: #FF3333;
+}
+
 body {
   /* overflow: hidden; */
   background: black;
@@ -13,7 +17,7 @@ body {
 }
 
 .rs-btn-primary {
-  background-color: red !important;
+  background-color: var(--main-bg-color) !important;
 }
 
 .rs-panel {
@@ -21,11 +25,11 @@ body {
 }
 
 .rs-slider-progress-bar {
-  background: red !important;
+  background: var(--main-bg-color) !important;
 }
 
 .rs-slider-handle:before {
-  border-color: red !important;
+  border-color: var(--main-bg-color) !important;
 }
 
 audio {
@@ -111,5 +115,70 @@ canvas {
 }
 
 .rs-drawer-right {
-  backdrop-filter: blur(25px) brightness(50%);
+  backdrop-filter: blur(20px) brightness(200%);
+}
+
+.rs-drawer-backdrop {
+  backdrop-filter: blur(5px) brightness(50%);
+  background-color: rgba(255, 255, 255, 0);
+}
+
+h4,
+.rs-drawer-body p {
+  filter: drop-shadow(rgb(67, 66, 66) 0px 0px 5px)
+}
+
+.rs-drawer-header-close,
+.btn-glass {
+  background: #FFFFFF22;
+  color: #111;
+}
+
+.rs-drawer-header-close.selected,
+.btn-glass.selected {
+  background: var(--main-bg-color);
+  color: #FFF;
+}
+
+.rs-drawer-header-close:hover,
+.btn-glass:hover {
+  background: #FFFFFF44;
+  color: #FFF;
+}
+
+.guest {
+  font-size: .8em;
+  color: #00000088;
+}
+
+h2,
+h3 {
+  color: #111111AA;
+}
+
+h3 {
+  font-size: 1.5em;
+}
+
+
+.rs-radio-checker label {
+  color: #111111AA !important;
+}
+
+.rs-radio-group {
+  background: #FFFFFF44;
+}
+
+.rs-radio-checked .rs-radio-checker label {
+  border-color: var(--main-bg-color) !important;
+  color: var(--main-bg-color) !important;
+}
+
+.rs-radio-group-picker {
+  border: 2px #FFFFFF22 solid;
+}
+
+.rs-drawer-header .rs-drawer-header-close {
+  right: 15px;
+  left: auto;
 }

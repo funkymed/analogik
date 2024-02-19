@@ -5,6 +5,7 @@ import config12 from "./variations/config12";
 import config13 from "./variations/config13";
 import config14 from "./variations/config14";
 import config15 from "./variations/config15";
+import config16 from "./variations/config16";
 import config2 from "./variations/config2";
 import config3 from "./variations/config3";
 import config4 from "./variations/config4";
@@ -30,4 +31,5 @@ export const ConfigVariations = [
   config13,
   config14,
   config15,
+  config16,
 ];

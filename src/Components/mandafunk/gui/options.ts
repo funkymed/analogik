@@ -2,7 +2,6 @@ import { shaders } from "../fx/shaders/background/index.ts";
 
 export const selectImagesPochette: string[] = [
   "",
-  "./images/w0.jpg",
   "./images/w1.jpg",
   "./images/w2.jpg",
   "./images/w3.jpg",
@@ -14,6 +13,8 @@ export const selectImagesPochette: string[] = [
   "./images/w9.jpg",
   "./images/w10.jpg",
   "./images/w11.jpg",
+  "./images/w12.jpg",
+  "./images/w13.jpg",
 ];
 
 export const selectImagesVinyl: string[] = [

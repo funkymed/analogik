@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { IconButton, ButtonGroup, Slider, FlexboxGrid } from "rsuite";
 import PauseIcon from "@rsuite/icons/legacy/Pause";
+import NextIcon from "@rsuite/icons/legacy/PageNext";
+import PrevIcon from "@rsuite/icons/legacy/PagePrevious";
 import PlayIcon from "@rsuite/icons/legacy/Play";
 import StopIcon from "@rsuite/icons/legacy/Stop";
 import { Capitalize } from "../utils";
@@ -57,7 +59,7 @@ function PlayerControl({
   return (
     <>
       {!mobileAndTabletCheck() ? (
-        <div style={{ width: 250, position: "absolute", bottom: 15, left: 15 }}>
+        <div style={{ width: 100, position: "absolute", bottom: 15, left: 15 }}>
           <label>Volume </label>
 
           <Slider
@@ -99,6 +101,16 @@ function PlayerControl({
             filter: "drop-shadow(0px 1px 18px #000000)",
           }}
         >
+          <IconButton
+            icon={<PrevIcon />}
+            placement="left"
+            disabled
+            onClick={() => {
+              player.seek(0);
+              player.pause();
+              setIsPlay(false);
+            }}
+          />
           {isPlay ? (
             <IconButton
               icon={<PauseIcon />}
@@ -116,6 +128,17 @@ function PlayerControl({
           <IconButton
             icon={<StopIcon />}
             placement="left"
+            onClick={() => {
+              player.seek(0);
+              player.pause();
+              setIsPlay(false);
+            }}
+          />
+
+          <IconButton
+            icon={<NextIcon />}
+            placement="left"
+            disabled
             onClick={() => {
               player.seek(0);
               player.pause();
