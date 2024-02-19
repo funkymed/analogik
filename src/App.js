@@ -21,8 +21,8 @@ import TracksList from "./Components/TrackList";
 import AuthorList from "./Components/AuthorList";
 import YearList from "./Components/YearList";
 import RenderCanvas from "./Components/RenderCanvas.tsx";
-import PlusIcon from "@rsuite/icons/legacy/Plus";
-import QuestionIcon from "@rsuite/icons/legacy/Question";
+import MusicIcon from "@rsuite/icons/legacy/Music";
+import InfoIcon from "@rsuite/icons/legacy/InfoCircle";
 import AboutDrawer from "./Components/AboutDrawer.js";
 import { getHttpParam } from "./Components/mandafunk/tools/http.ts";
 import {
@@ -231,7 +231,7 @@ function App(props) {
         // backdrop={false}
       >
         <Drawer.Header>
-          <Drawer.Title>Analogik MusicDisk</Drawer.Title>
+          <Drawer.Title>Finally the Analogik's MusicDisk</Drawer.Title>
         </Drawer.Header>
         <Drawer.Body>
           <h3>Selection</h3>
@@ -292,7 +292,7 @@ function App(props) {
       )}
       <IconButton
         appearance="primary"
-        icon={<PlusIcon />}
+        icon={<MusicIcon />}
         style={{
           position: "absolute",
           bottom: 15,
@@ -314,7 +314,7 @@ function App(props) {
 
       <IconButton
         appearance="primary"
-        icon={<QuestionIcon />}
+        icon={<InfoIcon />}
         style={{
           position: "absolute",
           top: 15,

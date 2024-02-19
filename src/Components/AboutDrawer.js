@@ -10,9 +10,14 @@ function AboutDrawer(props) {
   useEffect(() => {
     const ct = [];
     authors.map((author) => {
-      if (author.country && ct.indexOf(author.country) === -1) {
+      if (
+        author.country &&
+        author.country !== "?" &&
+        ct.indexOf(author.country) === -1
+      ) {
         ct.push(author.country);
       }
+      ct.sort();
       setCountries(ct);
     });
   }, []);
@@ -55,7 +60,7 @@ function AboutDrawer(props) {
       // backdrop={false}
     >
       <Drawer.Header>
-        <Drawer.Title>About Analogik</Drawer.Title>
+        <Drawer.Title>Journey Through Analogik's Chiptune Realm</Drawer.Title>
       </Drawer.Header>
       <Drawer.Body style={{ fontSize: 18 }} className="about">
         <p>
@@ -79,8 +84,8 @@ function AboutDrawer(props) {
         <p>
           Over the course of those three years, Analogik served as a melting pot
           of musical talent, attracting 27 artists from across the globe,
-          representing ({countries.length} countries). Together, they delved
-          into an eclectic array of genres, spanning from jazz to chiptune, from
+          representing {countries.length} countries. Together, they delved into
+          an eclectic array of genres, spanning from jazz to chiptune, from
           hip-hop to funk, and from acid jazz to dark ambient and trip-hop.
           These musical marvels were meticulously composed using Impulse
           Tracker, ScreamTracker 3, and Fasttracker 2, with file sizes always
@@ -88,9 +93,9 @@ function AboutDrawer(props) {
         </p>
 
         <p>
-          Hailing from diverse corners of the world {countries.join(", ")}, the
-          artists united under Analogik's banner, forming a global symphony of
-          creativity and collaboration.
+          Hailing from diverse corners of the world : {countries.join(", ")}.
+          The artists united under Analogik's banner, forming a global symphony
+          of creativity and collaboration.
         </p>
 
         <p>
@@ -99,7 +104,7 @@ function AboutDrawer(props) {
           connected and forged lasting bonds.
         </p>
 
-        <p>All the Artists who particapted :</p>
+        <p>Here is the list of all artists who participated :</p>
 
         <FlexboxGrid style={{ fontSize: 16 }}>
           {authors.map((author, k) => {
