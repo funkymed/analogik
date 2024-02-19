@@ -123,8 +123,7 @@ canvas {
   background-color: rgba(255, 255, 255, 0);
 }
 
-h4,
-.rs-drawer-body p {
+h4 {
   filter: drop-shadow(rgb(67, 66, 66) 0px 0px 5px)
 }
 
@@ -181,4 +180,17 @@ h3 {
 .rs-drawer-header .rs-drawer-header-close {
   right: 15px;
   left: auto;
+}
+
+.about p {
+  margin-bottom: 30px;
+  filter: drop-shadow(#000000FF 0px 0px 2px);
+}
+
+.rs-popover {
+  background: #000000;
+}
+
+.rs-popover h3 {
+  color: white;
 }

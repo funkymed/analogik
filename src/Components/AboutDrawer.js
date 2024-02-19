@@ -57,41 +57,49 @@ function AboutDrawer(props) {
       <Drawer.Header>
         <Drawer.Title>About Analogik</Drawer.Title>
       </Drawer.Header>
-      <Drawer.Body style={{ fontSize: 18 }}>
+      <Drawer.Body style={{ fontSize: 18 }} className="about">
         <p>
-          Analogik was a Chiptune label. All the artists were part of the
-          Demoscene in the 2000's.
+          Analogik stood as a beacon in the realm of Chiptune, a label where
+          every artist was a luminary within the vibrant Demoscene of the 2000s.
         </p>
-        <br />
+
         <p>
-          Founded by <b>Kenët</b> and <b>Med</b> in 2000 on a simple idea : Make
-          tiny tracks with great composition and sound.
+          Conceived by the visionary minds of Kenët and Med in 2000, Analogik
+          was born from a simple yet audacious mission: to craft miniature
+          masterpieces brimming with unparalleled composition and sonic
+          brilliance.
         </p>
-        <br />
+
         <p>
-          <b>Nagz</b> was one of the very first member, he was part of the main
-          idea and produced a lots of tracks during the 3 years of the label
-          existence.
+          Among the founding members, Nagz shone brightly, contributing
+          significantly to the label's ethos and churning out a plethora of
+          tracks throughout its illustrious three-year tenure.
         </p>
-        <br />
+
         <p>
-          During 3 years 27 artists from all over the worlds ({countries.length}{" "}
-          countries) produced hundred tracks in differents style like jazz,
-          chiptune, hiphop, funk, acidjazz, dark ambient, triphop ...
-          <br />
-          The track were composed on Impulse Tracker, ScreamTracker 3 and
-          Fasttracker 2. The modules were always under 80ko, but mainly less
-          than 20ko.
+          Over the course of those three years, Analogik served as a melting pot
+          of musical talent, attracting 27 artists from across the globe,
+          representing ({countries.length} countries). Together, they delved
+          into an eclectic array of genres, spanning from jazz to chiptune, from
+          hip-hop to funk, and from acid jazz to dark ambient and trip-hop.
+          These musical marvels were meticulously composed using Impulse
+          Tracker, ScreamTracker 3, and Fasttracker 2, with file sizes always
+          kept under 80ko, often resting comfortably below 20ko.
         </p>
-        <br />
+
         <p>
-          All the artists came from those countries : {countries.join(", ")}.
+          Hailing from diverse corners of the world {countries.join(", ")}, the
+          artists united under Analogik's banner, forming a global symphony of
+          creativity and collaboration.
         </p>
-        <br />
-        <p>We used IRC back in the days to contacts each others.</p>
-        <br />
+
+        <p>
+          In the era before social media dominance, communication flourished
+          through the digital underground of IRC channels, where artists
+          connected and forged lasting bonds.
+        </p>
+
         <p>All the Artists who particapted :</p>
-        <br />
 
         <FlexboxGrid style={{ fontSize: 16 }}>
           {authors.map((author, k) => {
