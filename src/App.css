@@ -194,3 +194,8 @@ h3 {
 .rs-popover h3 {
   color: white;
 }
+
+.hide {
+  opacity: 0;
+  transition-duration: .3s;
+}

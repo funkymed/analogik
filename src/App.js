@@ -33,6 +33,8 @@ import {
 import { ConfigVariations } from "./Components/ConfigVariations.js";
 import "./App.css";
 
+let mouseTimeout;
+
 function App(props) {
   const ChiptuneJsPlayer = window["ChiptuneJsPlayer"];
   const ChiptuneJsConfig = window["ChiptuneJsConfig"];
@@ -71,6 +73,9 @@ function App(props) {
   const [mods, setMods] = useState(getTracks(year, author, selection));
   const [isPrevTrack, setIsPrevTrack] = useState(false);
   const [isNextTrack, setIsNextTrack] = useState(false);
+
+  // mouse
+  const [isMouseMoving, setIsMouseMoving] = useState(false);
 
   const playOffset = (order) => {
     const track = mods[parseInt(currentPos) + order] ?? false;
@@ -190,8 +195,21 @@ function App(props) {
       currentTrack.shader = confOffset;
     }
 
+    const handleMouse = (event) => {
+      setIsMouseMoving(true);
+      if (mouseTimeout) {
+        clearTimeout(mouseTimeout);
+      }
+      mouseTimeout = setTimeout(() => {
+        setIsMouseMoving(false);
+      }, 2000);
+    };
+
+    window.addEventListener("mousemove", handleMouse);
+
     return () => {
       player.current.pause();
+      window.removeEventListener("mousemove", handleMouse);
       // window.removeEventListener("popstate", onPop);
       // window.removeEventListener("mouseup", onClickCanvas);
     };
@@ -306,6 +324,7 @@ function App(props) {
           prevTrack={prevTrack}
           currentPos={currentPos}
           lengthTracks={mods.length - 1}
+          isMouseMoving={isMouseMoving}
         />
       ) : (
         <Loader
@@ -317,6 +336,7 @@ function App(props) {
         />
       )}
       <IconButton
+        className={!isMouseMoving ? "hide" : ""}
         appearance="primary"
         icon={<MusicIcon />}
         style={{
@@ -339,6 +359,7 @@ function App(props) {
       />
 
       <IconButton
+        className={!isMouseMoving ? "hide" : ""}
         appearance="primary"
         icon={<InfoIcon />}
         style={{

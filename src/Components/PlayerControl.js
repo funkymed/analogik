@@ -24,8 +24,10 @@ function PlayerControl({
   prevTrack,
   currentPos,
   lengthTracks,
+  isMouseMoving,
 }) {
   const [playing, setPlaying] = useState(false);
+
   const FlexContent = useRef();
 
   const handleResize = useCallback(() => {
@@ -65,7 +67,10 @@ function PlayerControl({
   return (
     <>
       {!mobileAndTabletCheck() ? (
-        <div style={{ width: 100, position: "absolute", bottom: 15, left: 15 }}>
+        <div
+          style={{ width: 100, position: "absolute", bottom: 15, left: 15 }}
+          className={!isMouseMoving ? "hide" : ""}
+        >
           <label>Volume </label>
 
           <Slider
@@ -100,7 +105,10 @@ function PlayerControl({
         {getOctets(size)} octets)
       </div>
 
-      <div style={{ position: "absolute", top: 15, left: 15 }}>
+      <div
+        style={{ position: "absolute", top: 15, left: 15 }}
+        className={!isMouseMoving ? "hide" : ""}
+      >
         <ButtonGroup
           size="sm"
           style={{
