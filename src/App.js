@@ -147,14 +147,10 @@ function App(props) {
   };
 
   const updateControlBtn = (pos, length) => {
-    console.log(pos, length);
     let isPrev = false;
     let isNext = false;
 
-    if (length === 2) {
-      isPrev = pos <= length ? true : false;
-      isNext = pos > 0 ? true : false;
-    } else {
+    if (length >1) {
       isPrev = pos > 0 ? true : false;
       isNext = pos < length ? true : false;
     }
@@ -202,7 +198,6 @@ function App(props) {
   }, []);
 
   useEffect(() => {
-    console.log(year, author, selection)
     const modsList = getTracks(year, author, selection);
     setMods(modsList);
     updateRouteHttp();
@@ -309,6 +304,8 @@ function App(props) {
           isPrevTrack={isPrevTrack}
           nextTrack={nextTrack}
           prevTrack={prevTrack}
+          currentPos={currentPos}
+          lengthTracks={mods.length - 1}
         />
       ) : (
         <Loader

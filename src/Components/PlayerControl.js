@@ -22,6 +22,8 @@ function PlayerControl({
   isPrevTrack,
   nextTrack,
   prevTrack,
+  currentPos,
+  lengthTracks,
 }) {
   const [playing, setPlaying] = useState(false);
   const FlexContent = useRef();
@@ -142,6 +144,10 @@ function PlayerControl({
             onClick={nextTrack}
           />
         </ButtonGroup>
+        <br />
+        <div style={{ textAlign: "center" }}>
+          {parseInt(currentPos) + 1} / {parseInt(lengthTracks) + 1}
+        </div>
       </div>
 
       <FlexboxGrid
