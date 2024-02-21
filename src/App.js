@@ -150,7 +150,7 @@ function App(props) {
     let isPrev = false;
     let isNext = false;
 
-    if (length >1) {
+    if (length >= 1) {
       isPrev = pos > 0 ? true : false;
       isNext = pos < length ? true : false;
     }
