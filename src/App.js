@@ -197,13 +197,16 @@ function App(props) {
 
     const handleMouse = (event) => {
       setIsMouseMoving(true);
+      document.querySelector("body").style.cursor = "auto";
       if (mouseTimeout) {
         clearTimeout(mouseTimeout);
       }
       mouseTimeout = setTimeout(() => {
         setIsMouseMoving(false);
+        document.querySelector("body").style.cursor = "none";
       }, 2000);
     };
+    document.querySelector("body").style.cursor = "none";
 
     window.addEventListener("mousemove", handleMouse);
 
