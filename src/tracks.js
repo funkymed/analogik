@@ -897,7 +897,8 @@ function isSelected(track, selection) {
 export function getTracks(year, author, selection) {
   const selectedTracks = [];
   for (let track of tracks) {
-    if (year !== 0 && author !== 0 && selection !== "all") {
+
+    if (year !== 0 && author !== 0 && selection.toLowerCase() !== "all") {
       if (
         track.year === year &&
         track.author.includes(author) &&
@@ -905,11 +906,11 @@ export function getTracks(year, author, selection) {
       ) {
         selectedTracks.push(track);
       }
-    } else if (author !== 0 && selection !== "all") {
+    } else if (author !== 0 && selection.toLowerCase() !== "all") {
       if (track.author.includes(author) && isSelected(track, selection)) {
         selectedTracks.push(track);
       }
-    } else if (year !== 0 && selection !== "all") {
+    } else if (year !== 0 && selection.toLowerCase() !== "all") {
       if ((track.year === year) & isSelected(track, selection)) {
         selectedTracks.push(track);
       }
@@ -918,6 +919,7 @@ export function getTracks(year, author, selection) {
         selectedTracks.push(track);
       }
     } else if (author !== 0 && track.author.includes(author)) {
+      console.log(author);
       selectedTracks.push(track);
     } else if (year !== 0 && track.year === year) {
       selectedTracks.push(track);

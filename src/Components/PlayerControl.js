@@ -18,6 +18,10 @@ function PlayerControl({
   currentTrack,
   meta,
   size,
+  isNextTrack,
+  isPrevTrack,
+  nextTrack,
+  prevTrack,
 }) {
   const [playing, setPlaying] = useState(false);
   const FlexContent = useRef();
@@ -44,12 +48,12 @@ function PlayerControl({
   };
   const getAuthors = () => {
     const a = currentTrack.author;
-
+    const authors = [];
     for (let c in a) {
-      a[c] = Capitalize(a[c]);
+      authors.push(Capitalize(a[c]));
     }
 
-    return a.join(" & ");
+    return authors.join(" & ");
   };
 
   const getOctets = (n) => {
@@ -104,12 +108,8 @@ function PlayerControl({
           <IconButton
             icon={<PrevIcon />}
             placement="left"
-            disabled
-            onClick={() => {
-              player.seek(0);
-              player.pause();
-              setIsPlay(false);
-            }}
+            disabled={!isPrevTrack}
+            onClick={prevTrack}
           />
           {isPlay ? (
             <IconButton
@@ -138,12 +138,8 @@ function PlayerControl({
           <IconButton
             icon={<NextIcon />}
             placement="left"
-            disabled
-            onClick={() => {
-              player.seek(0);
-              player.pause();
-              setIsPlay(false);
-            }}
+            disabled={!isNextTrack}
+            onClick={nextTrack}
           />
         </ButtonGroup>
       </div>

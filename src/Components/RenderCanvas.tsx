@@ -65,6 +65,13 @@ function RenderCanvas(props: any): JSX.Element {
 
   const loadConfig = useCallback(
     (config: ConfigType) => {
+      if (mobileAndTabletCheck()) {
+        props.newConfig.scene.brightness /= 4;
+        props.newConfig.scene.brightness =
+          props.newConfig.scene.brightness < 0
+            ? 0
+            : props.newConfig.scene.brightness;
+      }
       deepMergeObjects(props.newConfig, config);
 
       if (manda_scene.current && staticItems.current && composer.current) {

@@ -12,17 +12,19 @@ function AuthorList(props) {
       >
         ALL
       </Button>
-      {props.authors.map((_author) => {
+      {props.authors.map((author) => {
         return (
           <Button
             className={
-              _author === props.author ? "btn-glass selected" : "btn-glass"
+              author === props.author ? "btn-glass selected" : "btn-glass"
             }
-            key={_author}
-            onClick={() => props.filterAuthor(_author)}
+            key={author}
+            onClick={() => {
+              props.filterAuthor(author);
+            }}
             size="sm"
           >
-            {_author}
+            {author}
           </Button>
         );
       })}

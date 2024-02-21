@@ -7,7 +7,7 @@ function TracksList(props) {
         return (
           <Button
             className={
-              (0 === props.currentTrack.filename) === `${a.filename}`
+              props.currentTrack.filename === `${a.filename}`
                 ? "btn-glass selected"
                 : "btn-glass"
             }

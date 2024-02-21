@@ -53,6 +53,7 @@ function App(props) {
   const [meta, setMeta] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isLoading, setIsLoading] = useState(0);
+  const [currentPos, setCurrentPos] = useState(0);
   const [newConfig, setNewConfig] = useState(null);
   const [newconfigOffset, setNewconfigOffset] = useState(
     getHttpParam("config") || null
@@ -61,8 +62,6 @@ function App(props) {
   // filters
   const [year, setYear] = useState(getHttpParam("year") || 0);
   const [author, setAuthor] = useState(getHttpParam("author") || 0);
-  const [prevTrack, setPrevTrack] = useState(false);
-  const [nextTrack, setNextTrack] = useState(false);
   const [authors, setAuthors] = useState(getAuthors(getHttpParam("year") || 0));
   const [selection, setSelection] = useState(
     getHttpParam("selection") || "all"
@@ -70,6 +69,23 @@ function App(props) {
 
   // tracks
   const [mods, setMods] = useState(getTracks(year, author, selection));
+  const [isPrevTrack, setIsPrevTrack] = useState(false);
+  const [isNextTrack, setIsNextTrack] = useState(false);
+
+  const playOffset = (order) => {
+    const track = mods[parseInt(currentPos) + order] ?? false;
+    if (track) {
+      setCurrentTrack(track);
+    }
+  };
+
+  const nextTrack = () => {
+    playOffset(1);
+  };
+
+  const prevTrack = () => {
+    playOffset(-1);
+  };
 
   const updateRouteHttp = () => {
     var url = new URL(window.location.origin);
@@ -130,9 +146,22 @@ function App(props) {
     console.log("updated history", e);
   };
 
-  const getNexTrack = () => {
-    const currentPost = getPosTrack(currentTrack, mods);
-    return mods[parseInt(currentPost) + 1] ?? false;
+  const updateControlBtn = (pos, length) => {
+    console.log(pos, length);
+    let isPrev = false;
+    let isNext = false;
+
+    if (length === 2) {
+      isPrev = pos <= length ? true : false;
+      isNext = pos > 0 ? true : false;
+    } else {
+      isPrev = pos > 0 ? true : false;
+      isNext = pos < length ? true : false;
+    }
+
+    setCurrentPos(pos);
+    setIsPrevTrack(isPrev);
+    setIsNextTrack(isNext);
   };
 
   const onClickCanvas = (e) => {
@@ -173,6 +202,7 @@ function App(props) {
   }, []);
 
   useEffect(() => {
+    console.log(year, author, selection)
     const modsList = getTracks(year, author, selection);
     setMods(modsList);
     updateRouteHttp();
@@ -188,6 +218,7 @@ function App(props) {
     }
 
     updateRouteHttp();
+    updateControlBtn(getPosTrack(currentTrack, mods), mods.length - 1);
 
     player.current
       .load(`./mods/${currentTrack.url}`)
@@ -198,15 +229,9 @@ function App(props) {
         player.current.play(buffer);
         player.current.seek(0);
 
-        player.current.onEnded(() => {
-          const next = getNexTrack();
-          if (next) {
-            setCurrentTrack(next);
-          } else {
-            player.current.pause();
-            player.current.seek(0);
-          }
-        });
+        if (isNextTrack) {
+          player.current.onEnded(nextTrack);
+        }
 
         setIsPlay(true);
 
@@ -280,6 +305,10 @@ function App(props) {
           size={size}
           setVolume={setPlayerVolume}
           volume={volume}
+          isNextTrack={isNextTrack}
+          isPrevTrack={isPrevTrack}
+          nextTrack={nextTrack}
+          prevTrack={prevTrack}
         />
       ) : (
         <Loader
