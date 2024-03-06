@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import "rsuite/dist/rsuite.min.css";
 import {
   Drawer,
@@ -13,8 +13,6 @@ import {
   getTracks,
   getAuthors,
   getYears,
-  getPosTrack,
-  getTrackByUrl,
   getTrackByPos,
 } from "./tracks";
 import PlayerControl from "./Components/PlayerControl";
@@ -27,12 +25,12 @@ import InfoIcon from "@rsuite/icons/legacy/InfoCircle";
 import AboutDrawer from "./Components/AboutDrawer.js";
 import { getHttpParam } from "./Components/mandafunk/tools/http.ts";
 import {
-  getRandomItem,
   getRandomOffset,
   mobileAndTabletCheck,
 } from "./tools.js";
 import { ConfigVariations } from "./Components/ConfigVariations.js";
 import "./App.css";
+import { useKeyPress } from "@uidotdev/usehooks";
 
 let mouseTimeout;
 
@@ -78,7 +76,7 @@ function App(props) {
   const [isMouseMoving, setIsMouseMoving] = useState(false);
 
   const playOffset = (order) => {
-    const track = tracks[currentTrack.pos - 1 + order] ?? false;
+    const track = tracks[parseInt(currentTrack.pos - 1) + order] ?? false;
     if (track) {
       setCurrentTrack(track);
     }
@@ -164,6 +162,15 @@ function App(props) {
     player.current.seek(pos * player.current.duration());
   };
 
+  useKeyPress("i", () => {
+    setAboutOpen(true);
+    setOpen(false);
+  });
+  useKeyPress("l", () => {
+    setAboutOpen(false);
+    setOpen(true);
+  });
+
   useEffect(() => {
     const config = new ChiptuneJsConfig({
       repeatCount: 0,
@@ -245,7 +252,7 @@ function App(props) {
         setIsLoading(false);
         setIsPlay(false);
       });
-  }, [currentTrack, setIsLoading, setIsPlay, player]);
+  }, [currentTrack]);
 
   return (
     <CustomProvider theme="dark">

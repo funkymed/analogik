@@ -7,6 +7,7 @@ import PlayIcon from "@rsuite/icons/legacy/Play";
 import StopIcon from "@rsuite/icons/legacy/Stop";
 import { Capitalize } from "../utils";
 import { mobileAndTabletCheck } from "../tools";
+import { useKeyPress } from "@uidotdev/usehooks";
 
 function PlayerControl({
   player,
@@ -65,6 +66,10 @@ function PlayerControl({
   const getOctets = (n) => {
     return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
   };
+
+  useKeyPress(" ", togglePlay);
+  useKeyPress("ArrowLeft", prevTrack);
+  useKeyPress("ArrowRight", nextTrack);
 
   return (
     <>
