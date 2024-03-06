@@ -67,7 +67,6 @@ export class MandaScene {
   }
 
   updateSceneBackground(config: ConfigType) {
-    // console.log(config)
     this.config = config;
     this.addShaderBackground();
     if (config.scene.bgColor) {

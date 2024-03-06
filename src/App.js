@@ -56,7 +56,6 @@ function App(props) {
   const [meta, setMeta] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isLoading, setIsLoading] = useState(0);
-  const [currentPos, setCurrentPos] = useState(0);
   const [newConfig, setNewConfig] = useState(null);
   const [newconfigOffset, setNewconfigOffset] = useState(
     getHttpParam("config") || null
@@ -79,7 +78,7 @@ function App(props) {
   const [isMouseMoving, setIsMouseMoving] = useState(false);
 
   const playOffset = (order) => {
-    const track = mods[parseInt(currentPos) + order] ?? false;
+    const track = tracks[currentTrack.pos - 1 + order] ?? false;
     if (track) {
       setCurrentTrack(track);
     }
@@ -151,20 +150,17 @@ function App(props) {
   const updateControlBtn = () => {
     let isPrev = false;
     let isNext = false;
-    const pos = currentTrack.pos ? currentTrack.pos - 1 : 0;
-    console.log(pos);
+    const posOffset = currentTrack.pos ? currentTrack.pos - 1 : 0;
 
-    isPrev = pos > 0 ? true : false;
-    isNext = pos < tracks.length - 1 ? true : false;
+    isPrev = posOffset > 0 ? true : false;
+    isNext = posOffset < tracks.length - 1 ? true : false;
 
-    setCurrentPos(pos);
     setIsPrevTrack(isPrev);
     setIsNextTrack(isNext);
   };
 
   const onClickCanvas = (e) => {
     const pos = e.screenX / window.innerWidth;
-    console.log(e);
     player.current.seek(pos * player.current.duration());
   };
 
@@ -177,7 +173,6 @@ function App(props) {
     player.current = new ChiptuneJsPlayer(config);
     player.current.pause();
 
-    console.log(currentTrack)
     if (!currentTrack) {
       const item = tracks[0]; //getRandomItem(tracks);
       setCurrentTrack(item);
@@ -247,7 +242,6 @@ function App(props) {
         setDuration(player.current.duration());
       })
       .catch((e) => {
-        console.log(e);
         setIsLoading(false);
         setIsPlay(false);
       });
@@ -316,8 +310,7 @@ function App(props) {
           isPrevTrack={isPrevTrack}
           nextTrack={nextTrack}
           prevTrack={prevTrack}
-          currentPos={currentPos}
-          lengthTracks={mods.length - 1}
+          lengthTracks={tracks.length}
           isMouseMoving={isMouseMoving}
         />
       ) : (

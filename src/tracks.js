@@ -922,7 +922,6 @@ export function getTracks(year, author, selection) {
         selectedTracks.push(track);
       }
     } else if (author !== 0 && track.author.includes(author)) {
-      console.log(author);
       selectedTracks.push(track);
     } else if (year !== 0 && track.year === year) {
       selectedTracks.push(track);

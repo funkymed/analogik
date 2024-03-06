@@ -110,7 +110,6 @@ export class Editor {
       addText: function () {
         const countTexts = Object.keys(config.texts).length;
         const key = `text-${countTexts + 1}`;
-        console.log(key);
         // config.texts['text-' + (countTexts + 1)] = {
         //     show: true,
         //     text: 'Default text',

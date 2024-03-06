@@ -22,7 +22,6 @@ function PlayerControl({
   isPrevTrack,
   nextTrack,
   prevTrack,
-  currentPos,
   lengthTracks,
   isMouseMoving,
 }) {
@@ -48,7 +47,10 @@ function PlayerControl({
   }, []);
 
   const getTitle = () => {
-    return `${currentTrack.pos}. `+(meta.title ? meta.title : currentTrack.filename).toUpperCase();
+    return (
+      `${currentTrack.pos}. ` +
+      (meta.title ? meta.title : currentTrack.filename).toUpperCase()
+    );
   };
   const getAuthors = () => {
     const a = currentTrack.author;
@@ -154,7 +156,7 @@ function PlayerControl({
         </ButtonGroup>
         <br />
         <div style={{ textAlign: "center" }}>
-          {parseInt(currentPos) + 1} / {parseInt(lengthTracks) + 1}
+          {currentTrack.pos} / {lengthTracks}
         </div>
       </div>
 

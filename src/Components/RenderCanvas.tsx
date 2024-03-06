@@ -159,7 +159,6 @@ function RenderCanvas(props: any): JSX.Element {
         editorGui.current.show(false);
       }
     }
-    console.log("init");
   }, [props.analyser, props.audioContext, props.player]);
 
   const render = (time: number) => {

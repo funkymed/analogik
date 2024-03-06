@@ -6,7 +6,6 @@ export const loadImage = function (name: string, file: string, options: any, sce
     new TextureLoader().load(
         file,
         (image) => {
-            console.log(image, options)
             const mesh: any = createMesh(name, image, options, false)
             mesh.objType = options.objType
             scene.add(mesh)
