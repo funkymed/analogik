@@ -7,7 +7,7 @@ import PlayIcon from "@rsuite/icons/legacy/Play";
 import StopIcon from "@rsuite/icons/legacy/Stop";
 import { Capitalize } from "../utils";
 import { mobileAndTabletCheck } from "../tools";
-import { useKeyPress } from "@uidotdev/usehooks";
+import useKeypress from "react-use-keypress";
 
 function PlayerControl({
   player,
@@ -67,9 +67,9 @@ function PlayerControl({
     return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
   };
 
-  useKeyPress(" ", togglePlay);
-  useKeyPress("ArrowLeft", prevTrack);
-  useKeyPress("ArrowRight", nextTrack);
+  useKeypress(" ", togglePlay);
+  useKeypress("ArrowLeft", prevTrack);
+  useKeypress("ArrowRight", nextTrack);
 
   return (
     <>

@@ -24,13 +24,10 @@ import MusicIcon from "@rsuite/icons/legacy/Music";
 import InfoIcon from "@rsuite/icons/legacy/InfoCircle";
 import AboutDrawer from "./Components/AboutDrawer.js";
 import { getHttpParam } from "./Components/mandafunk/tools/http.ts";
-import {
-  getRandomOffset,
-  mobileAndTabletCheck,
-} from "./tools.js";
+import { getRandomOffset, mobileAndTabletCheck } from "./tools.js";
 import { ConfigVariations } from "./Components/ConfigVariations.js";
 import "./App.css";
-import { useKeyPress } from "@uidotdev/usehooks";
+import useKeypress from "react-use-keypress";
 
 let mouseTimeout;
 
@@ -162,11 +159,11 @@ function App(props) {
     player.current.seek(pos * player.current.duration());
   };
 
-  useKeyPress("i", () => {
+  useKeypress("i", () => {
     setAboutOpen(true);
     setOpen(false);
   });
-  useKeyPress("l", () => {
+  useKeypress("l", () => {
     setAboutOpen(false);
     setOpen(true);
   });
