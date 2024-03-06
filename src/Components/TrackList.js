@@ -14,7 +14,7 @@ function TracksList(props) {
             key={`track-${b}`}
             onClick={() => props.load(a)}
             size="sm"
-          >{`${a.author.join(" & ")} : ${a.filename} (${a.year})`}</Button>
+          >{a.pos}. {`${a.author.join(" & ")} : ${a.filename} (${a.year})`}</Button>
         );
       })}
     </>

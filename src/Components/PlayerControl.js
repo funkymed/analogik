@@ -48,7 +48,7 @@ function PlayerControl({
   }, []);
 
   const getTitle = () => {
-    return (meta.title ? meta.title : currentTrack.filename).toUpperCase();
+    return `${currentTrack.pos}. `+(meta.title ? meta.title : currentTrack.filename).toUpperCase();
   };
   const getAuthors = () => {
     const a = currentTrack.author;

@@ -15,6 +15,7 @@ import {
   getYears,
   getPosTrack,
   getTrackByUrl,
+  getTrackByPos,
 } from "./tracks";
 import PlayerControl from "./Components/PlayerControl";
 import TracksList from "./Components/TrackList";
@@ -49,7 +50,7 @@ function App(props) {
   // tracks
   const [isPlay, setIsPlay] = useState(0);
   const [currentTrack, setCurrentTrack] = useState(
-    getTrackByUrl(getHttpParam("track"))
+    getTrackByPos(getHttpParam("track"))
   );
   const [size, setSize] = useState(0);
   const [meta, setMeta] = useState(0);
@@ -108,7 +109,7 @@ function App(props) {
     }
 
     if (currentTrack) {
-      search_params.append("track", currentTrack.url);
+      search_params.append("track", currentTrack.pos);
     }
 
     if (newconfigOffset) {
@@ -147,18 +148,14 @@ function App(props) {
     player.current.togglePause();
   };
 
-  const onPop = (e) => {
-    console.log("updated history", e);
-  };
-
-  const updateControlBtn = (pos, length) => {
+  const updateControlBtn = () => {
     let isPrev = false;
     let isNext = false;
+    const pos = currentTrack.pos ? currentTrack.pos - 1 : 0;
+    console.log(pos);
 
-    if (length >= 1) {
-      isPrev = pos > 0 ? true : false;
-      isNext = pos < length ? true : false;
-    }
+    isPrev = pos > 0 ? true : false;
+    isNext = pos < tracks.length - 1 ? true : false;
 
     setCurrentPos(pos);
     setIsPrevTrack(isPrev);
@@ -180,18 +177,14 @@ function App(props) {
     player.current = new ChiptuneJsPlayer(config);
     player.current.pause();
 
-    // window.addEventListener("popstate", onPop);
-    const confOffset = newconfigOffset
-      ? newconfigOffset
-      : getRandomOffset(ConfigVariations, -1);
-
+    console.log(currentTrack)
     if (!currentTrack) {
-      const item = getRandomItem(tracks);
-
-      item.shader = confOffset;
-
+      const item = tracks[0]; //getRandomItem(tracks);
       setCurrentTrack(item);
     } else {
+      const confOffset = newconfigOffset
+        ? newconfigOffset
+        : getRandomOffset(ConfigVariations, -1);
       currentTrack.shader = confOffset;
     }
 
@@ -213,8 +206,6 @@ function App(props) {
     return () => {
       player.current.pause();
       window.removeEventListener("mousemove", handleMouse);
-      // window.removeEventListener("popstate", onPop);
-      // window.removeEventListener("mouseup", onClickCanvas);
     };
   }, []);
 
@@ -234,13 +225,13 @@ function App(props) {
     }
 
     updateRouteHttp();
-    updateControlBtn(getPosTrack(currentTrack, mods), mods.length - 1);
 
     player.current
       .load(`./mods/${currentTrack.url}`)
       .then((buffer) => {
         setIsLoading(false);
 
+        updateControlBtn();
         player.current.pause();
         player.current.play(buffer);
         player.current.seek(0);

@@ -811,12 +811,16 @@ const tracks = [
   },
 ];
 
+tracks.sort(compare);
+let pos = 1;
 for (let t in tracks) {
   const confOffset = getRandomOffset(
     ConfigVariations,
     tracks[t - 1] ? tracks[t - 1].shader : -1
   );
   tracks[t].shader = confOffset;
+  tracks[t].pos = pos;
+  pos++;
 }
 
 export { tracks };
@@ -897,7 +901,6 @@ function isSelected(track, selection) {
 export function getTracks(year, author, selection) {
   const selectedTracks = [];
   for (let track of tracks) {
-
     if (year !== 0 && author !== 0 && selection.toLowerCase() !== "all") {
       if (
         track.year === year &&
@@ -953,4 +956,8 @@ export const getTrackByUrl = (url) => {
     }
   }
   return false;
+};
+
+export const getTrackByPos = (pos) => {
+  return tracks[pos - 1] ? tracks[pos - 1] : false;
 };
