@@ -70,6 +70,14 @@ function PlayerControl({
   useKeypress(" ", togglePlay);
   useKeypress("ArrowLeft", prevTrack);
   useKeypress("ArrowRight", nextTrack);
+  useKeypress("ArrowUp", () => {
+    const newVolume = volume + 5;
+    setVolume(newVolume <= 100 ? newVolume : 100);
+  });
+  useKeypress("ArrowDown", () => {
+    const newVolume = volume - 5;
+    setVolume(newVolume > 0 ? newVolume : 0);
+  });
 
   return (
     <>

@@ -13,24 +13,28 @@ function ActivateAudio(props) {
     const modulo = mobileCheck() ? 5 : 10;
 
     return (
-      <span key={`ath-${c}`}>
+      <span key={`ath-${c}`} style={{ color: c % 2 === 0 ? "#DDD" : "#8AD" }}>
         {txt}
-        {c % modulo === 0 ? <br /> : ""}
+        {c % modulo === 6 ? <br /> : ""}
       </span>
     );
   };
 
   return (
-    <Container style={{ background: "#212224" }}>
-      <Content
-        style={{
-          height: window.innerHeight,
-          margin: 10,
-        }}
-      >
-        <FlexboxGrid justify="center" align="middle">
+    <Container className="home-bg">
+      <Content>
+        <FlexboxGrid
+          justify="center"
+          align="middle"
+          style={{
+            height: window.innerHeight,
+          }}
+        >
           <FlexboxGrid>
-            <FlexboxGrid.Item colspan={24} style={{ textAlign: "center" }}>
+            <FlexboxGrid.Item
+              colspan={24}
+              style={{ color: "#8AD", textAlign: "center" }}
+            >
               <p>
                 Click on the image bellow to enter
                 <br /> the wonderfull world of the Analogik's Chiptune.
@@ -43,24 +47,26 @@ function ActivateAudio(props) {
                 speaker={<Popover title="Click me" />}
               >
                 <img
-                  src="./images/analogik.jpg"
+                  className="home-img"
+                  src="./logo512-cover.png"
                   onClick={props.unlockAudio}
-                  style={{
-                    height: "512px",
-                    filter: "drop-shadow(0px 0px 25px #000000AA)",
-                    cursor: "pointer",
-                  }}
                 />
               </Whisper>
             </FlexboxGrid.Item>
-            <FlexboxGrid.Item colspan={24} style={{ textAlign: "center" }}>
+            <FlexboxGrid.Item
+              colspan={24}
+              style={{ color: "#F52", textAlign: "center", zIndex: 1 }}
+            >
               <br />
-              <p>Code by Med</p>
+              <p>
+                Code by <span style={{ color: "#8AD" }}>Med</span>
+              </p>
               <p>
                 Musics by
                 <br />
                 {authors.map(authTxt)}
               </p>
+              <br />
               <p>Analogik 2000 - 2002</p>
             </FlexboxGrid.Item>
           </FlexboxGrid>

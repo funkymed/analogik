@@ -5,7 +5,7 @@ const authors = [
     country: "Israel",
     member: true,
   },
-  { nickname: "cemik", country: "Sweden" },
+  { nickname: "cemik", name: "Carl Waern", country: "Sweden" },
   {
     nickname: "dna-groove",
     name: "Eliran Ben-Ishay",
@@ -18,7 +18,11 @@ const authors = [
     country: "Germany",
     member: true,
   },
-  { nickname: "drax", country: "Danemark", name: "?" },
+  {
+    nickname: "drax",
+    name: "Thomas Laurits Vedel Mogensen",
+    country: "Danemark",
+  },
   {
     nickname: "edzes",
     name: "Andreas Bruvoll Skaarung",
@@ -36,7 +40,7 @@ const authors = [
   },
   {
     nickname: "keen",
-    name: "Alexey Komarchuck",
+    name: "Oleksij Komarchuk",
     country: "Ukraine",
     member: true,
   },
@@ -52,7 +56,7 @@ const authors = [
     nickname: "med",
     name: "Cyril Pereira",
     country: "France",
-    url: "http://medcg.free.fr",
+    url: "https://med.funkylab.fr",
     member: true,
   },
   { nickname: "nagz", name: "David Halmi", country: "Hungary", member: true },
@@ -89,7 +93,7 @@ const authors = [
     country: "Germany",
     member: true,
   },
-  { nickname: "wayfinder", country: "Germany" },
+  { nickname: "wayfinder", name: "Sebastian Grillmaier", country: "Germany" },
   { nickname: "willbe", name: "William Lamy", country: "France", member: true },
   { nickname: "xerxes", name: "Klaus Lunde", country: "Norway", member: true },
 ];
