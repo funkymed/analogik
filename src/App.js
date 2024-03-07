@@ -160,12 +160,12 @@ function App(props) {
   };
 
   useKeypress("i", () => {
-    setAboutOpen(true);
     setOpen(false);
+    setAboutOpen(!aboutOpen);
   });
   useKeypress("l", () => {
     setAboutOpen(false);
-    setOpen(true);
+    setOpen(!open);
   });
 
   useEffect(() => {
