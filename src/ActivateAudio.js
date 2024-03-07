@@ -2,6 +2,7 @@ import { Container, Content, Whisper, Popover, FlexboxGrid } from "rsuite";
 import authors from "./authors";
 import { Capitalize } from "./utils";
 import { mobileCheck } from "./tools";
+import { useEffect, useRef } from "react";
 
 function ActivateAudio(props) {
   const authTxt = (a, c) => {
@@ -11,19 +12,35 @@ function ActivateAudio(props) {
     }
 
     const modulo = mobileCheck() ? 5 : 10;
+    const moduloFit = mobileCheck() ? 0 : 6;
 
     return (
       <span key={`ath-${c}`} style={{ color: c % 2 === 0 ? "#DDD" : "#8AD" }}>
         {txt}
-        {c % modulo === 6 ? <br /> : ""}
+        {c % modulo === moduloFit ? <br /> : ""}
       </span>
     );
   };
+  const panel = useRef();
+
+  useEffect(() => {
+    const resizeHandler = () => {
+      if (panel.current) {
+        panel.current.style.width = `${window.innerWidth}px`;
+        panel.current.style.height = `${window.innerHeight}px`;
+      }
+    };
+    window.addEventListener("resize", resizeHandler);
+    return () => {
+      window.removeEventListener("resize", resizeHandler);
+    };
+  }, []);
 
   return (
     <Container className="home-bg">
       <Content>
         <FlexboxGrid
+          ref={panel}
           justify="center"
           align="middle"
           style={{
