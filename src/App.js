@@ -15,6 +15,7 @@ import {
   getYears,
   getTrackByPos,
 } from "./tracks";
+import TWEEN from "@tweenjs/tween.js";
 import PlayerControl from "./Components/PlayerControl";
 import TracksList from "./Components/TrackList";
 import AuthorList from "./Components/AuthorList";
@@ -24,19 +25,26 @@ import MusicIcon from "@rsuite/icons/legacy/Music";
 import InfoIcon from "@rsuite/icons/legacy/InfoCircle";
 import AboutDrawer from "./Components/AboutDrawer.js";
 import { getHttpParam } from "./Components/mandafunk/tools/http.ts";
-import { getRandomOffset, mobileAndTabletCheck } from "./tools.js";
+import {
+  getRandomItem,
+  getRandomOffset,
+  mobileAndTabletCheck,
+} from "./tools.js";
 import { ConfigVariations } from "./Components/ConfigVariations.js";
 import "./App.css";
 import useKeypress from "react-use-keypress";
 
 let mouseTimeout;
-
+let tweenAnim;
 function App(props) {
   const ChiptuneJsPlayer = window["ChiptuneJsPlayer"];
   const ChiptuneJsConfig = window["ChiptuneJsConfig"];
 
   const defaultVolume = 80;
   const player = useRef();
+  const mainView = useRef();
+  const requestRef = useRef();
+
   const years = getYears();
   const [open, setOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
@@ -51,6 +59,7 @@ function App(props) {
   const [meta, setMeta] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isLoading, setIsLoading] = useState(0);
+  const [isDisplayLoader, setIsDisplayLoader] = useState(0);
   const [newConfig, setNewConfig] = useState(null);
   const [newconfigOffset, setNewconfigOffset] = useState(
     getHttpParam("config") || null
@@ -168,15 +177,19 @@ function App(props) {
     setOpen(!open);
   });
 
-  useEffect(() => {
+  const getPlayer = () => {
     const config = new ChiptuneJsConfig({
       repeatCount: 0,
       volume: defaultVolume,
       context: props.context,
     });
+
     player.current = new ChiptuneJsPlayer(config);
     player.current.pause();
+  };
 
+  useEffect(() => {
+    getPlayer();
     if (!currentTrack) {
       const item = tracks[0]; //getRandomItem(tracks);
       setCurrentTrack(item);
@@ -202,9 +215,12 @@ function App(props) {
 
     window.addEventListener("mousemove", handleMouse);
 
+    requestRef.current = requestAnimationFrame(animationLoop);
+
     return () => {
       player.current.pause();
       window.removeEventListener("mousemove", handleMouse);
+      cancelAnimationFrame(requestRef.current);
     };
   }, []);
 
@@ -215,41 +231,67 @@ function App(props) {
   }, [year, author, selection, getTracks, newconfigOffset]);
 
   useEffect(() => {
-    setIsLoading(true);
-    setOpen(false);
-
-    if (currentTrack.shader) {
-      setNewconfigOffset(currentTrack.shader);
-      setNewConfig(ConfigVariations[currentTrack.shader]);
+    // setOpen(false);
+    console.log(currentTrack);
+    if (tweenAnim) {
+      TWEEN.remove(tweenAnim);
     }
 
-    updateRouteHttp();
+    if (mainView.current) {
+      const animTime = 300;
+      mainView.current.style.opacity = 1;
+      tweenAnim = new TWEEN.Tween(mainView.current.style)
+        .to({ opacity: 0 }, animTime)
+        .onComplete(() => {
+          if (currentTrack.shader) {
+            setNewconfigOffset(currentTrack.shader);
+            setNewConfig(ConfigVariations[currentTrack.shader]);
+          }
 
-    player.current
-      .load(`./mods/${currentTrack.url}`)
-      .then((buffer) => {
-        setIsLoading(false);
+          updateRouteHttp();
 
-        updateControlBtn();
-        player.current.pause();
-        player.current.play(buffer);
-        player.current.seek(0);
+          if (player.current && player.current.currentPlayingNode) {
+            player.current.pause();
+            player.current.seek(0);
+          }
 
-        if (isNextTrack) {
-          player.current.onEnded(nextTrack);
-        }
+          getPlayer();
+          setIsLoading(true);
+          setIsPlay(false);
+          player.current.load(`./mods/${currentTrack.url}`).then((buffer) => {
+            setIsLoading(false);
+            updateControlBtn();
+            player.current.pause();
+            player.current.play(buffer);
+            player.current.seek(0);
 
-        setIsPlay(true);
+            if (isNextTrack) {
+              player.current.onEnded(nextTrack);
+            }
 
-        setSize(buffer.byteLength);
-        setMeta(player.current.metadata());
-        setDuration(player.current.duration());
-      })
-      .catch((e) => {
-        setIsLoading(false);
-        setIsPlay(false);
-      });
+            setIsPlay(true);
+            setSize(buffer.byteLength);
+            setMeta(player.current.metadata());
+            setDuration(player.current.duration());
+
+            if (tweenAnim) {
+              TWEEN.remove(tweenAnim);
+            }
+            mainView.current.style.opacity = 0;
+            tweenAnim = new TWEEN.Tween(mainView.current.style)
+              .to({ opacity: 1 }, animTime)
+              .delay(animTime)
+              .start();
+          });
+        })
+        .start();
+    }
   }, [currentTrack]);
+
+  const animationLoop = () => {
+    TWEEN.update();
+    requestRef.current = requestAnimationFrame(animationLoop);
+  };
 
   return (
     <CustomProvider theme="dark">
@@ -295,37 +337,46 @@ function App(props) {
           </div>
         </Drawer.Body>
       </Drawer>
-
-      {currentTrack &&
-      !isLoading &&
-      player.current &&
-      player.current.currentPlayingNode ? (
-        <PlayerControl
-          player={player.current}
-          currentTrack={currentTrack}
-          meta={meta}
-          togglePlay={togglePlay}
-          isPlay={isPlay}
-          setIsPlay={setIsPlay}
-          size={size}
-          setVolume={setPlayerVolume}
-          volume={volume}
-          isNextTrack={isNextTrack}
-          isPrevTrack={isPrevTrack}
-          nextTrack={nextTrack}
-          prevTrack={prevTrack}
-          lengthTracks={tracks.length}
-          isMouseMoving={isMouseMoving}
-        />
-      ) : (
+      {isLoading ? (
         <Loader
           speed="fast"
           center={true}
           vertical={true}
           size="lg"
-          content="Loading ..."
+          content={getRandomItem([
+            "Ch33p Ch33p",
+            "Bleep Bleep",
+            "Defragmenting",
+            "Downloading the internet",
+            "Contacting Elon",
+            "Sending data to the FBI",
+            "Hacking your computer",
+            "Starting your Tesla",
+            "Reconnecting your 56k modem",
+          ])}
         />
+      ) : (
+        ""
       )}
+      <PlayerControl
+        player={player.current}
+        currentTrack={currentTrack}
+        meta={meta}
+        togglePlay={togglePlay}
+        isPlay={isPlay}
+        isLoading={isLoading}
+        setIsPlay={setIsPlay}
+        size={size}
+        setVolume={setPlayerVolume}
+        volume={volume}
+        isNextTrack={isNextTrack}
+        isPrevTrack={isPrevTrack}
+        nextTrack={nextTrack}
+        prevTrack={prevTrack}
+        lengthTracks={tracks.length}
+        isMouseMoving={isMouseMoving}
+      />
+
       <IconButton
         className={!isMouseMoving ? "hide" : ""}
         appearance="primary"
@@ -341,14 +392,12 @@ function App(props) {
         circle
         size={mobileAndTabletCheck() ? "sm" : "lg"}
       />
-
       <AboutDrawer
         aboutOpen={aboutOpen}
         setAboutOpen={setAboutOpen}
         filterAuthor={filterAuthor}
         setTrackDrawerOpen={setOpen}
       />
-
       <IconButton
         className={!isMouseMoving ? "hide" : ""}
         appearance="primary"
@@ -364,23 +413,23 @@ function App(props) {
         circle
         size={mobileAndTabletCheck() ? "sm" : "lg"}
       />
-
-      {player.current &&
-      currentTrack &&
-      !isLoading &&
-      player.current.currentPlayingNode &&
-      newConfig ? (
-        <RenderCanvas
-          player={player.current}
-          audioContext={props.context}
-          isPlay={isPlay}
-          setIsPlay={setIsPlay}
-          newConfig={newConfig}
-          onClickCanvas={onClickCanvas}
-        />
-      ) : (
-        ""
-      )}
+      <div ref={mainView}>
+        {player.current &&
+        currentTrack &&
+        player.current.currentPlayingNode &&
+        newConfig ? (
+          <RenderCanvas
+            player={player.current}
+            audioContext={props.context}
+            isPlay={isPlay}
+            setIsPlay={setIsPlay}
+            newConfig={newConfig}
+            onClickCanvas={onClickCanvas}
+          />
+        ) : (
+          ""
+        )}
+      </div>
     </CustomProvider>
   );
 }

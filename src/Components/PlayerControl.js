@@ -6,8 +6,11 @@ import PrevIcon from "@rsuite/icons/legacy/PagePrevious";
 import PlayIcon from "@rsuite/icons/legacy/Play";
 import StopIcon from "@rsuite/icons/legacy/Stop";
 import { Capitalize } from "../utils";
+import TWEEN from "@tweenjs/tween.js";
 import { mobileAndTabletCheck } from "../tools";
 import useKeypress from "react-use-keypress";
+
+let tweenAnim;
 
 function PlayerControl({
   player,
@@ -25,10 +28,13 @@ function PlayerControl({
   prevTrack,
   lengthTracks,
   isMouseMoving,
+  isLoading,
 }) {
   const [playing, setPlaying] = useState(false);
 
   const FlexContent = useRef();
+  const titlePanel = useRef();
+  const bottomTitle = useRef();
 
   const handleResize = useCallback(() => {
     if (FlexContent.current) {
@@ -41,16 +47,54 @@ function PlayerControl({
   }, [isPlay, setIsPlay, playing]);
 
   useEffect(() => {
+    if (isLoading) {
+      if (bottomTitle.current) {
+        bottomTitle.current.style.opacity = 0;
+      }
+      if (titlePanel.current) {
+        titlePanel.current.style.opacity = 0;
+      }
+    }
+  }, [isLoading]);
+
+  useEffect(() => {
+    if (tweenAnim) TWEEN.remove(tweenAnim);
+
+    if (bottomTitle.current) {
+      bottomTitle.current.style.opacity = 0;
+    }
+    if (titlePanel.current && isPlay) {
+      titlePanel.current.style.opacity = 0;
+      tweenAnim = new TWEEN.Tween(titlePanel.current.style)
+        .to({ opacity: 1 }, 1000)
+        .delay(2000)
+        .easing(TWEEN.Easing.Sinusoidal.InOut)
+        .onComplete(() => {
+          tweenAnim = new TWEEN.Tween(titlePanel.current.style)
+            .to({ opacity: 0 }, 1000)
+            .delay(2000)
+            .easing(TWEEN.Easing.Sinusoidal.InOut)
+            .onComplete(() => {
+              tweenAnim = new TWEEN.Tween(bottomTitle.current.style)
+                .to({ opacity: 0.85 }, 500)
+                .easing(TWEEN.Easing.Sinusoidal.InOut)
+                .start();
+            })
+            .start();
+        })
+        .start();
+    }
+
     window.addEventListener("resize", handleResize);
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, []);
+  }, [meta, isPlay]);
 
   const getTitle = () => {
     return (
       `${currentTrack.pos}. ` +
-      (meta.title ? meta.title : currentTrack.filename).toUpperCase()
+      String(meta.title ? meta.title : currentTrack.filename).toUpperCase()
     );
   };
   const getAuthors = () => {
@@ -102,13 +146,14 @@ function PlayerControl({
       )}
 
       <div
+        ref={bottomTitle}
         style={{
           width: window.innerWidth,
           position: "absolute",
           fontFamily: "Kdam Thmor Pro",
           bottom: 15,
           left: 0,
-          opacity: 0.85,
+          opacity: 0,
           textAlign: "center",
           filter: "drop-shadow(0px 0px 5px #000000FF)",
           fontSize: 15,
@@ -185,7 +230,7 @@ function PlayerControl({
       >
         <FlexboxGrid.Item colspan={10} style={{ pointerEvents: "none" }}>
           <div
-            className="fade-in"
+            ref={titlePanel}
             style={{
               opacity: 0,
               width: window.innerWidth,

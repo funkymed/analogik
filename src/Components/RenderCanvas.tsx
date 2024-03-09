@@ -215,12 +215,12 @@ function RenderCanvas(props: any): JSX.Element {
 
   return (
     <canvas
+      ref={canvasRef}
       onClick={props.onClickCanvas}
       className="canvasStyle"
       style={{
         pointerEvents: "auto",
       }}
-      ref={canvasRef}
     />
   );
 }
