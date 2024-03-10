@@ -60,42 +60,43 @@ function AboutDrawer(props) {
       // backdrop={false}
     >
       <Drawer.Header>
-        <Drawer.Title>Journey Through Analogik's Chiptune Realm</Drawer.Title>
+        <Drawer.Title>About Analogik and the MusicDisk</Drawer.Title>
       </Drawer.Header>
       <Drawer.Body style={{ fontSize: 18 }} className="about">
         <p>
-          Analogik stood as a beacon in the realm of Chiptune, a label where
-          every artist was a luminary within the vibrant Demoscene of the 2000s.
+          <u>Analogik</u> stood as a beacon in the realm of Chiptune, a label
+          where every artist was a luminary within the vibrant Demoscene of the
+          2000s.
         </p>
 
         <p>
-          Conceived by the visionary minds of Kenët and Med in 2000, Analogik
-          was born from a simple yet audacious mission: to craft miniature
-          masterpieces brimming with unparalleled composition and sonic
-          brilliance.
+          Conceived by the visionary minds of <b>Kenët</b> and <b>Med</b> in
+          2000, <u>Analogik</u> was born from a simple yet audacious mission: to
+          craft miniature masterpieces brimming with unparalleled composition
+          and sonic brilliance.
         </p>
 
         <p>
-          Among the founding members, Nagz shone brightly, contributing
+          Among the founding members, <b>Nagz</b> shone brightly, contributing
           significantly to the label's ethos and churning out a plethora of
           tracks throughout its illustrious three-year tenure.
         </p>
 
         <p>
-          Over the course of those three years, Analogik served as a melting pot
-          of musical talent, attracting 27 artists from across the globe,
-          representing {countries.length} countries. Together, they delved into
-          an eclectic array of genres, spanning from jazz to chiptune, from
-          hip-hop to funk, and from acid jazz to dark ambient and trip-hop.
-          These musical marvels were meticulously composed using Impulse
-          Tracker, ScreamTracker 3, and Fasttracker 2, with file sizes always
-          kept under 80ko, often resting comfortably below 20ko.
+          Over the course of those three years, <u>Analogik</u> served as a
+          melting pot of musical talent, attracting 27 artists from across the
+          globe, representing {countries.length} countries. Together, they
+          delved into an eclectic array of genres, spanning from jazz to
+          chiptune, from hip-hop to funk, and from acid jazz to dark ambient and
+          trip-hop. These musical marvels were meticulously composed using
+          Impulse Tracker, ScreamTracker 3, and Fasttracker 2, with file sizes
+          always kept under 80ko, often resting comfortably below 20ko.
         </p>
 
         <p>
           Hailing from diverse corners of the world : {countries.join(", ")}.
-          The artists united under Analogik's banner, forming a global symphony
-          of creativity and collaboration.
+          The artists united under <u>Analogik</u>'s banner, forming a global
+          symphony of creativity and collaboration.
         </p>
 
         <p>
@@ -103,8 +104,12 @@ function AboutDrawer(props) {
           through the digital underground of IRC channels, where artists
           connected and forged lasting bonds.
         </p>
-
-        <p>Here is the list of all artists who participated :</p>
+        <p>
+          Coded by Med in 2024 with the support of <b>Nagz</b>, <i>Willbe</i>,{" "}
+          <u>Bacter</u>, <b>Unware</b> and <i>Ks</i>, this Music Disk is a gift
+          for all the Chiptune's lovers to never forgot what was Analogik.
+        </p>
+        <p>All artists who participated :</p>
 
         <FlexboxGrid style={{ fontSize: 16 }}>
           {authors.map((author, k) => {

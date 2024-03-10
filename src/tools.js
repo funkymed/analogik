@@ -59,3 +59,31 @@ export const getRandomInt = (min, max) => {
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
+
+export const updateRouteHttp = (
+  year,
+  author,
+  selection,
+  pos,
+  newconfigOffset
+) => {
+  var url = new URL(window.location.origin);
+  var search_params = url.searchParams;
+  if (year) {
+    search_params.append("year", year);
+  }
+  if (author) {
+    search_params.append("author", author);
+  }
+  if (selection !== "all") {
+    search_params.append("selection", selection);
+  }
+  if (pos) {
+    search_params.append("track", pos);
+  }
+  if (newconfigOffset) {
+    search_params.append("config", newconfigOffset);
+  }
+  url.search = search_params.toString();
+  window.history.pushState(null, null, `?${search_params.toString()}`);
+};

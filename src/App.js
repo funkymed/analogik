@@ -1,13 +1,5 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import "rsuite/dist/rsuite.min.css";
-import {
-  Drawer,
-  IconButton,
-  CustomProvider,
-  Loader,
-  Radio,
-  RadioGroup,
-} from "rsuite";
+import React, { useEffect, useRef, useState } from "react";
+import { IconButton, CustomProvider } from "rsuite";
 import {
   tracks,
   getTracks,
@@ -17,22 +9,23 @@ import {
 } from "./tracks";
 import TWEEN from "@tweenjs/tween.js";
 import PlayerControl from "./Components/PlayerControl";
-import TracksList from "./Components/TrackList";
-import AuthorList from "./Components/AuthorList";
-import YearList from "./Components/YearList";
+
 import RenderCanvas from "./Components/RenderCanvas.tsx";
 import MusicIcon from "@rsuite/icons/legacy/Music";
 import InfoIcon from "@rsuite/icons/legacy/InfoCircle";
 import AboutDrawer from "./Components/AboutDrawer.js";
+import "rsuite/dist/rsuite.min.css";
 import { getHttpParam } from "./Components/mandafunk/tools/http.ts";
 import {
-  getRandomItem,
   getRandomOffset,
   mobileAndTabletCheck,
+  updateRouteHttp,
 } from "./tools.js";
 import { ConfigVariations } from "./Components/ConfigVariations.js";
 import "./App.css";
 import useKeypress from "react-use-keypress";
+import PlaylistDrawer from "./Components/PlayListDrawer.js";
+import Loader from "./Components/Loader.js";
 
 let mouseTimeout;
 let tweenAnim;
@@ -59,7 +52,6 @@ function App(props) {
   const [meta, setMeta] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isLoading, setIsLoading] = useState(0);
-  const [isDisplayLoader, setIsDisplayLoader] = useState(0);
   const [newConfig, setNewConfig] = useState(null);
   const [newconfigOffset, setNewconfigOffset] = useState(
     getHttpParam("config") || null
@@ -94,34 +86,6 @@ function App(props) {
 
   const prevTrack = () => {
     playOffset(-1);
-  };
-
-  const updateRouteHttp = () => {
-    var url = new URL(window.location.origin);
-    var search_params = url.searchParams;
-
-    if (year) {
-      search_params.append("year", year);
-    }
-    if (author) {
-      search_params.append("author", author);
-    }
-
-    if (selection !== "all") {
-      search_params.append("selection", selection);
-    }
-
-    if (currentTrack) {
-      search_params.append("track", currentTrack.pos);
-    }
-
-    if (newconfigOffset) {
-      search_params.append("config", newconfigOffset);
-    }
-
-    url.search = search_params.toString();
-
-    window.history.pushState(null, null, `?${search_params.toString()}`);
   };
 
   const filterYear = (y) => {
@@ -227,12 +191,16 @@ function App(props) {
   useEffect(() => {
     const modsList = getTracks(year, author, selection);
     setMods(modsList);
-    updateRouteHttp();
+    updateRouteHttp(
+      year,
+      author,
+      selection,
+      currentTrack ? currentTrack.pos : null,
+      newconfigOffset
+    );
   }, [year, author, selection, getTracks, newconfigOffset]);
 
   useEffect(() => {
-    // setOpen(false);
-    console.log(currentTrack);
     if (tweenAnim) {
       TWEEN.remove(tweenAnim);
     }
@@ -248,7 +216,13 @@ function App(props) {
             setNewConfig(ConfigVariations[currentTrack.shader]);
           }
 
-          updateRouteHttp();
+          updateRouteHttp(
+            year,
+            author,
+            selection,
+            currentTrack ? currentTrack.pos : null,
+            newconfigOffset
+          );
 
           if (player.current && player.current.currentPlayingNode) {
             player.current.pause();
@@ -295,69 +269,22 @@ function App(props) {
 
   return (
     <CustomProvider theme="dark">
-      <Drawer
-        size={mobileAndTabletCheck() ? "full" : "lg"}
-        placement="right"
+      <PlaylistDrawer
         open={open}
-        onClose={() => setOpen(false)}
-        // backdrop={false}
-      >
-        <Drawer.Header>
-          <Drawer.Title>Finally the Analogik's MusicDisk</Drawer.Title>
-        </Drawer.Header>
-        <Drawer.Body>
-          <h3>Selection</h3>
-          <RadioGroup
-            inline
-            appearance="picker"
-            defaultValue="all"
-            value={selection}
-            onChange={filterSelection}
-          >
-            <Radio value="all">All</Radio>
-            <Radio value="selecta">Selecta</Radio>
-            <Radio value="bleep">Bleep</Radio>
-          </RadioGroup>
-          <div style={{ marginTop: 25 }}>
-            <YearList year={year} years={years} filterYear={filterYear} />
-          </div>
-          <div style={{ marginTop: 25 }}>
-            <AuthorList
-              author={author}
-              authors={authors}
-              filterAuthor={filterAuthor}
-            />
-          </div>
-          <div style={{ marginTop: 25 }}>
-            <TracksList
-              mods={mods}
-              currentTrack={currentTrack}
-              load={setCurrentTrack}
-            />
-          </div>
-        </Drawer.Body>
-      </Drawer>
-      {isLoading ? (
-        <Loader
-          speed="fast"
-          center={true}
-          vertical={true}
-          size="lg"
-          content={getRandomItem([
-            "Ch33p Ch33p",
-            "Bleep Bleep",
-            "Defragmenting",
-            "Downloading the internet",
-            "Contacting Elon",
-            "Sending data to the FBI",
-            "Hacking your computer",
-            "Starting your Tesla",
-            "Reconnecting your 56k modem",
-          ])}
-        />
-      ) : (
-        ""
-      )}
+        setOpen={setOpen}
+        mods={mods}
+        year={year}
+        years={years}
+        filterYear={filterYear}
+        selection={selection}
+        filterSelection={filterSelection}
+        author={author}
+        authors={authors}
+        currentTrack={currentTrack}
+        setCurrentTrack={setCurrentTrack}
+        filterAuthor={filterAuthor}
+      />
+      {isLoading ? <Loader /> : ""}
       <PlayerControl
         player={player.current}
         currentTrack={currentTrack}

@@ -65,18 +65,19 @@ function PlayerControl({
     }
     if (titlePanel.current && isPlay) {
       titlePanel.current.style.opacity = 0;
+      const timeAnim = 250;
       tweenAnim = new TWEEN.Tween(titlePanel.current.style)
-        .to({ opacity: 1 }, 1000)
+        .to({ opacity: 1 }, timeAnim)
         .delay(2000)
         .easing(TWEEN.Easing.Sinusoidal.InOut)
         .onComplete(() => {
           tweenAnim = new TWEEN.Tween(titlePanel.current.style)
-            .to({ opacity: 0 }, 1000)
+            .to({ opacity: 0 }, timeAnim)
             .delay(2000)
             .easing(TWEEN.Easing.Sinusoidal.InOut)
             .onComplete(() => {
               tweenAnim = new TWEEN.Tween(bottomTitle.current.style)
-                .to({ opacity: 0.85 }, 500)
+                .to({ opacity: 0.85 }, timeAnim / 2)
                 .easing(TWEEN.Easing.Sinusoidal.InOut)
                 .start();
             })
