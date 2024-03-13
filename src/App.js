@@ -276,8 +276,7 @@ function App(props) {
   return (
     <CustomProvider theme="dark">
       <PlaylistDrawer
-        open={true}
-        // open={open}
+        open={open}
         setOpen={setOpen}
         mods={mods}
         year={year}
