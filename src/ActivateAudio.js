@@ -54,7 +54,7 @@ function ActivateAudio(props) {
             >
               <p>
                 Click on the image bellow to enter
-                <br /> the wonderfull world of the Analogik's Chiptune.
+                <br /> the wonderfull world of the Analogik's Chiptunes.
               </p>
               <br />
               <Whisper
