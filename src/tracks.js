@@ -825,14 +825,44 @@ for (let t in tracks) {
 
 export { tracks };
 
-export function getAuthors(year) {
+const isTrackYear = (item, year) => {
+  if (!year || item.year === year) {
+    return true;
+  }
+  return false;
+};
+
+const isSelected = (track, selection) => {
+  if (selection === "bleep" && track.bleep) {
+    return true;
+  } else if (
+    selection === "selecta" &&
+    (!track.bleep || track.bleep !== true)
+  ) {
+    return true;
+  } else if (selection === "all") {
+    return true;
+  }
+  return false;
+};
+
+export function getAuthors(year, selection) {
   const authors = [];
   for (let item of tracks) {
-    if (!year || item.year === year) {
-      for (let author of item.author) {
-        if (!authors.includes(author)) {
-          authors.push(author);
-        }
+    let insert = false;
+
+    if (selection === "all" && !year) {
+      insert = true;
+    } else if (isTrackYear(item, year) && isSelected(item, selection)) {
+      insert = true;
+    }
+
+    if (!insert) {
+      continue;
+    }
+    for (let author of item.author) {
+      if (!authors.includes(author)) {
+        authors.push(author);
       }
     }
   }
@@ -884,53 +914,45 @@ function compare(a, b) {
   return 0;
 }
 
-function isSelected(track, selection) {
-  if (selection === "bleep" && track.bleep) {
-    return true;
-  } else if (
-    selection === "selecta" &&
-    (!track.bleep || track.bleep !== true)
-  ) {
-    return true;
-  } else if (selection === "all") {
-    return true;
-  }
-  return false;
-}
-
 export function getTracks(year, author, selection) {
   const selectedTracks = [];
   for (let track of tracks) {
+    let insert = false;
     if (year !== 0 && author !== 0 && selection.toLowerCase() !== "all") {
       if (
-        track.year === year &&
+        isTrackYear(track, year) &&
         track.author.includes(author) &&
         isSelected(track, selection)
       ) {
-        selectedTracks.push(track);
+        insert = true;
       }
     } else if (author !== 0 && selection.toLowerCase() !== "all") {
       if (track.author.includes(author) && isSelected(track, selection)) {
-        selectedTracks.push(track);
+        insert = true;
       }
     } else if (year !== 0 && selection.toLowerCase() !== "all") {
-      if ((track.year === year) & isSelected(track, selection)) {
-        selectedTracks.push(track);
+      if (isTrackYear(track, year) & isSelected(track, selection)) {
+        insert = true;
       }
     } else if (year !== 0 && author !== 0) {
-      if (track.year === year && track.author.includes(author)) {
-        selectedTracks.push(track);
+      if (isTrackYear(track, year) && track.author.includes(author)) {
+        insert = true;
       }
     } else if (author !== 0 && track.author.includes(author)) {
-      selectedTracks.push(track);
-    } else if (year !== 0 && track.year === year) {
-      selectedTracks.push(track);
+      insert = true;
+    } else if (year !== 0 && isTrackYear(track, year)) {
+      insert = true;
     } else if (selection !== "all" && isSelected(track, selection)) {
-      selectedTracks.push(track);
+      insert = true;
     } else if (year === 0 && author === 0 && selection === "all") {
+      insert = true;
+    }
+
+    if (insert) {
       selectedTracks.push(track);
     }
   }
+
   selectedTracks.sort(compare);
 
   return selectedTracks;

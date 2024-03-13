@@ -60,7 +60,9 @@ function App(props) {
   // filters
   const [year, setYear] = useState(getHttpParam("year") || 0);
   const [author, setAuthor] = useState(getHttpParam("author") || 0);
-  const [authors, setAuthors] = useState(getAuthors(getHttpParam("year") || 0));
+  const [authors, setAuthors] = useState(
+    getAuthors(getHttpParam("year") || 0, getHttpParam("selection") || "all")
+  );
   const [selection, setSelection] = useState(
     getHttpParam("selection") || "all"
   );
@@ -88,9 +90,17 @@ function App(props) {
     playOffset(-1);
   };
 
+  const filterSelection = (s) => {
+    setYear(0);
+    setAuthor(0);
+    setSelection(s);
+    setAuthors(getAuthors(0, s));
+  };
+
   const filterYear = (y) => {
+    setAuthor(0);
     setYear(y);
-    setAuthors(getAuthors(y));
+    setAuthors(getAuthors(y, selection));
   };
 
   const filterAuthor = (a, reset) => {
@@ -99,10 +109,6 @@ function App(props) {
       filterSelection("all");
     }
     setAuthor(a);
-  };
-
-  const filterSelection = (s) => {
-    setSelection(s);
   };
 
   const setPlayerVolume = (value) => {
@@ -270,7 +276,8 @@ function App(props) {
   return (
     <CustomProvider theme="dark">
       <PlaylistDrawer
-        open={open}
+        open={true}
+        // open={open}
         setOpen={setOpen}
         mods={mods}
         year={year}
