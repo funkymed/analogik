@@ -136,7 +136,7 @@ function App(props) {
     setOpen(false);
     setAboutOpen(!aboutOpen);
   });
-  useKeypress("l", () => {
+  useKeypress("p", () => {
     setAboutOpen(false);
     setOpen(!open);
   });

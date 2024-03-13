@@ -9,8 +9,9 @@ import { RGBShiftShader } from "./shaders/RGBShiftShader.ts";
 import { HueSaturationShader } from "./shaders/HueSaturationShader.ts";
 import { KaleidoShader } from "./shaders/KaleidoShader.ts";
 import { LensShader } from "./shaders/LensShader.ts";
-import { FXAAShader } from './shaders/FXAAShader.ts'
+import { FXAAShader } from "./shaders/FXAAShader.ts";
 import { ColorifyShader } from "./shaders/ColorifyShader.ts";
+import { WaterShader } from "./shaders/WaterShader.ts";
 import { ConfigType } from "../types/config.ts";
 import { MandaScene } from "../scene.ts";
 
@@ -26,6 +27,7 @@ export class Composer {
   huePass: ShaderPass;
   lensPass: ShaderPass;
   colorifyPass: ShaderPass;
+  waterPass: ShaderPass;
   scene: Scene;
   mandaScene: MandaScene;
   camera: PerspectiveCamera;
@@ -55,6 +57,7 @@ export class Composer {
     this.huePass = new ShaderPass(HueSaturationShader);
     this.colorifyPass = new ShaderPass(ColorifyShader);
     this.lensPass = new ShaderPass(LensShader);
+    this.waterPass = new ShaderPass(WaterShader);
     this.mandaScene = mandaScene;
     this.scene = mandaScene.getScene();
     this.camera = camera;
@@ -67,9 +70,12 @@ export class Composer {
     // Pipeline rendering
     this.composer.addPass(new RenderPass(this.scene, this.camera));
 
-    var effectFXAA = new ShaderPass(FXAAShader)
-    effectFXAA.uniforms.resolution.value.set(1 / (this.width ?? 0), 1 / (this.height ?? 0))
-    this.composer.addPass(effectFXAA)
+    var effectFXAA = new ShaderPass(FXAAShader);
+    effectFXAA.uniforms.resolution.value.set(
+      1 / (this.width ?? 0),
+      1 / (this.height ?? 0)
+    );
+    this.composer.addPass(effectFXAA);
 
     if (config.composer?.lens?.show) {
       this.composer.addPass(this.lensPass);
@@ -81,10 +87,17 @@ export class Composer {
     }
 
     if (config.composer?.kaleidoscope?.show) {
-    this.kaleiPass.uniforms["sides"].value = 5;
-    this.composer.addPass(this.kaleiPass);
+      this.kaleiPass.uniforms["sides"].value = 5;
+      this.composer.addPass(this.kaleiPass);
     }
-    
+
+    this.waterPass.uniforms["resolution"].value = new Vector2(
+      this.width,
+      this.height
+    );
+    this.waterPass.uniforms["factor"].value = 0.15;
+    this.composer.addPass(this.waterPass);
+
     if (config.composer?.hue?.show) {
       this.huePass.uniforms["hue"].value = config.composer.hue.hue;
       this.huePass.uniforms["saturation"].value =
@@ -124,7 +137,10 @@ export class Composer {
     this.filmPass.uniforms["time"].value = time;
     this.staticPass.uniforms["time"].value = time;
     this.kaleiPass.uniforms["angle"].value = time / 10;
-    this.kaleiPass.uniforms["sides"].value = 4+Math.sin(time)*16
+    this.kaleiPass.uniforms["sides"].value = 4 + Math.sin(time) * 16;
+
+    this.waterPass.uniforms["time"].value = time;
+
     this.composer.render(time);
     this.mandaScene.updateShader(time);
   }

@@ -70,7 +70,7 @@ const authors = [
   { nickname: "rez", name: "Christophe Resigné", country: "France" },
   {
     nickname: "skybax",
-    name: "Jonny Jansson",
+    name: "Jonny Jansson (",
     country: "Finland",
     member: true,
   },

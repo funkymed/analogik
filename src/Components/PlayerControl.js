@@ -35,6 +35,7 @@ function PlayerControl({
   const FlexContent = useRef();
   const titlePanel = useRef();
   const bottomTitle = useRef();
+  const topTitle = useRef();
 
   const handleResize = useCallback(() => {
     if (FlexContent.current) {
@@ -164,6 +165,25 @@ function PlayerControl({
       >
         <b>{getTitle()}</b> by {getAuthors()} in {currentTrack.year} (
         {getOctets(size)} octets)
+      </div>
+
+      <div
+        ref={topTitle}
+        className={!isMouseMoving ? "hide" : ""}
+        style={{
+          width: window.innerWidth,
+          position: "absolute",
+          fontFamily: "Kdam Thmor Pro",
+          top: 15,
+          left: 0,
+          textAlign: "center",
+          filter: "drop-shadow(0px 0px 5px #000000FF)",
+          fontSize: 15,
+          color: "#FFF",
+          pointerEvents: "none",
+        }}
+      >
+        Change track <b>← →</b>  - Volume <b>↑ ↓</b> - use keyboard to display information <b>(i)</b> and playlist <b>(p)</b>
       </div>
 
       <div
