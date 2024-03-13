@@ -58,7 +58,7 @@ function ActivateAudio(props) {
               </p>
               <br />
               <Whisper
-                enterable
+                // enterable
                 placement="autoVertical"
                 followCursor={true}
                 speaker={<Popover title="Click me" />}

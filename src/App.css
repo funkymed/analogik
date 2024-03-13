@@ -190,9 +190,9 @@ h3 {
 }
 
 .home-img {
-  transition: transform .3s cubic-bezier(0.5, 1.8, 0.3, 0.8);
+  transition: transform .3s cubic-bezier(0.5, 2.8, 0.3, 0.5);
   height: "512px";
-  filter: drop-shadow(0px 0px 35px #00000088);
+  filter: drop-shadow(0px 0px 40px #00000088);
   cursor: "pointer";
   z-index: 1000;
   position: relative;
@@ -202,5 +202,10 @@ h3 {
 
 .home-img:hover {
   transform: scale(.95);
-  filter: drop-shadow(0px 0px 5px #000000AA);
+  filter: drop-shadow(0px 0px 15px #000000AA);
+}
+
+.home-img:active {
+  transform: scale(.90);
+  filter: drop-shadow(0px 0px 5px #000000EE);
 }
