@@ -69,6 +69,8 @@ function App(props) {
 
   // tracks
   const [mods, setMods] = useState(getTracks(year, author, selection));
+  const [currentPlaylist, setCurrentPlaylist] = useState([]);
+  const [isCustomPlaylist, setIsCustomPlaylist] = useState(false);
   const [isPrevTrack, setIsPrevTrack] = useState(false);
   const [isNextTrack, setIsNextTrack] = useState(false);
 
@@ -76,7 +78,8 @@ function App(props) {
   const [isMouseMoving, setIsMouseMoving] = useState(false);
 
   const playOffset = (order) => {
-    const track = tracks[parseInt(currentTrack.pos - 1) + order] ?? false;
+    const track =
+      currentPlaylist[parseInt(currentTrack.pos - 1) + order] ?? false;
     if (track) {
       setCurrentTrack(track);
     }
@@ -160,9 +163,9 @@ function App(props) {
 
   useEffect(() => {
     getPlayer();
+    setCurrentPlaylist(tracks);
     if (!currentTrack) {
-      const item = tracks[0]; //getRandomItem(tracks);
-      setCurrentTrack(item);
+      setCurrentTrack(tracks[0]); //getRandomItem(tracks);
     } else {
       const confOffset = newconfigOffset
         ? newconfigOffset
@@ -273,12 +276,32 @@ function App(props) {
     requestRef.current = requestAnimationFrame(animationLoop);
   };
 
+  const PlayListControl = (clear) => {
+    let playlist;
+    if (clear) {
+      setIsCustomPlaylist(false);
+      playlist = tracks;
+    } else {
+      setIsCustomPlaylist(true);
+      playlist = mods;
+    }
+
+    for (let r in playlist) {
+      playlist[r].pos = parseInt(r) + 1;
+    }
+
+    setCurrentPlaylist(playlist);
+    setCurrentTrack(playlist[0]);
+  };
+
   return (
     <CustomProvider theme="dark">
       <PlaylistDrawer
         open={open}
         setOpen={setOpen}
         mods={mods}
+        PlayListControl={PlayListControl}
+        isCustomPlaylist={isCustomPlaylist}
         year={year}
         years={years}
         filterYear={filterYear}
@@ -306,7 +329,7 @@ function App(props) {
         isPrevTrack={isPrevTrack}
         nextTrack={nextTrack}
         prevTrack={prevTrack}
-        lengthTracks={tracks.length}
+        lengthTracks={currentPlaylist.length}
         isMouseMoving={isMouseMoving}
       />
 
