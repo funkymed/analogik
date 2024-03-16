@@ -277,6 +277,9 @@ function App(props) {
   };
 
   const PlayListControl = (clear) => {
+    player.current.pause();
+    player.current.seek(0);
+
     let playlist;
     if (clear) {
       setIsCustomPlaylist(false);
