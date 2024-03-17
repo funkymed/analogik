@@ -5,7 +5,12 @@ export default {
   scene: {
     shader: "Med2",
     shader_speed: 0.25,
-    shader_opacity: 0.5,
+    shader_opacity: 0.25,
+    shader_zoom: 0.9,
+    shader_sin_cos_x: true,
+    shader_sin_cos_y: true,
+    shader_sin_cos_speed: 0.05,
+    shader_sin_cos_space: 250,
     background: "./images/w7.jpg",
     blur: 5,
     brightness: 60,
@@ -24,11 +29,11 @@ export default {
       nIntensity: 0.15,
       grayscale: false,
     },
-    bloom: { show: true, strength: 0.74, threshold: 0.43, radius: 1 },
-    static: { show: true, amount: 0.03, size: 15 },
-    rgb: { show: false, amount: 0.016, angle: 0.65 },
+    bloom: { show: true, strength: 0.34, threshold: 0.43, radius: 1 },
+    static: { show: false, amount: 0.05, size: 5 },
+    rgb: { show: true, amount: 0.004, angle: 0.65 },
     // hue: { show: true, hue: 0.77, saturation: 0 },
-    // film: { show: false },
+    film: { show: false },
   },
   texts: {
     title: {
@@ -43,7 +48,7 @@ export default {
       rotationY: 0,
       rotationZ: 0,
       size: 150,
-      color: "#bb8833",
+      color: "#FFBB00",
     },
     subtitle: {
       show: true,

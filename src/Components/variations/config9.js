@@ -8,10 +8,11 @@ export default {
     brightness: 50,
     shader: "Bubble",
     shader_speed: 0.25,
-    shader_opacity: 0.5,
+    shader_opacity: 0.45,
+    shader_zoom: 1,
   },
   composer: {
-    bloom: { show: true, strength: 0.74, threshold: 0.43, radius: 1 },
+    bloom: { show: true, strength: 0.34, threshold: 0.2, radius: 1 },
     rgb: { show: false, amount: 0.003, angle: 0.7 },
     film: {
       show: true,
@@ -37,11 +38,11 @@ export default {
       rotationY: 0,
       rotationZ: 0,
       size: 150,
-      color: "#8659D8",
+      color: "#00BBFF",
     },
     subtitle: {
       show: true,
-      order: 5,
+      order: 0,
       text: "Chiptune netlabel",
       font: "Kdam Thmor Pro",
       x: -70,
@@ -51,7 +52,7 @@ export default {
       rotationY: 0,
       rotationZ: 0,
       size: 39,
-      color: "#3e3e3e",
+      color: "#000000",
     },
   },
 };

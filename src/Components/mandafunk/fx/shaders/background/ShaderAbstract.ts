@@ -1,4 +1,5 @@
 import {
+  AdditiveBlending,
   Mesh,
   NearestFilter,
   PlaneGeometry,
@@ -84,11 +85,13 @@ export abstract class ShaderAbstract implements BackgroundShader {
       uniforms: this.uniforms,
       vertexShader: this.vshader,
       fragmentShader: this.fshader,
-      transparent: true,
+      transparent: false,
+      blending: AdditiveBlending,
     });
 
     this.mesh = new Mesh(geometry, this.shaderMaterial);
-    this.mesh.position.z = mobileAndTabletCheck() ? -0 : -500;
+    this.mesh.position.z =
+      (mobileAndTabletCheck() ? -0 : -500) * (config.scene.shader_zoom || 1);
     this.scene.add(this.mesh);
     this.afterInit();
   }
@@ -109,6 +112,16 @@ export abstract class ShaderAbstract implements BackgroundShader {
     // if (this.staticItems) {
     //     this.uniforms.iChannel1.value = this.staticItems.textureSpectrum.texture
     // }
+
+    const sinSpeed = this.config.scene.shader_sin_cos_speed || 1;
+    const sinSpace = this.config.scene.shader_sin_cos_space || 1;
+    if (this.config.scene.shader_sin_cos_x) {
+      this.mesh.position.x = Math.sin(time * sinSpeed) * sinSpace;
+    }
+    if (this.config.scene.shader_sin_cos_y) {
+      this.mesh.position.y = Math.cos(time * sinSpeed) * sinSpace;
+    }
+
     this.uniforms.iTime.value = time * (this.config.scene.shader_speed || 1);
   }
 }

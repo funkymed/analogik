@@ -25,7 +25,7 @@ export default {
     },
     hue: { show: false },
     rgb: { show: false },
-    static: { show: true, amount: 0.065, size: 3 },
+    static: { show: false, amount: 0.065, size: 3 },
   },
   texts: {
     title: {
@@ -40,7 +40,7 @@ export default {
       rotationY: 0,
       rotationZ: 0,
       size: 150,
-      color: "#FF8800",
+      color: "#FFAA88",
     },
     subtitle: {
       show: true,

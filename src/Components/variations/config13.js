@@ -31,7 +31,7 @@ export default {
     },
     hue: { show: false },
     rgb: { show: false },
-    static: { show: true, amount: 0.065, size: 3 },
+    static: { show: false, amount: 0.065, size: 3 },
   },
   texts: {
     title: {

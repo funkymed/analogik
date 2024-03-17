@@ -6,6 +6,9 @@ export default {
     shader: "",
     shader_speed: 1,
     shader_opacity: 1,
+    shader_zoom: 1,
+    shader_sin_cos_x: false,
+    shader_sin_cos_y: false,
     bgColor: "#000000",
   },
 

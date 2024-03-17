@@ -5,6 +5,8 @@ import {
   PerspectiveCamera,
   WebGLRenderer,
   EquirectangularReflectionMapping,
+  Color,
+  Vector3,
 } from "three";
 import { useEffect, useRef, JSX, useCallback } from "react";
 import { ConfigType } from "./mandafunk/types/config.ts";
@@ -23,7 +25,6 @@ import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
 
 import {
   deepMergeObjects,
-  getRandomOffset,
   mobileAndTabletCheck,
 } from "../tools.js";
 
@@ -37,6 +38,7 @@ function RenderCanvas(props: any): JSX.Element {
   const staticItems = useRef<StaticItems>();
   const editorGui = useRef<Editor>();
   const currentConfig = useRef<ConfigType>();
+  const currentLogo = useRef<Mesh>();
   const newConfig = useRef<any>();
   const manda_scene = useRef<MandaScene>();
   const renderer = useRef<WebGLRenderer>();
@@ -86,8 +88,9 @@ function RenderCanvas(props: any): JSX.Element {
       }
       deepMergeObjects(props.newConfig, config);
 
-      if (config.texts.title) {
-        // delete config.texts.title;
+      if (config.texts && config.texts["title"]) {
+        config.texts["title"].text = "";
+        config.texts["subtitle"].text = "";
       }
 
       if (manda_scene.current && staticItems.current && composer.current) {
@@ -139,24 +142,40 @@ function RenderCanvas(props: any): JSX.Element {
         }
       );
 
+      let color = "0xffffff";
+      if (
+        currentConfig.current &&
+        currentConfig.current.texts &&
+        currentConfig.current.texts["title"]
+      ) {
+        color = currentConfig.current.texts["title"].color;
+      }
+
       const material = new MeshPhysicalMaterial({
         envMap: hdrEquirect,
-        reflectivity: 0.5,
-        roughness: 0.2,
+        reflectivity: 0.95,
+        roughness: 0.1,
         metalness: 0,
         clearcoat: 0.5,
-        clearcoatRoughness: 0.25,
-        transmission: 1.05,
-        ior: 1.2,
-        thickness: 5,
-        // emissive: new Color(0x222244),
+        clearcoatRoughness: 0.95,
+        transmission: .7,
+        ior: 1.8,
+        thickness: 10,
+        color: new Color(color),
       });
 
       const textMesh = new Mesh(textGeometry, material);
 
-      textMesh.position.set(-45, 20, -120);
+      const position = new Vector3();
+
+      textMesh.rotation.x = 50;
+      textMesh.position.set(0, 10, -70);
+      textMesh.getWorldPosition(position);
+      textMesh.geometry.center();
+
       if (manda_scene.current) {
         manda_scene.current.getScene().add(textMesh);
+        currentLogo.current = textMesh;
       }
     });
   };
@@ -180,7 +199,6 @@ function RenderCanvas(props: any): JSX.Element {
       props.analyser,
       manda_scene.current.getScene()
     );
-    // addLogo();
     manda_scene.current.setStatic(staticItems.current);
 
     // Camera
@@ -227,6 +245,8 @@ function RenderCanvas(props: any): JSX.Element {
         editorGui.current.show(false);
       }
     }
+
+    addLogo();
   }, [props.analyser, props.audioContext, props.player]);
 
   const render = (time: number) => {
@@ -241,6 +261,11 @@ function RenderCanvas(props: any): JSX.Element {
   const animate = useCallback(() => {
     animateId.current = requestAnimationFrame(animate);
     time.current = clock.current ? clock.current.getElapsedTime() : 0;
+
+    if (currentLogo.current) {
+      currentLogo.current.rotation.y = Math.sin(time.current / 4) * 0.15;
+      currentLogo.current.position.z = -70 + Math.sin(time.current / 2);
+    }
 
     if (manda_scene.current && currentConfig.current && staticItems.current) {
       updateImageAnimation(

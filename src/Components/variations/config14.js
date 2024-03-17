@@ -7,7 +7,7 @@ export default {
     background: "./images/w12.jpg",
     shader_speed: 1,
     shader_opacity: .08,
-    blur: 2,
+    blur: 5,
     brightness: 60,
     bgColor: "#000000",
   },
@@ -46,7 +46,7 @@ export default {
       rotationY: 0,
       rotationZ: 0,
       size: 150,
-      color: "#aa8833",
+      color: "#FFBB00",
     },
     subtitle: {
       show: true,

@@ -5,9 +5,14 @@ export default {
   scene: {
     shader: "Med1",
     shader_speed: 0.2,
-    shader_opacity: 0.1,
+    shader_opacity: 0.15,
+    shader_zoom: 0.25,
+    shader_sin_cos_x: true,
+    shader_sin_cos_y: true,
+    shader_sin_cos_speed: .15,
+    shader_sin_cos_space: 25,
     background: "./images/w1.jpg",
-    blur: 3,
+    blur: 10,
     brightness: 50,
     bgColor: "#000000",
   },
@@ -24,7 +29,7 @@ export default {
     },
   },
   composer: {
-    bloom: { show: true, strength: 0.74, threshold: 0.43, radius: 1 },
+    bloom: { show: true, strength: 0.15, threshold: 0.19, radius: 0.2 },
     film: {
       show: true,
       count: 814,

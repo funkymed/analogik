@@ -72,8 +72,8 @@ export class Composer {
 
     var effectFXAA = new ShaderPass(FXAAShader);
     effectFXAA.uniforms.resolution.value.set(
-      1 / (this.width ?? 0),
-      1 / (this.height ?? 0)
+      1 / window.innerWidth,
+      1 / window.innerHeight
     );
     this.composer.addPass(effectFXAA);
 
@@ -139,7 +139,7 @@ export class Composer {
     this.kaleiPass.uniforms["angle"].value = time / 10;
     this.kaleiPass.uniforms["sides"].value = 4 + Math.sin(time) * 16;
 
-    this.waterPass.uniforms["time"].value = time;
+    this.waterPass.uniforms["time"].value = time / 10;
 
     this.composer.render(time);
     this.mandaScene.updateShader(time);

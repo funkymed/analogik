@@ -5,8 +5,8 @@ export default {
   scene: {
     bgColor: "#000000",
     background: "./images/w8.jpg",
-    blur: 0,
-    brightness: 40,
+    blur: 5,
+    brightness: 20,
     shader: "Combustible",
     shader_speed: 0.15,
     shader_opacity: 0.5,
@@ -44,7 +44,7 @@ export default {
       rotationY: 0,
       rotationZ: 0,
       size: 150,
-      color: "#AA8800",
+      color: "#FFBB55",
     },
     subtitle: {
       show: true,

@@ -7,9 +7,17 @@ export default {
     background: "./images/w11.jpg",
     shader_speed: 0.8,
     shader_opacity: 0.15,
+    shader_zoom: 0.9,
+    shader_sin_cos_x: true,
+    shader_sin_cos_y: true,
+    shader_sin_cos_speed: .5,
+    shader_sin_cos_space: 55,
     blur: 2,
     brightness: 5,
     bgColor: "#000000",
+  },
+  timer: {
+    opacity: 0.25,
   },
   vumeters: {
     oscilloscop: {
@@ -22,7 +30,7 @@ export default {
     },
   },
   composer: {
-    bloom: { show: true, strength: 0.74, threshold: 0.43, radius: 1 },
+    bloom: { show: true, strength: 0.32, threshold: 0.19, radius: 0.2 },
     film: { show: false },
     static: { show: false },
     rgb: { show: false },

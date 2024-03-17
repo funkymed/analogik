@@ -1,8 +1,8 @@
 import { getRandomInt, getRandomItem } from "../../tools";
 import clean from "./clean";
 
-const color = getRandomItem(["#3352b9", "#ff55dd","#dd55ff", "#ff55ff","#55bb55","#994400"]);
-
+const color = getRandomItem(["#55FF55", "#FFBB55","#55BBFF", "#ff55ff","#FF5555"]);
+ 
 export default {
   ...clean,
   scene: {
@@ -63,7 +63,7 @@ export default {
       rotationY: 0,
       rotationZ: 0,
       size: 39,
-      color: getRandomItem(["#7e7e8e", "#223", "#222"]),
+      color: getRandomItem(["#7e7e8e", "#223", "#222","#aaa"]),
     },
   },
 };

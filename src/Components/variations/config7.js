@@ -4,8 +4,8 @@ export default {
   ...clean,
   scene: {
     shader: "Med3",
-    shader_speed: 0.15,
-    shader_opacity: 0.2,
+    shader_speed: 0.007,
+    shader_opacity: 0.08,
     background: "./images/w10.jpg",
     blur: 0,
     brightness: 10,
@@ -23,7 +23,7 @@ export default {
     },
   },
   composer: {
-    bloom: { show: true, strength: 0.74, threshold: 0.43, radius: 1 },
+    bloom: { show: true, strength: 0.32, threshold: 0.19, radius: .2 },
     film: {
       show: true,
       count: 1000,
@@ -48,13 +48,14 @@ export default {
       rotationY: 0,
       rotationZ: 0,
       size: 150,
-      color: "#AAFF55",
+      color: "#00BBFF",
     },
     subtitle: {
       show: true,
       order: 5,
       text: "Chiptune netlabel",
       font: "Kdam Thmor Pro",
+      opacity: 0.5,
       x: -70,
       y: -19,
       z: -650,
@@ -62,7 +63,7 @@ export default {
       rotationY: 0,
       rotationZ: 0,
       size: 39,
-      color: "#333333",
+      color: "#000000",
     },
   },
 };
