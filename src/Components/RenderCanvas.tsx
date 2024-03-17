@@ -1,4 +1,11 @@
-import { Clock, PerspectiveCamera, WebGLRenderer } from "three";
+import {
+  Clock,
+  Mesh,
+  MeshPhysicalMaterial,
+  PerspectiveCamera,
+  WebGLRenderer,
+  EquirectangularReflectionMapping,
+} from "three";
 import { useEffect, useRef, JSX, useCallback } from "react";
 import { ConfigType } from "./mandafunk/types/config.ts";
 import { MandaScene } from "./mandafunk/scene.ts";
@@ -9,6 +16,11 @@ import { Composer } from "./mandafunk/fx/composer.ts";
 import testConfig from "../config.ts";
 import { Editor } from "./mandafunk/gui/editor.ts";
 import { getHttpParam } from "./mandafunk/tools/http.ts";
+import { TTFLoader } from "three/examples/jsm/loaders/TTFLoader.js";
+import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
+import { Font } from "three/examples/jsm/loaders/FontLoader.js";
+import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
+
 import {
   deepMergeObjects,
   getRandomOffset,
@@ -74,6 +86,10 @@ function RenderCanvas(props: any): JSX.Element {
       }
       deepMergeObjects(props.newConfig, config);
 
+      if (config.texts.title) {
+        // delete config.texts.title;
+      }
+
       if (manda_scene.current && staticItems.current && composer.current) {
         manda_scene.current.updateSceneBackground(config);
         manda_scene.current.clearScene();
@@ -94,6 +110,57 @@ function RenderCanvas(props: any): JSX.Element {
     },
     [time]
   );
+
+  const addLogo = () => {
+    const loader = new TTFLoader();
+
+    // Loading the TTF font file from Fontsource CDN. Can also be the link to font file from Google Fonts
+    loader.load("./fonts/Lobster-Regular.ttf", (fontData) => {
+      // Convert the parsed fontData to the format Three.js understands
+      const font = new Font(fontData);
+
+      // Create the text geometry
+      const textGeometry = new TextGeometry("Analogik", {
+        font: font,
+        size: 18,
+        height: 5,
+        curveSegments: 32,
+        bevelEnabled: true,
+        bevelThickness: 0.5,
+        bevelSize: 0.5,
+        bevelSegments: 8,
+      });
+
+      // Textures
+      const hdrEquirect = new RGBELoader().load(
+        "./images/empty_warehouse_01_2k.hdr",
+        () => {
+          hdrEquirect.mapping = EquirectangularReflectionMapping;
+        }
+      );
+
+      const material = new MeshPhysicalMaterial({
+        envMap: hdrEquirect,
+        reflectivity: 0.5,
+        roughness: 0.2,
+        metalness: 0,
+        clearcoat: 0.5,
+        clearcoatRoughness: 0.25,
+        transmission: 1.05,
+        ior: 1.2,
+        thickness: 5,
+        // emissive: new Color(0x222244),
+      });
+
+      const textMesh = new Mesh(textGeometry, material);
+
+      textMesh.position.set(-45, 20, -120);
+      if (manda_scene.current) {
+        manda_scene.current.getScene().add(textMesh);
+      }
+    });
+  };
+
   const init = useCallback(() => {
     // init
 
@@ -113,6 +180,7 @@ function RenderCanvas(props: any): JSX.Element {
       props.analyser,
       manda_scene.current.getScene()
     );
+    // addLogo();
     manda_scene.current.setStatic(staticItems.current);
 
     // Camera
@@ -164,6 +232,8 @@ function RenderCanvas(props: any): JSX.Element {
   const render = (time: number) => {
     // renderer.render(scene, camera)
     if (composer.current) {
+      // camera.current.position.x = Math.sin(time) * 5;
+      // camera.current.position.y = Math.cos(time) * 2;
       composer.current.rendering(time);
     }
   };
