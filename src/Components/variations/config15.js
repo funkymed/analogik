@@ -3,16 +3,16 @@ import clean from "./clean";
 export default {
   ...clean,
   scene: {
-    shader: "Ice",
+    shader: "Med1",
     background: "./images/w13.jpg",
-    shader_speed: .75 ,
-    shader_opacity: .5,
+    shader_speed: 0.75,
+    shader_opacity: 0.25,
     shader_zoom: 0.5,
     shader_sin_cos_x: true,
     shader_sin_cos_y: true,
-    shader_sin_cos_speed: .5,
+    shader_sin_cos_speed: 0.15,
     shader_sin_cos_space: 200,
-    blur: 1,
+    blur: 5,
     brightness: 50,
     bgColor: "#000000",
   },
@@ -22,7 +22,8 @@ export default {
   vumeters: {
     oscilloscop: {
       show: true,
-      color: "#2596be",
+      color: "#FFFF00",
+      z: -180,
     },
   },
   composer: {
@@ -31,12 +32,12 @@ export default {
       show: true,
       count: 1500,
       sIntensity: 1,
-      nIntensity: .2,
+      nIntensity: 0.2,
       grayscale: false,
     },
     hue: { show: false },
     rgb: { show: false },
-    static: { show: false},
+    static: { show: false },
   },
   texts: {
     title: {

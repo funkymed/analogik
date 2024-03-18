@@ -23,10 +23,8 @@ import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
 import { Font } from "three/examples/jsm/loaders/FontLoader.js";
 import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
 
-import {
-  deepMergeObjects,
-  mobileAndTabletCheck,
-} from "../tools.js";
+import { deepMergeObjects, mobileAndTabletCheck } from "../tools.js";
+import Sparks from "./sparks.js";
 
 const isEditor = getHttpParam("editor");
 
@@ -45,6 +43,7 @@ function RenderCanvas(props: any): JSX.Element {
   const composer = useRef<Composer>();
   const camera = useRef<PerspectiveCamera>();
   const time = useRef<number>(0);
+  const sparks = useRef<any>();
   const shaderOffset = useRef<number>(0);
   const animateId = useRef<number>();
 
@@ -158,7 +157,7 @@ function RenderCanvas(props: any): JSX.Element {
         metalness: 0,
         clearcoat: 0.5,
         clearcoatRoughness: 0.95,
-        transmission: .7,
+        transmission: 0.7,
         ior: 1.8,
         thickness: 10,
         color: new Color(color),
@@ -247,6 +246,16 @@ function RenderCanvas(props: any): JSX.Element {
     }
 
     addLogo();
+    sparks.current = [];
+    sparks.current.push(
+      new Sparks(manda_scene.current.getScene(), 100, "#ff0000", 0.5, 0.15)
+    );
+    sparks.current.push(
+      new Sparks(manda_scene.current.getScene(), 200, "#FFFFFF", 0.25, 0.25)
+    );
+    sparks.current.push(
+      new Sparks(manda_scene.current.getScene(), 100, "#00BBFF", 0.5, 0.2)
+    );
   }, [props.analyser, props.audioContext, props.player]);
 
   const render = (time: number) => {
@@ -274,6 +283,11 @@ function RenderCanvas(props: any): JSX.Element {
         time.current
       );
       staticItems.current.rendering(time.current);
+    }
+    if (sparks.current) {
+      for (let p of sparks.current) {
+        p.rendering(time.current);
+      }
     }
 
     render(time.current);

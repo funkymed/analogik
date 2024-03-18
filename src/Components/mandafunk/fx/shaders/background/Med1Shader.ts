@@ -7,11 +7,11 @@ export class Med1Shader extends ShaderAbstract {
     this.fshader += `
         vec3 palette( in float t)
         {
-            vec3 a = vec3(0., 0., 0.500);
-            vec3 b = vec3(0.188, .23, 1.);
-            vec3 c = vec3(1.000, .000, 0.508);
-            vec3 d = vec3(.100, .2, 0.);
-            return a + b*cos( 6.28318*(c*t+d) );
+            vec3 a = vec3(0.5, 0.5, 0.5);
+            vec3 b = vec3(0.5, 0.5, 0.5);
+            vec3 c = vec3(1.0,1.0,1.0);
+            vec3 d = vec3(0.076,0.364,0.940);
+            return (a + b*cos( 6.28318*(c*t+d)) )*.2;
         }
 
         float sdCircle( vec2 p, float r )
