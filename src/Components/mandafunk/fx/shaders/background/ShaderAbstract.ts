@@ -13,7 +13,7 @@ import { BackgroundShader } from "../BackgroundShader.ts";
 import { ConfigType } from "../../../types/config.ts";
 import { configDefault } from "../../../config.ts";
 import { StaticItems } from "../../static.ts";
-import { mobileAndTabletCheck } from "../../../../../tools.js";
+import { mobileAndTabletCheck, mobileCheck } from "../../../../../tools.js";
 
 export abstract class ShaderAbstract implements BackgroundShader {
   uniforms: any;
@@ -113,13 +113,15 @@ export abstract class ShaderAbstract implements BackgroundShader {
     //     this.uniforms.iChannel1.value = this.staticItems.textureSpectrum.texture
     // }
 
-    const sinSpeed = this.config.scene.shader_sin_cos_speed || 1;
-    const sinSpace = this.config.scene.shader_sin_cos_space || 1;
-    if (this.config.scene.shader_sin_cos_x) {
-      this.mesh.position.x = Math.sin(time * sinSpeed) * sinSpace;
-    }
-    if (this.config.scene.shader_sin_cos_y) {
-      this.mesh.position.y = Math.cos(time * sinSpeed) * sinSpace;
+    if (!mobileCheck()) {
+      const sinSpeed = this.config.scene.shader_sin_cos_speed || 1;
+      const sinSpace = this.config.scene.shader_sin_cos_space || 1;
+      if (this.config.scene.shader_sin_cos_x) {
+        this.mesh.position.x = Math.sin(time * sinSpeed) * sinSpace;
+      }
+      if (this.config.scene.shader_sin_cos_y) {
+        this.mesh.position.y = Math.cos(time * sinSpeed) * sinSpace;
+      }
     }
 
     this.uniforms.iTime.value = time * (this.config.scene.shader_speed || 1);

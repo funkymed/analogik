@@ -22,7 +22,11 @@ import { TTFLoader } from "three/examples/jsm/loaders/TTFLoader.js";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
 import { Font } from "three/examples/jsm/loaders/FontLoader.js";
 import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
-import { deepMergeObjects, mobileAndTabletCheck } from "../tools.js";
+import {
+  deepMergeObjects,
+  mobileAndTabletCheck,
+  mobileCheck,
+} from "../tools.js";
 import Sparks from "./sparks.js";
 
 const isEditor = getHttpParam("editor");
@@ -86,9 +90,11 @@ function RenderCanvas(props: any): JSX.Element {
       }
       deepMergeObjects(props.newConfig, config);
 
-      if (config.texts && config.texts["title"]) {
-        config.texts["title"].text = "";
-        config.texts["subtitle"].text = "";
+      if (!mobileCheck()) {
+        if (config.texts && config.texts["title"]) {
+          config.texts["title"].text = "";
+          config.texts["subtitle"].text = "";
+        }
       }
 
       if (manda_scene.current && staticItems.current && composer.current) {
@@ -245,7 +251,10 @@ function RenderCanvas(props: any): JSX.Element {
       }
     }
 
-    addLogo();
+    if (!mobileCheck()) {
+      addLogo();
+    }
+
     sparks.current = [];
 
     if (currentConfig.current && currentConfig.current.scene.sparks) {
