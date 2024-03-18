@@ -71,6 +71,7 @@ export interface ConfigType {
     shader_sin_cos_y?: boolean;
     shader_sin_cos_speed?: number;
     shader_sin_cos_space?: number;
+    sparks?: boolean;
   };
   music: string;
   timer: {

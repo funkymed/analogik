@@ -5,11 +5,12 @@ export default {
   scene: {
     background: "./images/w4.jpg",
     blur: 5,
-    brightness: 50,
+    brightness: 40,
     shader: "Bubble",
     shader_speed: 0.25,
     shader_opacity: 0.45,
     shader_zoom: 1,
+    sparks: true,
   },
   composer: {
     bloom: { show: true, strength: 0.34, threshold: 0.2, radius: 1 },

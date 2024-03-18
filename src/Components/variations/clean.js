@@ -10,6 +10,7 @@ export default {
     shader_sin_cos_x: false,
     shader_sin_cos_y: false,
     bgColor: "#000000",
+    sparks: false,
   },
 
   vumeters: {

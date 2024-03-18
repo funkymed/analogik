@@ -14,6 +14,7 @@ export default {
     background: "./images/w1.jpg",
     blur: 0,
     brightness: 20,
+    sparks: true,
   },
   timer: {
     opacity: 0.5,
@@ -26,8 +27,8 @@ export default {
     film: {
       show: false,
       count: 1000,
-      sIntensity: .11,
-      nIntensity: .34,
+      sIntensity: 0.11,
+      nIntensity: 0.34,
       grayscale: false,
     },
     static: { show: false, amount: 0.097, size: 2.1 },

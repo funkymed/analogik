@@ -15,6 +15,7 @@ export default {
     blur: 0,
     brightness: 40,
     bgColor: "#000000",
+    sparks: false,
   },
   timer: {
     opacity: 0.2,

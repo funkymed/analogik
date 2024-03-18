@@ -3,13 +3,14 @@ import clean from "./clean";
 export default {
   ...clean,
   scene: {
-    shader: "Plasma",
+    shader: "Color",
     background: "./images/w3.jpg",
-    shader_speed: 2,
-    shader_opacity: .25,
+    shader_speed: .5,
+    shader_opacity: 0.25,
     blur: 2,
     brightness: 100,
     bgColor: "#000000",
+    sparks: true,
   },
   timer: {
     opacity: 0.2,

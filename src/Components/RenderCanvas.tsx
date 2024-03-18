@@ -22,7 +22,6 @@ import { TTFLoader } from "three/examples/jsm/loaders/TTFLoader.js";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
 import { Font } from "three/examples/jsm/loaders/FontLoader.js";
 import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
-
 import { deepMergeObjects, mobileAndTabletCheck } from "../tools.js";
 import Sparks from "./sparks.js";
 
@@ -221,6 +220,7 @@ function RenderCanvas(props: any): JSX.Element {
     renderer.current.autoClear = false;
     renderer.current.autoClearColor = true;
     renderer.current.setPixelRatio(window.devicePixelRatio);
+
     // document.body.appendChild(renderer.domElement)
 
     // Composer
@@ -247,15 +247,18 @@ function RenderCanvas(props: any): JSX.Element {
 
     addLogo();
     sparks.current = [];
-    sparks.current.push(
-      new Sparks(manda_scene.current.getScene(), 100, "#ff0000", 0.5, 0.15)
-    );
-    sparks.current.push(
-      new Sparks(manda_scene.current.getScene(), 200, "#FFFFFF", 0.25, 0.25)
-    );
-    sparks.current.push(
-      new Sparks(manda_scene.current.getScene(), 100, "#00BBFF", 0.5, 0.2)
-    );
+
+    if (currentConfig.current && currentConfig.current.scene.sparks) {
+      sparks.current.push(
+        new Sparks(manda_scene.current.getScene(), 100, "#ff0000", 0.5, 0.15)
+      );
+      sparks.current.push(
+        new Sparks(manda_scene.current.getScene(), 200, "#FFFFFF", 0.25, 0.25)
+      );
+      sparks.current.push(
+        new Sparks(manda_scene.current.getScene(), 100, "#00BBFF", 0.5, 0.2)
+      );
+    }
   }, [props.analyser, props.audioContext, props.player]);
 
   const render = (time: number) => {

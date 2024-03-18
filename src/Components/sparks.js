@@ -63,8 +63,6 @@ export default class Sparks {
 
   rendering(time) {
     const positionAttribute = this.starGeo.getAttribute("position");
-
-    console.log(positionAttribute);
     for (let i = 0; i < positionAttribute.count; i++) {
       const accel = this.accelerations[i];
       let x = positionAttribute.getX(i);
