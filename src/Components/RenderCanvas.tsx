@@ -256,7 +256,7 @@ function RenderCanvas(props: any): JSX.Element {
     }
 
     sparks.current = [];
-
+    console.log(currentConfig.current.scene.sparks)
     if (currentConfig.current && currentConfig.current.scene.sparks) {
       sparks.current.push(
         new Sparks(manda_scene.current.getScene(), 100, "#ff0000", 0.5, 0.15)

@@ -9,7 +9,7 @@ import {
 } from "./tracks";
 import TWEEN from "@tweenjs/tween.js";
 import PlayerControl from "./Components/PlayerControl";
-
+import useKeypress from "react-use-keypress";
 import RenderCanvas from "./Components/RenderCanvas.tsx";
 import MusicIcon from "@rsuite/icons/legacy/Music";
 import InfoIcon from "@rsuite/icons/legacy/InfoCircle";
@@ -23,7 +23,6 @@ import {
 } from "./tools.js";
 import { ConfigVariations } from "./Components/ConfigVariations.js";
 import "./App.css";
-import useKeypress from "react-use-keypress";
 import PlaylistDrawer from "./Components/PlayListDrawer.js";
 import Loader from "./Components/Loader.js";
 
@@ -219,7 +218,7 @@ function App(props) {
       mainView.current.style.opacity = 1;
       tweenAnim = new TWEEN.Tween(mainView.current.style)
         .to({ opacity: 0 }, animTime)
-        .onComplete(() => {
+        .onComplete(async () => {
           if (currentTrack.shader) {
             setNewconfigOffset(currentTrack.shader);
             setNewConfig(ConfigVariations[currentTrack.shader]);
@@ -241,35 +240,40 @@ function App(props) {
           getPlayer();
           setIsLoading(true);
           setIsPlay(false);
-          player.current.load(`./mods/${currentTrack.url}`).then((buffer) => {
-            setIsLoading(false);
-            updateControlBtn();
-            player.current.pause();
-            player.current.play(buffer);
-            player.current.seek(0);
-
-            if (isNextTrack) {
-              player.current.onEnded(nextTrack);
-            }
-
-            setIsPlay(true);
-            setSize(buffer.byteLength);
-            setMeta(player.current.metadata());
-            setDuration(player.current.duration());
-
-            if (tweenAnim) {
-              TWEEN.remove(tweenAnim);
-            }
-            mainView.current.style.opacity = 0;
-            tweenAnim = new TWEEN.Tween(mainView.current.style)
-              .to({ opacity: 1 }, animTime)
-              .delay(animTime)
-              .start();
-          });
+          setTimeout(loadTrack, 1000);
         })
         .start();
     }
   }, [currentTrack]);
+
+  const loadTrack = () => {
+    const animTime = 300;
+    player.current.load(`./mods/${currentTrack.url}`).then((buffer) => {
+      setIsLoading(false);
+      updateControlBtn();
+      player.current.pause();
+      player.current.play(buffer);
+      player.current.seek(0);
+
+      if (isNextTrack) {
+        player.current.onEnded(nextTrack);
+      }
+
+      setIsPlay(true);
+      setSize(buffer.byteLength);
+      setMeta(player.current.metadata());
+      setDuration(player.current.duration());
+
+      if (tweenAnim) {
+        TWEEN.remove(tweenAnim);
+      }
+      mainView.current.style.opacity = 0;
+      tweenAnim = new TWEEN.Tween(mainView.current.style)
+        .to({ opacity: 1 }, animTime)
+        .delay(animTime)
+        .start();
+    });
+  };
 
   const animationLoop = () => {
     TWEEN.update();

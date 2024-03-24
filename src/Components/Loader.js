@@ -15,12 +15,13 @@ const Loader = () => {
         "Contacting Elon",
         "Sending data to the FBI",
         "Hacking your computer",
-        "Unlocking your Tesla's doors",
+        "Unlocking your Tesla",
+        "Overclocking your Nvidia's card to mine Bitcoin",
         "Reconnecting your 56k modem",
-        "Spamming scam from your computer",
+        "Spamming scam from your IP",
         "Accessing your personnal data",
-        "Sending your nude photo to all your friends",
-        "Uncrypting your wallet",
+        "Sending your nude's photos to all your friends",
+        "Hacking your wallet",
       ])}
     />
   );

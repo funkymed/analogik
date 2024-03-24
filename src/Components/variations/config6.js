@@ -3,24 +3,24 @@ import clean from "./clean";
 export default {
   ...clean,
   scene: {
-    shader: "WaveLine",
-    shader_speed: 0.65,
-    shader_opacity: 0.6,
-    shader_zoom: 1.2,
+    shader: "Galaxy",
+    shader_speed: 0.35,
+    shader_opacity: 0.33,
+    shader_zoom: .5,
     shader_sin_cos_x: false,
     shader_sin_cos_y: false,
     shader_sin_cos_speed: 5,
     shader_sin_cos_space: 55,
     background: "./images/w1.jpg",
-    blur: 0,
-    brightness: 20,
+    blur: 5,
+    brightness: 100,
     sparks: true,
   },
   timer: {
     opacity: 0.5,
   },
   vumeters: {
-    oscilloscop: { show: false },
+    oscilloscop: { show: true },
   },
   composer: {
     bloom: { show: false },
@@ -48,7 +48,7 @@ export default {
       rotationY: 0,
       rotationZ: 0,
       size: 150,
-      color: "#AA00AA",
+      color: "#FF55CC",
     },
     subtitle: {
       show: true,

@@ -16,7 +16,8 @@ export default {
   },
   vumeters: {
     oscilloscop: {
-      show: false,
+      show: true,
+      color: "#00BBFF",
     },
   },
   composer: {
