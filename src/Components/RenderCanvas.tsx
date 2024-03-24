@@ -69,7 +69,7 @@ function RenderCanvas(props: any): JSX.Element {
       renderer.current.setSize(W, H);
     }
     if (manda_scene.current) {
-      // manda_scene.current.updateAfterResize();
+      manda_scene.current.updateAfterResize();
     }
     time.current = clock.current ? clock.current.getElapsedTime() : 0;
 

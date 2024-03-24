@@ -65,6 +65,9 @@ function PlayerControl({
       bottomTitle.current.style.opacity = 0;
     }
     if (titlePanel.current && isPlay) {
+      if (isMobile) {
+        titlePanel.current.style.display = "none";
+      }
       titlePanel.current.style.opacity = 0;
       const timeAnim = 250;
       tweenAnim = new TWEEN.Tween(titlePanel.current.style)
@@ -163,11 +166,21 @@ function PlayerControl({
           pointerEvents: "none",
         }}
       >
-        <b>{getTitle()}</b> by {getAuthors()} in {currentTrack.year} (
-        {getOctets(size)} octets)
+        {isMobile ? (
+          <>
+            <b>{getTitle()}</b> by {getAuthors()} <br />
+            in {currentTrack.year} <br />
+            {getOctets(size)} octets
+          </>
+        ) : (
+          <>
+            <b>{getTitle()}</b> by {getAuthors()} in {currentTrack.year} (
+            {getOctets(size)} octets)
+          </>
+        )}
       </div>
 
-      {isMobile ? (
+      {!isMobile ? (
         <div
           ref={topTitle}
           className={!isMouseMoving ? "hide" : ""}
@@ -307,31 +320,6 @@ function PlayerControl({
               >
                 {getOctets(size)} octets
               </p>
-              {/* {meta.message ? (
-                <>
-                  <hr
-                    style={{
-                      border: "1px white solid",
-                      opacity: 0.1,
-                    }}
-                  />
-                  <div
-                    style={{
-                      whiteSpace: "pre-wrap",
-                      maxHeight: 150,
-                      overflowY: "overlay",
-                      pointerEvents: "auto",
-                      scrollbarColor: "red",
-                      fontSize: 15,
-                      color: "black",
-                    }}
-                  >
-                    {meta.message}
-                  </div>
-                </>
-              ) : (
-                ""
-              )} */}
             </div>
           </div>
         </FlexboxGrid.Item>

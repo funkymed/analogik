@@ -14,6 +14,7 @@ import { ColorifyShader } from "./shaders/ColorifyShader.ts";
 import { WaterShader } from "./shaders/WaterShader.ts";
 import { ConfigType } from "../types/config.ts";
 import { MandaScene } from "../scene.ts";
+import { isMobile } from "react-device-detect";
 
 export class Composer {
   composer: EffectComposer;
@@ -105,9 +106,13 @@ export class Composer {
       this.composer.addPass(this.huePass);
     }
     if (config.composer?.bloom?.show) {
-      this.bloomPass["radius"] = config.composer.bloom.radius;
-      this.bloomPass["threshold"] = config.composer.bloom.threshold;
-      this.bloomPass["strength"] = config.composer.bloom.strength;
+      this.bloomPass["radius"] = !isMobile ? config.composer.bloom.radius : 1.5;
+      this.bloomPass["threshold"] = !isMobile
+        ? config.composer.bloom.threshold
+        : 3;
+      this.bloomPass["strength"] = !isMobile
+        ? config.composer.bloom.strength
+        : 1;
       this.composer.addPass(this.bloomPass);
     }
     if (config.composer?.rgb?.show) {

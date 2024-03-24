@@ -106,6 +106,8 @@ export abstract class ShaderAbstract implements BackgroundShader {
     this.uniforms.iResolution.value.x = window.innerWidth;
     this.uniforms.iResolution.value.y = window.innerHeight;
     this.uniforms.iResolution.value.xy = window.innerWidth / window.innerHeight;
+    this.mesh.position.z =
+      (isMobile ? -0 : -500) * (this.config.scene.shader_zoom || 1);
   }
 
   update(time: number): void {

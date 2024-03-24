@@ -5,6 +5,7 @@ import { configDefault } from "./config.ts";
 import { deepClone } from "./tools/deepClone.ts";
 import { shaders } from "./fx/shaders/background/index.ts";
 import { StaticItems } from "./fx/static.ts";
+import { isMobile } from "react-device-detect";
 
 export class MandaScene {
   scene: Scene;
@@ -36,15 +37,13 @@ export class MandaScene {
     );
     const context = texture.context;
     if (context) {
-      if (this.config.scene.blur) {
-        if (this.config.scene.brightness) {
-          context.filter = `blur(${this.config.scene.blur}px) brightness(${this.config.scene.brightness}%)`;
-        } else {
-          context.filter = `blur(${this.config.scene.blur}px)`;
-        }
-      } else if (this.config.scene.brightness) {
-        context.filter = `brightness(${this.config.scene.brightness}%)`;
+      const blur = this.config.scene.blur || 0;
+      let brightness: number = this.config.scene.brightness || 100;
+      if (isMobile) {
+        brightness /= 2;
       }
+
+      context.filter = `blur(${blur}px) brightness(${brightness}%)`;
       context.drawImage(
         this.background,
         0,
