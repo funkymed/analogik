@@ -18,13 +18,13 @@ import "rsuite/dist/rsuite.min.css";
 import { getHttpParam } from "./Components/mandafunk/tools/http.ts";
 import {
   getRandomOffset,
-  mobileAndTabletCheck,
   updateRouteHttp,
 } from "./tools.js";
 import { ConfigVariations } from "./Components/ConfigVariations.js";
 import "./App.css";
 import PlaylistDrawer from "./Components/PlayListDrawer.js";
 import Loader from "./Components/Loader.js";
+import { isMobile } from "react-device-detect";
 
 let mouseTimeout;
 let tweenAnim;
@@ -353,7 +353,7 @@ function App(props) {
         }}
         onClick={() => setOpen(true)}
         circle
-        size={mobileAndTabletCheck() ? "sm" : "lg"}
+        size={isMobile ? "sm" : "lg"}
       />
       <AboutDrawer
         aboutOpen={aboutOpen}
@@ -374,7 +374,7 @@ function App(props) {
         }}
         onClick={() => setAboutOpen(true)}
         circle
-        size={mobileAndTabletCheck() ? "sm" : "lg"}
+        size={isMobile ? "sm" : "lg"}
       />
       <div ref={mainView}>
         {player.current &&

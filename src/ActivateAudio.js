@@ -1,8 +1,8 @@
 import { Container, Content, Whisper, Popover, FlexboxGrid } from "rsuite";
 import authors from "./authors";
 import { Capitalize } from "./utils";
-import { mobileCheck } from "./tools";
 import { useEffect, useRef } from "react";
+import { isMobile } from "react-device-detect";
 
 function ActivateAudio(props) {
   const authTxt = (a, c) => {
@@ -11,8 +11,8 @@ function ActivateAudio(props) {
       txt += ", ";
     }
 
-    const modulo = mobileCheck() ? 5 : 10;
-    const moduloFit = mobileCheck() ? 0 : 6;
+    const modulo = isMobile ? 5 : 10;
+    const moduloFit = isMobile ? 0 : 6;
 
     return (
       <span key={`ath-${c}`} style={{ color: c % 2 === 0 ? "#DDD" : "#8AD" }}>

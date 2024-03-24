@@ -3,7 +3,7 @@ import authors from "../authors";
 import { useEffect, useState } from "react";
 import { getTracksByAuthor, getTracksCoop } from "../tracks";
 import { Capitalize } from "../utils";
-import { mobileAndTabletCheck } from "../tools";
+import { isMobile } from "react-device-detect";
 
 function AboutDrawer(props) {
   const [countries, setCountries] = useState([]);
@@ -52,7 +52,7 @@ function AboutDrawer(props) {
 
   return (
     <Drawer
-      size={mobileAndTabletCheck() ? "full" : "lg"}
+      size={isMobile ? "full" : "lg"}
       placement="right"
       open={props.aboutOpen}
       //   open={true}

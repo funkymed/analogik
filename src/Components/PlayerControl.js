@@ -7,8 +7,8 @@ import PlayIcon from "@rsuite/icons/legacy/Play";
 import StopIcon from "@rsuite/icons/legacy/Stop";
 import { Capitalize } from "../utils";
 import TWEEN from "@tweenjs/tween.js";
-import { mobileAndTabletCheck } from "../tools";
 import useKeypress from "react-use-keypress";
+import { isMobile } from "react-device-detect";
 
 let tweenAnim;
 
@@ -127,7 +127,7 @@ function PlayerControl({
 
   return (
     <>
-      {!mobileAndTabletCheck() ? (
+      {!isMobile ? (
         <div
           style={{ width: 100, position: "absolute", bottom: 15, left: 15 }}
           className={!isMouseMoving ? "hide" : ""}
@@ -167,24 +167,29 @@ function PlayerControl({
         {getOctets(size)} octets)
       </div>
 
-      <div
-        ref={topTitle}
-        className={!isMouseMoving ? "hide" : ""}
-        style={{
-          width: window.innerWidth,
-          position: "absolute",
-          fontFamily: "Kdam Thmor Pro",
-          top: 15,
-          left: 0,
-          textAlign: "center",
-          filter: "drop-shadow(0px 0px 5px #000000FF)",
-          fontSize: 15,
-          color: "#FFF",
-          pointerEvents: "none",
-        }}
-      >
-        Change track <b>← →</b>  - Volume <b>↑ ↓</b> - use keyboard to display information <b>(i)</b> and playlist <b>(p)</b>
-      </div>
+      {isMobile ? (
+        <div
+          ref={topTitle}
+          className={!isMouseMoving ? "hide" : ""}
+          style={{
+            width: window.innerWidth,
+            position: "absolute",
+            fontFamily: "Kdam Thmor Pro",
+            top: 15,
+            left: 0,
+            textAlign: "center",
+            filter: "drop-shadow(0px 0px 5px #000000FF)",
+            fontSize: 15,
+            color: "#FFF",
+            pointerEvents: "none",
+          }}
+        >
+          Change track <b>← →</b> - Volume <b>↑ ↓</b> - use keyboard to display
+          information <b>(i)</b> and playlist <b>(p)</b>
+        </div>
+      ) : (
+        ""
+      )}
 
       <div
         style={{ position: "absolute", top: 15, left: 15 }}

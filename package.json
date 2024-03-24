@@ -11,6 +11,7 @@
     "dat.gui": "^0.7.9",
     "react": "^18.2.0",
     "react-backdrop-filter": "^2.1.0",
+    "react-device-detect": "^2.2.3",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.21.1",
     "react-scripts": "5.0.1",

@@ -13,7 +13,7 @@ import { BackgroundShader } from "../BackgroundShader.ts";
 import { ConfigType } from "../../../types/config.ts";
 import { configDefault } from "../../../config.ts";
 import { StaticItems } from "../../static.ts";
-import { mobileAndTabletCheck, mobileCheck } from "../../../../../tools.js";
+import { isMobile, isMobileOnly } from "react-device-detect";
 
 export abstract class ShaderAbstract implements BackgroundShader {
   uniforms: any;
@@ -91,7 +91,7 @@ export abstract class ShaderAbstract implements BackgroundShader {
 
     this.mesh = new Mesh(geometry, this.shaderMaterial);
     this.mesh.position.z =
-      (mobileAndTabletCheck() ? -0 : -500) * (config.scene.shader_zoom || 1);
+      (isMobile ? -0 : -500) * (config.scene.shader_zoom || 1);
     this.scene.add(this.mesh);
     this.afterInit();
   }
@@ -113,7 +113,7 @@ export abstract class ShaderAbstract implements BackgroundShader {
     //     this.uniforms.iChannel1.value = this.staticItems.textureSpectrum.texture
     // }
 
-    if (!mobileCheck()) {
+    if (!isMobileOnly) {
       const sinSpeed = this.config.scene.shader_sin_cos_speed || 1;
       const sinSpace = this.config.scene.shader_sin_cos_space || 1;
       if (this.config.scene.shader_sin_cos_x) {

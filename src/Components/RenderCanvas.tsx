@@ -22,12 +22,9 @@ import { TTFLoader } from "three/examples/jsm/loaders/TTFLoader.js";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
 import { Font } from "three/examples/jsm/loaders/FontLoader.js";
 import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
-import {
-  deepMergeObjects,
-  mobileAndTabletCheck,
-  mobileCheck,
-} from "../tools.js";
+import { deepMergeObjects } from "../tools.js";
 import Sparks from "./sparks.js";
+import { isMobile, isMobileOnly } from "react-device-detect";
 
 const isEditor = getHttpParam("editor");
 
@@ -59,7 +56,7 @@ function RenderCanvas(props: any): JSX.Element {
       portrait.current = camera.current.aspect < 1 ? true : false;
 
       camera.current.updateProjectionMatrix();
-      if (mobileAndTabletCheck()) {
+      if (isMobile) {
         if (portrait.current === true) {
           camera.current.position.set(0, 0, 500);
         } else {
@@ -81,7 +78,7 @@ function RenderCanvas(props: any): JSX.Element {
 
   const loadConfig = useCallback(
     (config: ConfigType) => {
-      if (mobileAndTabletCheck()) {
+      if (isMobile) {
         props.newConfig.scene.brightness /= 4;
         props.newConfig.scene.brightness =
           props.newConfig.scene.brightness < 0
@@ -90,7 +87,7 @@ function RenderCanvas(props: any): JSX.Element {
       }
       deepMergeObjects(props.newConfig, config);
 
-      if (!mobileCheck()) {
+      if (!isMobileOnly) {
         if (config.texts && config.texts["title"]) {
           config.texts["title"].text = "";
           config.texts["subtitle"].text = "";
@@ -251,13 +248,12 @@ function RenderCanvas(props: any): JSX.Element {
       }
     }
 
-    if (!mobileCheck()) {
+    if (!isMobileOnly) {
       addLogo();
     }
 
     sparks.current = [];
-    console.log(currentConfig.current.scene.sparks)
-    if (currentConfig.current && currentConfig.current.scene.sparks) {
+    if (currentConfig.current) {
       sparks.current.push(
         new Sparks(manda_scene.current.getScene(), 100, "#ff0000", 0.5, 0.15)
       );
@@ -296,7 +292,11 @@ function RenderCanvas(props: any): JSX.Element {
       );
       staticItems.current.rendering(time.current);
     }
-    if (sparks.current) {
+    if (
+      sparks.current &&
+      currentConfig.current &&
+      currentConfig.current.scene.sparks === true
+    ) {
       for (let p of sparks.current) {
         p.rendering(time.current);
       }

@@ -1,15 +1,15 @@
 import { Col, Drawer, Grid, Radio, RadioGroup, Row, Button } from "rsuite";
-import { mobileAndTabletCheck } from "../tools";
 import TracksList from "../Components/TrackList";
 import AuthorList from "../Components/AuthorList";
 import YearList from "../Components/YearList";
 import MinusIcon from "@rsuite/icons/legacy/Minus";
 import PlusIcon from "@rsuite/icons/legacy/Plus";
+import { isMobile } from "react-device-detect";
 
 function PlaylistDrawer(props) {
   return (
     <Drawer
-      size={mobileAndTabletCheck() ? "full" : "lg"}
+      size={isMobile ? "full" : "lg"}
       placement="right"
       open={props.open}
       onClose={() => props.setOpen(false)}
