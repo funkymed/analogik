@@ -3,10 +3,15 @@ import clean from "./clean";
 export default {
   ...clean,
   scene: {
-    shader: "Color",
+    shader: "Med3",
     background: "./images/w12.jpg",
-    shader_speed: 0.5,
-    shader_opacity: 0.15,
+    shader_speed: 0.005,
+    shader_opacity: 0.05,
+    shader_zoom: .2,
+    shader_sin_cos_x: true,
+    shader_sin_cos_y: true,
+    shader_sin_cos_speed: 0.05,
+    shader_sin_cos_space: 55,
     blur: 5,
     brightness: 70,
     bgColor: "#000000",

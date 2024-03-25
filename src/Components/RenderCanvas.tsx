@@ -128,11 +128,12 @@ function RenderCanvas(props: any): JSX.Element {
         font: font,
         size: 18,
         height: 5,
-        curveSegments: 32,
+        curveSegments: 64,
         bevelEnabled: true,
         bevelThickness: 0.5,
+        bevelOffset: 0.05,
         bevelSize: 0.5,
-        bevelSegments: 8,
+        bevelSegments: 1,
       });
 
       // Textures
@@ -155,11 +156,11 @@ function RenderCanvas(props: any): JSX.Element {
       const material = new MeshPhysicalMaterial({
         envMap: hdrEquirect,
         reflectivity: 0.95,
-        roughness: 0.1,
-        metalness: 0,
+        roughness: 0.001,
+        metalness: 0.5,
         clearcoat: 0.5,
         clearcoatRoughness: 0.95,
-        transmission: 0.7,
+        transmission: 0.5,
         ior: 1.8,
         thickness: 10,
         color: new Color(color),
