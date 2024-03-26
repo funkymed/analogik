@@ -10,14 +10,14 @@
   "version": "1.0.1",
   "main": "main.js",
   "devDependencies": {
-    "electron": "^28.1.0",
-    "electron-builder": "24.9.1",
-    "electron-packager": "17.1.2"
+    "electron": "^29.1.5",
+    "electron-builder": "^24.13.3",
+    "electron-packager": "^17.1.2"
   },
   "scripts": {
     "postinstall": "./node_modules/.bin/electron-builder install-app-deps",
     "start": "./node_modules/.bin/electron .",
-    "build": "./node_modules/.bin/electron-builder build",
+    "build": "./node_modules/.bin/electron-builder build -mwl",
     "build-mac": "./node_modules/.bin/electron-builder build --mac",
     "build-win": "./node_modules/.bin/electron-builder build --win",
     "build-linux": "./node_modules/.bin/electron-builder build --linux",
@@ -30,7 +30,14 @@
     "productName": "analogik-musicdisk",
     "mac": {
       "icon": "build/logo512.png",
-      "mergeASARs": true
+      "mergeASARs": true,
+      "target": {
+        "target": "default",
+        "arch": [
+          "x64",
+          "arm64"
+        ]
+      }
     },
     "dmg": {
       "icon": "build/logo512.png"
@@ -40,12 +47,24 @@
     },
     "win": {
       "icon": "build/logo512.png",
-      "publisherName": "Analogik MusicDisk"
+      "publisherName": "Analogik MusicDisk",
+      "target": {
+        "target": "default",
+        "arch": [
+          "x64"
+        ]
+      }
     },
     "appx": {},
     "portable": {},
     "linux": {
-      "icon": "build/logo512.png"
+      "icon": "build/logo512.png",
+      "target": {
+        "target": "default",
+        "arch": [
+          "x64"
+        ]
+      }
     },
     "files": [
       "build/logo512.png",

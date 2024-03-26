@@ -1,16 +1,11 @@
-const {
-  app,
-  BrowserWindow,
-  Menu,
-  globalShortcut,
-} = require('electron');
+const { app, BrowserWindow, Menu, globalShortcut } = require("electron");
 
 let mainWindow;
 
 Menu.setApplicationMenu(null);
 
-app.on('ready', () => {
-  globalShortcut.register('Escape', function(){
+const createWindow = () => {
+  globalShortcut.register("Escape", function () {
     mainWindow.close();
   });
 
@@ -18,22 +13,33 @@ app.on('ready', () => {
     frame: false,
     resizable: true,
     transparent: false,
-    width: 1920,
-    height: 1080,
+    // width: 1920,
+    // height: 1080,
     webPreferences: {
-      nodeIntegration: true
-    }
+      nodeIntegration: true,
+      allowRunningInsecureContent: true,
+      experimentalFeatures: true,
+    },
   });
 
-  // mainWindow.webContents.openDevTools()
+  // mainWindow.webContents.openDevTools();
 
   mainWindow.center();
   mainWindow.setMenu(null);
   mainWindow.setFullScreen(true);
-  mainWindow.loadURL('file://' + __dirname + '/build/index.html');
+  mainWindow.loadFile("build/index.html");
+  mainWindow.loadURL("file://" + __dirname + "/build/index.html");
+};
+
+app.whenReady().then(() => {
+  createWindow();
+
+  app.on("activate", () => {
+    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+  });
 });
 
-app.on('will-quit', function(){
-  globalShortcut.unregister('Escape');
+app.on("will-quit", function () {
+  globalShortcut.unregister("Escape");
   globalShortcut.unregisterAll();
 });
