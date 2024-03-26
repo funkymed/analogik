@@ -4,10 +4,10 @@
     "name": "med/analogik",
     "email": "cyril.pereira@gmail.com"
   },
-  "homepage": "http://analo0gik.free.fr",
+  "homepage": "https://analogik.funkylab.fr",
   "description": "Analogik MusicDisk",
   "license": "UNLICENSED",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "main": "main.js",
   "devDependencies": {
     "electron": "^29.1.5",
@@ -39,12 +39,6 @@
         ]
       }
     },
-    "dmg": {
-      "icon": "build/logo512.png"
-    },
-    "mas": {
-      "icon": "build/logo512.png"
-    },
     "win": {
       "icon": "build/logo512.png",
       "publisherName": "Analogik MusicDisk",
@@ -55,8 +49,6 @@
         ]
       }
     },
-    "appx": {},
-    "portable": {},
     "linux": {
       "icon": "build/logo512.png",
       "target": {

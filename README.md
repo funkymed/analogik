@@ -1,49 +1,49 @@
 # Analogik Music Disk
 
-> **Code** by med
-> **Music** by
+> **Code** by med   
+> **Music** by   
     bacter - cemik - dna-groove - drax - dualtrax - edzes - ernestoaeroflot - forsaken - genuis - jashiin - keen - kenet - keyg - ks - med - nagz - poulpy - redribbon - rez - skybax - tomaes - traven - unaware - vhiiula - wayfinder - willbe - xerxes
 
 ## Install
 
 ```bash
-yarn
+make install
+make electron-install
 ```
 
 ## Start dev server
 
 ```bash
-yarn start
+make start
 ```
 
-## Build
+## Build the React App
 
 ```bash
-yarn build
+make build
+open build
 ```
 
-The result will be available in `dist/`
+The result will be available in `build/`
 
 ### Build Electron version
 
 ```bash
-$ yarn build
-$ cp -r build/* electron
+make build
+make cp-build
+make build-platform #(platform=mac|win|linux)
+open electron/dist
 ```
-
-edit the index.html and replace `/static` by `./static`   
-edit the css file, replace `/static/` by `../`
 
 #### Preview 
 
 ```bash
-$ cd electron
-$ yarn start
+make electron-start
 ```
 
 #### Build a release
 
 ```bash
-$ cd electron
-$ yarn build-mac # build-win or build-linux
+make build-all
+open electron/dist
 ```
