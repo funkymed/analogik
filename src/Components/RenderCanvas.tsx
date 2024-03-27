@@ -254,17 +254,15 @@ function RenderCanvas(props: any): JSX.Element {
     }
 
     sparks.current = [];
-    if (currentConfig.current) {
-      sparks.current.push(
-        new Sparks(manda_scene.current.getScene(), 100, "#ff0000", 0.5, 0.15)
-      );
-      sparks.current.push(
-        new Sparks(manda_scene.current.getScene(), 200, "#FFFFFF", 0.25, 0.25)
-      );
-      sparks.current.push(
-        new Sparks(manda_scene.current.getScene(), 100, "#00BBFF", 0.5, 0.2)
-      );
-    }
+    sparks.current.push(
+      new Sparks(manda_scene.current.getScene(), 100, "#ff0000", 0.5, 0.15)
+    );
+    sparks.current.push(
+      new Sparks(manda_scene.current.getScene(), 200, "#FFFFFF", 0.25, 0.25)
+    );
+    sparks.current.push(
+      new Sparks(manda_scene.current.getScene(), 100, "#00BBFF", 0.5, 0.2)
+    );
   }, [props.analyser, props.audioContext, props.player]);
 
   const render = (time: number) => {
@@ -294,11 +292,7 @@ function RenderCanvas(props: any): JSX.Element {
       );
       staticItems.current.rendering(time.current);
     }
-    if (
-      sparks.current &&
-      currentConfig.current &&
-      currentConfig.current.scene.sparks === true
-    ) {
+    if (sparks.current && props.newConfig.scene.sparks === true) {
       for (let p of sparks.current) {
         p.rendering(time.current);
       }

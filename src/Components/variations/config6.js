@@ -4,7 +4,7 @@ export default {
   ...clean,
   scene: {
     shader: "Color",
-    shader_speed: 5,
+    shader_speed: .5,
     shader_opacity: 0.33,
     shader_zoom: .5,
     shader_sin_cos_x: false,

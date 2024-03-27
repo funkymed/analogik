@@ -50,7 +50,7 @@ start:
 	yarn start
 
 ## Build
-build:
+build-react:
 	rm -rf build
 	yarn build
 
@@ -97,7 +97,8 @@ Extra:
 ## Do All
 all:
 	$(MAKE) install
+	$(MAKE) build-react
 	$(MAKE) electron-install
 	$(MAKE) cp-build
 	$(MAKE) build-all
-	$(MAKE) build
+	
