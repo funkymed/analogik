@@ -3,126 +3,6 @@ import { getRandomOffset } from "./tools";
 
 const tracks = [
   {
-    url: "2001/bacter-dna_emotions.it",
-    year: "2001",
-    author: ["bacter", "dna-groove"],
-    filename: "emotions.it",
-  },
-  {
-    url: "2001/bacter-keen-vhiiula_sbrk.it",
-    year: "2001",
-    author: ["bacter", "keen", "vhiiula"],
-    filename: "sbrk.it",
-  },
-  {
-    url: "2001/bacter-vhiiula_head.it",
-    year: "2001",
-    author: ["bacter", "vhiiula"],
-    filename: "head.it",
-  },
-  {
-    url: "2002/bacter_insidemyoldschoolpc.it",
-    year: "2002",
-    author: ["bacter"],
-    filename: "insidemyoldschoolpc.it",
-  },
-  {
-    url: "2001/cemik-nagz_twnd.xm",
-    year: "2001",
-    author: ["cemik", "nagz"],
-    filename: "twnd.xm",
-    bleep: true,
-  },
-  {
-    url: "2002/dualtrax_crosnake.xm",
-    year: "2002",
-    author: ["dualtrax"],
-    filename: "crosnake.xm",
-    bleep: true,
-  },
-  {
-    url: "2002/dualtrax_orion.xm",
-    year: "2002",
-    author: ["dualtrax"],
-    filename: "orion.xm",
-    bleep: true,
-  },
-  {
-    url: "2002/dualtrax_radiatorsgrill.xm",
-    year: "2002",
-    author: ["dualtrax"],
-    filename: "radiatorsgrill.xm",
-    bleep: true,
-  },
-  {
-    url: "2001/edzes_cec_2000.xm",
-    year: "2001",
-    author: ["edzes"],
-    filename: "cec",
-    bleep: true,
-  },
-  {
-    url: "2001/edzes_teddy.xm",
-    year: "2001",
-    author: ["edzes"],
-    filename: "teddy.xm",
-    bleep: true,
-  },
-  {
-    url: "2002/ernestoaeroflot_joinme.xm",
-    year: "2002",
-    author: ["ernestoaeroflot"],
-    filename: "joinme.xm",
-  },
-  {
-    url: "2002/jashiin_9320000.it",
-    year: "2002",
-    author: ["jashiin"],
-    filename: "9320000.it",
-  },
-  {
-    url: "2002/jashiin_convincingconvexity.s3m",
-    year: "2002",
-    author: ["jashiin"],
-    filename: "convincingconvexity.s3m",
-  },
-  {
-    url: "2002/jashiin_huomenta.it",
-    year: "2002",
-    author: ["jashiin"],
-    filename: "huomenta.it",
-  },
-  {
-    url: "2002/jashiin_kylmyys.it",
-    year: "2002",
-    author: ["jashiin"],
-    filename: "kylmyys.it",
-  },
-  {
-    url: "2002/jashiin_mansikka.it",
-    year: "2002",
-    author: ["jashiin"],
-    filename: "mansikka.it",
-  },
-  {
-    url: "2002/jashiin_nohands.it",
-    year: "2002",
-    author: ["jashiin"],
-    filename: "nohands.it",
-  },
-  {
-    url: "2001/keen_falseend.it",
-    year: "2001",
-    author: ["keen"],
-    filename: "falseend.it",
-  },
-  {
-    url: "2001/keen_hsf.it",
-    year: "2001",
-    author: ["keen"],
-    filename: "hsf.it",
-  },
-  {
     url: "2000/kenet-cemik_melody.xm",
     year: "2000",
     author: ["kenet", "cemik"],
@@ -219,19 +99,6 @@ const tracks = [
     bleep: true,
   },
   {
-    url: "2001/med_2voices2.xm",
-    year: "2001",
-    author: ["med"],
-    filename: "2voices2.xm",
-  },
-  {
-    url: "2001/med_3vil.xm",
-    year: "2001",
-    author: ["med"],
-    filename: "3vil.xm",
-    bleep: true,
-  },
-  {
     url: "2000/med_cho7.xm",
     year: "2000",
     author: ["med"],
@@ -246,36 +113,10 @@ const tracks = [
     bleep: true,
   },
   {
-    url: "2001/med_curry.xm",
-    year: "2001",
-    author: ["med"],
-    filename: "curry.xm",
-  },
-  {
     url: "2000/med_dartagna.xm",
     year: "2000",
     author: ["med"],
     filename: "dartagna.xm",
-  },
-  {
-    url: "2001/med_deep.xm",
-    year: "2001",
-    author: ["med"],
-    filename: "deep.xm",
-    bleep: true,
-  },
-  {
-    url: "2001/med_kickass.xm",
-    year: "2001",
-    author: ["med"],
-    filename: "kickass.xm",
-    bleep: true,
-  },
-  {
-    url: "2001/med_mini2.xm",
-    year: "2001",
-    author: ["med"],
-    filename: "mini2.xm",
   },
   {
     url: "2000/med_nia.xm",
@@ -305,14 +146,6 @@ const tracks = [
     filename: "rakiz.xm",
     bleep: true,
   },
-  {
-    url: "2001/med_smileit.xm",
-    year: "2001",
-    author: ["med"],
-    filename: "smileit.xm",
-    bleep: true,
-  },
-
   {
     url: "2000/med-kenet_nopseeking.xm",
     year: "2000",
@@ -355,7 +188,208 @@ const tracks = [
     filename: "lacrottequiparle.xm",
     bleep: true,
   },
-
+  {
+    url: "2000/nagz-genuis_kpon.xm",
+    year: "2000",
+    author: ["nagz", "genuiz"],
+    filename: "kpon.xm",
+    bleep: true,
+  },
+  {
+    url: "2000/nagz_mioy.xm",
+    year: "2000",
+    author: ["nagz"],
+    filename: "mioy.xm",
+    bleep: true,
+  },
+  {
+    url: "2000/blbblb_xmas.xm",
+    year: "2000",
+    author: ["nagz"],
+    filename: "xmas.xm",
+    bleep: true,
+  },
+  {
+    url: "2000/nagz_mycv.xm",
+    year: "2000",
+    author: ["nagz"],
+    filename: "mycv.xm",
+  },
+  {
+    url: "2000/nagz_suxy.xm",
+    year: "2000",
+    author: ["nagz"],
+    filename: "suxy.xm",
+  },
+  {
+    url: "2000/redribbon-poulpy_elyxiis.xm",
+    year: "2000",
+    author: ["redribbon", "poulpy"],
+    filename: "elyxiis.xm",
+    bleep: true,
+  },
+  {
+    url: "2000/redribbon_pulp.xm",
+    year: "2000",
+    author: ["redribbon"],
+    filename: "pulp.xm",
+  },
+  {
+    url: "2000/redribbon_redmo2final.xm",
+    year: "2000",
+    author: ["redribbon"],
+    filename: "redmo2final.xm",
+    bleep: true,
+  },
+  {
+    url: "2000/traven_mario.xm",
+    year: "2000",
+    author: ["traven"],
+    filename: "mario.xm",
+    bleep: true,
+  },
+  {
+    url: "2000/traven_scene-city.xm",
+    year: "2000",
+    author: ["traven"],
+    filename: "scene-city.xm",
+    bleep: true,
+  },
+  {
+    url: "2000/traven_syndrome.xm",
+    year: "2000",
+    author: ["traven"],
+    filename: "syndrome.xm",
+  },
+  {
+    url: "2000/unaware_callfrom.xm",
+    year: "2000",
+    author: ["unaware"],
+    filename: "callfrom.xm",
+    bleep: true,
+  },
+  {
+    url: "2000/willbe_aeroplane.it",
+    year: "2000",
+    author: ["willbe"],
+    filename: "aeroplane.it",
+  },
+  {
+    url: "2000/willbe_minich4tr.it",
+    year: "2000",
+    author: ["willbe"],
+    filename: "minich4tr.it",
+  },
+  {
+    url: "2000/willbe_minidrktow.it",
+    year: "2000",
+    author: ["willbe"],
+    filename: "minidrktow.it",
+  },
+  {
+    url: "2000/willbe_miniwash.it",
+    year: "2000",
+    author: ["willbe"],
+    filename: "miniwash.it",
+  },
+  {
+    url: "2001/bacter-dna_emotions.it",
+    year: "2001",
+    author: ["bacter", "dna-groove"],
+    filename: "emotions.it",
+    shader: 0,
+  },
+  {
+    url: "2001/bacter-keen-vhiiula_sbrk.it",
+    year: "2001",
+    author: ["bacter", "keen", "vhiiula"],
+    filename: "sbrk.it",
+  },
+  {
+    url: "2001/bacter-vhiiula_head.it",
+    year: "2001",
+    author: ["bacter", "vhiiula"],
+    filename: "head.it",
+  },
+  {
+    url: "2001/cemik-nagz_twnd.xm",
+    year: "2001",
+    author: ["cemik", "nagz"],
+    filename: "twnd.xm",
+    bleep: true,
+  },
+  {
+    url: "2001/edzes_cec_2000.xm",
+    year: "2001",
+    author: ["edzes"],
+    filename: "cec",
+    bleep: true,
+  },
+  {
+    url: "2001/edzes_teddy.xm",
+    year: "2001",
+    author: ["edzes"],
+    filename: "teddy.xm",
+    bleep: true,
+  },
+  {
+    url: "2001/keen_falseend.it",
+    year: "2001",
+    author: ["keen"],
+    filename: "falseend.it",
+  },
+  {
+    url: "2001/keen_hsf.it",
+    year: "2001",
+    author: ["keen"],
+    filename: "hsf.it",
+  },
+  {
+    url: "2001/med_2voices2.xm",
+    year: "2001",
+    author: ["med"],
+    filename: "2voices2.xm",
+  },
+  {
+    url: "2001/med_3vil.xm",
+    year: "2001",
+    author: ["med"],
+    filename: "3vil.xm",
+    bleep: true,
+  },
+  {
+    url: "2001/med_curry.xm",
+    year: "2001",
+    author: ["med"],
+    filename: "curry.xm",
+  },
+  {
+    url: "2001/med_deep.xm",
+    year: "2001",
+    author: ["med"],
+    filename: "deep.xm",
+    bleep: true,
+  },
+  {
+    url: "2001/med_kickass.xm",
+    year: "2001",
+    author: ["med"],
+    filename: "kickass.xm",
+    bleep: true,
+  },
+  {
+    url: "2001/med_mini2.xm",
+    year: "2001",
+    author: ["med"],
+    filename: "mini2.xm",
+  },
+  {
+    url: "2001/med_smileit.xm",
+    year: "2001",
+    author: ["med"],
+    filename: "smileit.xm",
+    bleep: true,
+  },
   {
     url: "2001/med_dotflower.xm",
     year: "2001",
@@ -410,7 +444,6 @@ const tracks = [
     author: ["med"],
     filename: "mirrorcube.xm",
   },
-
   {
     url: "2001/med_misc.xm",
     year: "2001",
@@ -428,13 +461,6 @@ const tracks = [
     year: "2001",
     author: ["nagz", "drax"],
     filename: "rnth.xm",
-  },
-  {
-    url: "2000/nagz-genuis_kpon.xm",
-    year: "2000",
-    author: ["nagz", "genuiz"],
-    filename: "kpon.xm",
-    bleep: true,
   },
   {
     url: "2001/nagz-kenet_bckd.xm",
@@ -468,55 +494,16 @@ const tracks = [
     filename: "inmw.xm",
   },
   {
-    url: "2002/nagz_makingmusic.xm",
-    year: "2002",
-    author: ["nagz"],
-    filename: "makingmusic.xm",
-  },
-  {
-    url: "2002/nagz_milk.xm",
-    year: "2002",
-    author: ["nagz"],
-    filename: "milk.xm",
-  },
-  {
-    url: "2000/nagz_mioy.xm",
-    year: "2000",
-    author: ["nagz"],
-    filename: "mioy.xm",
-    bleep: true,
-  },
-  {
     url: "2001/nagz_mtie.xm",
     year: "2001",
     author: ["nagz"],
     filename: "mtie.xm",
-  },
-
-  {
-    url: "2000/blbblb_xmas.xm",
-    year: "2000",
-    author: ["nagz"],
-    filename: "xmas.xm",
-    bleep: true,
   },
   {
     url: "2001/nagz_mtsp.xm",
     year: "2001",
     author: ["nagz"],
     filename: "mtsp.xm",
-  },
-  {
-    url: "2000/nagz_mycv.xm",
-    year: "2000",
-    author: ["nagz"],
-    filename: "mycv.xm",
-  },
-  {
-    url: "2002/nagz_mydoglivesonthemoon.xm",
-    year: "2002",
-    author: ["nagz"],
-    filename: "mydoglivesonthemoon.xm",
   },
   {
     url: "2001/nagz_rboa.xm",
@@ -530,13 +517,6 @@ const tracks = [
     author: ["nagz"],
     filename: "rwsp.xm",
   },
-
-  {
-    url: "2000/nagz_suxy.xm",
-    year: "2000",
-    author: ["nagz"],
-    filename: "suxy.xm",
-  },
   {
     url: "2001/redribbon-med_upermarch.xm",
     year: "2001",
@@ -544,30 +524,10 @@ const tracks = [
     filename: "upermarch.xm",
   },
   {
-    url: "2000/redribbon-poulpy_elyxiis.xm",
-    year: "2000",
-    author: ["redribbon", "poulpy"],
-    filename: "elyxiis.xm",
-    bleep: true,
-  },
-  {
     url: "2001/redribbon_cahouin.xm",
     year: "2001",
     author: ["redribbon"],
     filename: "cahouin.xm",
-  },
-  {
-    url: "2000/redribbon_pulp.xm",
-    year: "2000",
-    author: ["redribbon"],
-    filename: "pulp.xm",
-  },
-  {
-    url: "2000/redribbon_redmo2final.xm",
-    year: "2000",
-    author: ["redribbon"],
-    filename: "redmo2final.xm",
-    bleep: true,
   },
   {
     url: "2001/skybax_purp.it",
@@ -590,24 +550,147 @@ const tracks = [
     bleep: true,
   },
   {
-    url: "2000/traven_mario.xm",
-    year: "2000",
-    author: ["traven"],
-    filename: "mario.xm",
+    url: "2001/unaware_mboxchip.xm",
+    year: "2001",
+    author: ["unaware"],
+    filename: "mboxchip.xm",
+  },
+  {
+    url: "2001/vhiiula_bal.it",
+    year: "2001",
+    author: ["vhiiula"],
+    filename: "bal.it",
+  },
+  {
+    url: "2001/vhiiula_etan.it",
+    year: "2001",
+    author: ["vhiiula"],
+    filename: "etan.it",
+  },
+  {
+    url: "2001/vhiiula_klam.it",
+    year: "2001",
+    author: ["vhiiula"],
+    filename: "klam.it",
+  },
+  {
+    url: "2001/vhiiula_misz.it",
+    year: "2001",
+    author: ["vhiiula"],
+    filename: "misz.it",
+  },
+  {
+    url: "2001/vhiiula_prel.it",
+    year: "2001",
+    author: ["vhiiula"],
+    filename: "prel.it",
+  },
+  {
+    url: "2001/vhiiula_tanx.it",
+    year: "2001",
+    author: ["vhiiula"],
+    filename: "tanx.it",
+  },
+  {
+    url: "2001/wayfinder_gb01.it",
+    year: "2001",
+    author: ["wayfinder"],
+    filename: "gb01.it",
     bleep: true,
   },
   {
-    url: "2000/traven_scene-city.xm",
-    year: "2000",
-    author: ["traven"],
-    filename: "scene-city.xm",
+    url: "2001/wayfinder_mario.it",
+    year: "2001",
+    author: ["wayfinder"],
+    filename: "mario.it",
     bleep: true,
   },
   {
-    url: "2000/traven_syndrome.xm",
-    year: "2000",
-    author: ["traven"],
-    filename: "syndrome.xm",
+    url: "2002/bacter_insidemyoldschoolpc.it",
+    year: "2002",
+    author: ["bacter"],
+    filename: "insidemyoldschoolpc.it",
+  },
+  {
+    url: "2002/dualtrax_crosnake.xm",
+    year: "2002",
+    author: ["dualtrax"],
+    filename: "crosnake.xm",
+    bleep: true,
+  },
+  {
+    url: "2002/dualtrax_orion.xm",
+    year: "2002",
+    author: ["dualtrax"],
+    filename: "orion.xm",
+    bleep: true,
+  },
+  {
+    url: "2002/dualtrax_radiatorsgrill.xm",
+    year: "2002",
+    author: ["dualtrax"],
+    filename: "radiatorsgrill.xm",
+    bleep: true,
+  },
+  {
+    url: "2002/ernestoaeroflot_joinme.xm",
+    year: "2002",
+    author: ["ernestoaeroflot"],
+    filename: "joinme.xm",
+  },
+  {
+    url: "2002/jashiin_9320000.it",
+    year: "2002",
+    author: ["jashiin"],
+    filename: "9320000.it",
+  },
+  {
+    url: "2002/jashiin_convincingconvexity.s3m",
+    year: "2002",
+    author: ["jashiin"],
+    filename: "convincingconvexity.s3m",
+  },
+  {
+    url: "2002/jashiin_huomenta.it",
+    year: "2002",
+    author: ["jashiin"],
+    filename: "huomenta.it",
+  },
+  {
+    url: "2002/jashiin_kylmyys.it",
+    year: "2002",
+    author: ["jashiin"],
+    filename: "kylmyys.it",
+  },
+  {
+    url: "2002/jashiin_mansikka.it",
+    year: "2002",
+    author: ["jashiin"],
+    filename: "mansikka.it",
+  },
+  {
+    url: "2002/jashiin_nohands.it",
+    year: "2002",
+    author: ["jashiin"],
+    filename: "nohands.it",
+  },
+  {
+    url: "2002/nagz_makingmusic.xm",
+    year: "2002",
+    author: ["nagz"],
+    filename: "makingmusic.xm",
+  },
+  {
+    url: "2002/nagz_milk.xm",
+    year: "2002",
+    author: ["nagz"],
+    filename: "milk.xm",
+  },
+  {
+    url: "2002/nagz_mydoglivesonthemoon.xm",
+    year: "2002",
+    author: ["nagz"],
+    filename: "mydoglivesonthemoon.xm",
   },
   {
     url: "2002/unaware-forsaken_thelight.xm",
@@ -629,13 +712,6 @@ const tracks = [
     filename: "brainles.xm",
   },
   {
-    url: "2000/unaware_callfrom.xm",
-    year: "2000",
-    author: ["unaware"],
-    filename: "callfrom.xm",
-    bleep: true,
-  },
-  {
     url: "2002/unaware_chece.xm",
     year: "2002",
     author: ["unaware"],
@@ -646,12 +722,6 @@ const tracks = [
     year: "2002",
     author: ["unaware"],
     filename: "evuole.xm",
-  },
-  {
-    url: "2001/unaware_mboxchip.xm",
-    year: "2001",
-    author: ["unaware"],
-    filename: "mboxchip.xm",
   },
   {
     url: "2002/unaware_nap.xm",
@@ -672,12 +742,6 @@ const tracks = [
     filename: "untitled.xm",
   },
   {
-    url: "2001/vhiiula_bal.it",
-    year: "2001",
-    author: ["vhiiula"],
-    filename: "bal.it",
-  },
-  {
     url: "2002/vhiiula_darkservant.it",
     year: "2002",
     author: ["vhiiula"],
@@ -692,24 +756,6 @@ const tracks = [
     bleep: true,
   },
   {
-    url: "2001/vhiiula_etan.it",
-    year: "2001",
-    author: ["vhiiula"],
-    filename: "etan.it",
-  },
-  {
-    url: "2001/vhiiula_klam.it",
-    year: "2001",
-    author: ["vhiiula"],
-    filename: "klam.it",
-  },
-  {
-    url: "2001/vhiiula_misz.it",
-    year: "2001",
-    author: ["vhiiula"],
-    filename: "misz.it",
-  },
-  {
     url: "2002/vhiiula_partytrackered.it",
     year: "2002",
     author: ["vhiiula"],
@@ -717,61 +763,11 @@ const tracks = [
     bleep: true,
   },
   {
-    url: "2001/vhiiula_prel.it",
-    year: "2001",
-    author: ["vhiiula"],
-    filename: "prel.it",
-  },
-  {
-    url: "2001/vhiiula_tanx.it",
-    year: "2001",
-    author: ["vhiiula"],
-    filename: "tanx.it",
-  },
-  {
     url: "2002/vhiiula_whynotsendflowers.it",
     year: "2002",
     author: ["vhiiula"],
     filename: "whynotsendflowers.it",
     bleep: true,
-  },
-  {
-    url: "2001/wayfinder_gb01.it",
-    year: "2001",
-    author: ["wayfinder"],
-    filename: "gb01.it",
-    bleep: true,
-  },
-  {
-    url: "2001/wayfinder_mario.it",
-    year: "2001",
-    author: ["wayfinder"],
-    filename: "mario.it",
-    bleep: true,
-  },
-  {
-    url: "2000/willbe_aeroplane.it",
-    year: "2000",
-    author: ["willbe"],
-    filename: "aeroplane.it",
-  },
-  {
-    url: "2000/willbe_minich4tr.it",
-    year: "2000",
-    author: ["willbe"],
-    filename: "minich4tr.it",
-  },
-  {
-    url: "2000/willbe_minidrktow.it",
-    year: "2000",
-    author: ["willbe"],
-    filename: "minidrktow.it",
-  },
-  {
-    url: "2000/willbe_miniwash.it",
-    year: "2000",
-    author: ["willbe"],
-    filename: "miniwash.it",
   },
   {
     url: "2002/xerxes-nezcafe.it",
@@ -786,7 +782,6 @@ const tracks = [
     filename: "circleofshit.xm",
     bleep: true,
   },
-
   {
     url: "2002/nagz_runjump.xm",
     year: "2002",
@@ -794,7 +789,6 @@ const tracks = [
     filename: "runjump.xm",
     bleep: true,
   },
-
   {
     url: "2002/vhiiula_greensnow.it",
     year: "2002",
@@ -802,7 +796,6 @@ const tracks = [
     filename: "greensnow.it",
     bleep: true,
   },
-
   {
     url: "2002/vhiiula_jaipas.it",
     year: "2002",
@@ -811,14 +804,21 @@ const tracks = [
   },
 ];
 
-tracks.sort(compare);
+// tracks.sort(compare);
 let pos = 1;
+let startShader = 11;
+const endShader = 16;
 for (let t in tracks) {
-  const confOffset = getRandomOffset(
-    ConfigVariations,
-    tracks[t - 1] ? tracks[t - 1].shader : -1
-  );
-  tracks[t].shader = confOffset;
+  // const confOffset = getRandomOffset(
+  //   ConfigVariations,
+  //   tracks[t - 1] ? tracks[t - 1].shader : -1
+  // );
+  tracks[t].shader = startShader;
+  startShader++;
+  if (startShader > endShader) {
+    startShader = 1;
+  }
+
   tracks[t].pos = pos;
   pos++;
 }

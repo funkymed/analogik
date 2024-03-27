@@ -17,6 +17,7 @@ import config9 from "./variations/config9";
 
 export const ConfigVariations = [
   config1,
+  config1,
   config2,
   config3,
   config4,

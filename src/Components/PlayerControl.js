@@ -292,7 +292,7 @@ function PlayerControl({
             >
               <h4
                 style={{
-                  color: "#000",
+                  color: "#333",
                   fontSize: 40,
                   fontFamily: "Permanent Marker",
                   filter: "drop-shadow(0px 0px 5px #17467aAA)",

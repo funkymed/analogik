@@ -52,7 +52,7 @@ start:
 ## Build
 build:
 	rm -rf build
-	yarn Build
+	yarn build
 
 ## --
 Electron:

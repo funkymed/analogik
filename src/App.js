@@ -16,10 +16,7 @@ import InfoIcon from "@rsuite/icons/legacy/InfoCircle";
 import AboutDrawer from "./Components/AboutDrawer.js";
 import "rsuite/dist/rsuite.min.css";
 import { getHttpParam } from "./Components/mandafunk/tools/http.ts";
-import {
-  getRandomOffset,
-  updateRouteHttp,
-} from "./tools.js";
+import { getRandomOffset, updateRouteHttp } from "./tools.js";
 import { ConfigVariations } from "./Components/ConfigVariations.js";
 import "./App.css";
 import PlaylistDrawer from "./Components/PlayListDrawer.js";
@@ -169,7 +166,7 @@ function App(props) {
       const confOffset = newconfigOffset
         ? newconfigOffset
         : getRandomOffset(ConfigVariations, -1);
-      currentTrack.shader = confOffset;
+      currentTrack.shader = currentTrack.shader || confOffset;
     }
 
     const handleMouse = (event) => {
@@ -240,6 +237,7 @@ function App(props) {
           getPlayer();
           setIsLoading(true);
           setIsPlay(false);
+
           setTimeout(loadTrack, 1000);
         })
         .start();

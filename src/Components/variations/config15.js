@@ -3,17 +3,13 @@ import clean from "./clean";
 export default {
   ...clean,
   scene: {
-    shader: "Med1",
+    shader: "Med2",
     background: "./images/w13.jpg",
     shader_speed: 0.75,
     shader_opacity: 0.25,
-    shader_zoom: 0.5,
-    shader_sin_cos_x: true,
-    shader_sin_cos_y: true,
-    shader_sin_cos_speed: 0.15,
-    shader_sin_cos_space: 200,
-    blur: 5,
-    brightness: 50,
+    shader_zoom: 0.15,
+    blur: 2,
+    brightness: 25,
     bgColor: "#000000",
   },
   timer: {
@@ -21,7 +17,7 @@ export default {
   },
   vumeters: {
     oscilloscop: {
-      show: true,
+      show: false,
       color: "#FFFF00",
       z: -180,
     },
@@ -52,7 +48,7 @@ export default {
       rotationY: 0,
       rotationZ: 0,
       size: 150,
-      color: "#55DDFF",
+      color: "#FF8855",
     },
     subtitle: {
       show: true,

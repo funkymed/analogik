@@ -3,12 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@react-three/fiber": "^8.15.19",
-    "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
     "@tweenjs/tween.js": "^23.1.1",
     "dat.gui": "^0.7.9",
+    "disable-devtool": "^0.3.7",
     "react": "^18.2.0",
     "react-backdrop-filter": "^2.1.0",
     "react-device-detect": "^2.2.3",

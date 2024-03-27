@@ -157,10 +157,10 @@ function RenderCanvas(props: any): JSX.Element {
         envMap: hdrEquirect,
         reflectivity: 0.95,
         roughness: 0.001,
-        metalness: 0.5,
+        metalness: 0.25,
         clearcoat: 0.5,
         clearcoatRoughness: 0.95,
-        transmission: 0.5,
+        transmission: 1.1,
         ior: 1.8,
         thickness: 10,
         color: new Color(color),
@@ -282,6 +282,7 @@ function RenderCanvas(props: any): JSX.Element {
 
     if (currentLogo.current) {
       currentLogo.current.rotation.y = Math.sin(time.current / 4) * 0.15;
+      currentLogo.current.rotation.x = 25 + Math.sin(time.current / 5) * 0.25;
       currentLogo.current.position.z = -70 + Math.sin(time.current / 2);
     }
 

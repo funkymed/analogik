@@ -3,8 +3,8 @@ import clean from "./clean";
 export default {
   ...clean,
   scene: {
-    shader: "Galaxy",
-    shader_speed: 0.35,
+    shader: "Color",
+    shader_speed: 5,
     shader_opacity: 0.33,
     shader_zoom: .5,
     shader_sin_cos_x: false,

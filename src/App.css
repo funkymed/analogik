@@ -87,10 +87,6 @@ canvas {
   background-color: rgba(0, 0, 0, 0);
 }
 
-h4 {
-  filter: drop-shadow(rgb(67, 66, 66) 0px 0px 5px);
-}
-
 .btn-glass {
   height: 30px;
   min-width: 50px;

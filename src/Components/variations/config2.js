@@ -52,7 +52,7 @@ export default {
       rotationY: 0,
       rotationZ: 0,
       size: 150,
-      color: "#55ff55",
+      color: "#238823",
     },
     subtitle: {
       show: true,
