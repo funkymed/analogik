@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { IconButton, CustomProvider } from "rsuite";
+import Preloader from "assets-preloader";
 import {
   tracks,
   getTracks,
@@ -178,7 +179,7 @@ function App(props) {
       mouseTimeout = setTimeout(() => {
         setIsMouseMoving(false);
         document.querySelector("body").style.cursor = "none";
-      }, 2000);
+      }, 100);
     };
     document.querySelector("body").style.cursor = "none";
 
@@ -216,9 +217,11 @@ function App(props) {
       tweenAnim = new TWEEN.Tween(mainView.current.style)
         .to({ opacity: 0 }, animTime)
         .onComplete(async () => {
+          let _conf = false;
           if (currentTrack.shader) {
             setNewconfigOffset(currentTrack.shader);
             setNewConfig(ConfigVariations[currentTrack.shader]);
+            _conf = ConfigVariations[currentTrack.shader];
           }
 
           updateRouteHttp(
@@ -238,7 +241,27 @@ function App(props) {
           setIsLoading(true);
           setIsPlay(false);
 
-          setTimeout(loadTrack, 1000);
+          // Preload before load track
+          if (_conf) {
+            const imgs = [
+              _conf.scene.background,
+              `./mods/${currentTrack.url}`,
+              "./fonts/Lobster-Regular.ttf",
+              "./fonts/KdamThmorPro-Regular.ttf",
+              "./images/empty_warehouse_01_2k.hdr",
+            ];
+
+            const loader = new Preloader(imgs);
+
+            loader.listen("progress", (val) => {
+              console.log(val);
+            });
+
+            loader.load().then(() => {
+              console.log("success");
+              setTimeout(loadTrack, 1000);
+            });
+          }
         })
         .start();
     }
