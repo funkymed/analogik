@@ -240,10 +240,10 @@ function App(props) {
           getPlayer();
           setIsLoading(true);
           setIsPlay(false);
-
+          setTimeout(loadTrack, 1000);
           // Preload before load track
           if (_conf) {
-            const imgs = [
+            const assets = [
               _conf.scene.background,
               `./mods/${currentTrack.url}`,
               "./fonts/Lobster-Regular.ttf",
@@ -251,15 +251,9 @@ function App(props) {
               "./images/empty_warehouse_01_2k.hdr",
             ];
 
-            const loader = new Preloader(imgs);
-
-            loader.listen("progress", (val) => {
-              console.log(val);
-            });
-
+            const loader = new Preloader(assets);
             loader.load().then(() => {
               console.log("success");
-              setTimeout(loadTrack, 1000);
             });
           }
         })
@@ -272,6 +266,7 @@ function App(props) {
     player.current.load(`./mods/${currentTrack.url}`).then((buffer) => {
       setIsLoading(false);
       updateControlBtn();
+
       player.current.pause();
       player.current.play(buffer);
       player.current.seek(0);
