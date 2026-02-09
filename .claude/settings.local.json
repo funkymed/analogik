@@ -12,7 +12,10 @@
       "Bash(npx eslint:*)",
       "Bash(git commit:*)",
       "Bash(timeout 30 npm start:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(npx knip:*)",
+      "Bash(npx depcheck:*)",
+      "Bash(npm install:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
