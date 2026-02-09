@@ -106,27 +106,27 @@ cp-nfo:
 	cd nfo && ./copy.sh
 
 ## --
-Tauri:
+Electrobun:
 
-## Test Tauri App
-tauri-start:
-	npm run tauri:dev
+## Test Electrobun App
+electrobun-start:
+	npm run electrobun:dev
 
-## Build Tauri (all platforms)
-tauri-build:
-	npm run tauri:build
+## Build Electrobun (all platforms)
+electrobun-build:
+	npm run electrobun:build
 
-## Build Tauri Mac Universal
-tauri-build-mac:
-	npm run tauri:build-mac
+## Build Electrobun Mac Universal
+electrobun-build-mac:
+	npm run electrobun:build-mac
 
-## Build Tauri Windows
-tauri-build-win:
-	npm run tauri:build-win
+## Build Electrobun Windows
+electrobun-build-win:
+	npm run electrobun:build-win
 
-## Build Tauri Linux
-tauri-build-linux:
-	npm run tauri:build-linux
+## Build Electrobun Linux
+electrobun-build-linux:
+	npm run electrobun:build-linux
 
 ## --
 Extra:

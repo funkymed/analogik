@@ -3,8 +3,8 @@ import App from "./App";
 import ActivateAudio from "./ActivateAudio";
 
 const isElectron = !!(window.electronAPI);
-const isTauri = !!(window.__TAURI__);
-const isDesktop = isElectron || isTauri;
+const isElectrobun = !!(window.electrobun);
+const isDesktop = isElectron || isElectrobun;
 
 function AppAudio() {
   const ctx = new (window.AudioContext || window.webkitAudioContext)();

@@ -46,6 +46,55 @@ make all  # Install, build React, install Electron, copy build, build all platfo
 ### Makefile Structure
 The Makefile uses color-coded help output. Run `make help` or just `make` to see all available commands.
 
+## Electrobun Distribution
+
+Analogik can be packaged with **Electrobun** (~12 MB) as an alternative ultra-lightweight and fast option to Electron.
+
+### Electrobun Advantages
+- **Ultra-fast build**: 10-30 seconds (vs 3-5 min Tauri)
+- **Size**: ~12 MB (vs 130 MB Electron)
+- **Updates**: Patches of only 14 KB
+- **System WebView**: WebKit (macOS), Edge WebView2 (Windows), WebKitGTK (Linux)
+- **Native TypeScript**: Bun backend + React frontend
+- **Hot reload**: No recompilation needed
+
+### Electrobun Commands
+
+```bash
+# Development
+make electrobun-start  # or npm run electrobun:dev
+
+# Build
+make electrobun-build-mac     # Universal binary (Intel + Silicon)
+make electrobun-build-win     # Windows NSIS installer
+make electrobun-build-linux   # AppImage
+
+# Build all platforms
+make electrobun-build
+```
+
+### Configuration
+- Config: `electrobun.config.ts`
+- Entry point: `src/index.js` (React) + `index.html`
+- Assets: `public/` directory
+- Output: `dist/` directory
+
+### Electrobun Detection
+```javascript
+const isElectrobun = !!(window.electrobun);
+const isDesktop = isElectron || isElectrobun;
+```
+
+## Electron vs Electrobun
+
+| Feature | Electron | Electrobun |
+|---------|----------|------------|
+| Size | ~130 MB | ~12 MB |
+| Build time | 2-5 min | 10-30 sec |
+| WebView | Chromium | System |
+| Backend | Node.js | Bun |
+| Hot reload | Slow | Instant |
+
 ## Architecture
 
 ### Core Application Flow

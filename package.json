@@ -21,12 +21,11 @@
     "build:check": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
-    "tauri": "tauri",
-    "tauri:dev": "tauri dev",
-    "tauri:build": "tauri build",
-    "tauri:build-mac": "tauri build --target universal-apple-darwin",
-    "tauri:build-win": "tauri build --target x86_64-pc-windows-msvc",
-    "tauri:build-linux": "tauri build --target x86_64-unknown-linux-gnu"
+    "electrobun:dev": "electrobun dev",
+    "electrobun:build": "electrobun build",
+    "electrobun:build-mac": "electrobun build --mac",
+    "electrobun:build-win": "electrobun build --win",
+    "electrobun:build-linux": "electrobun build --linux"
   },
   "eslintConfig": {
     "extends": [
@@ -35,12 +34,12 @@
     ]
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^2.10.0",
     "@types/node": "^25.2.2",
     "@types/react": "^19.2.13",
     "@types/react-dom": "^19.2.3",
     "@types/three": "^0.160.0",
     "@vitejs/plugin-react": "^4.7.0",
+    "electrobun": "^1.12.1",
     "typescript": "^5.9.3",
     "vite": "^6.4.1"
   }
