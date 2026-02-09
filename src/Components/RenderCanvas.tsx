@@ -79,15 +79,6 @@ function RenderCanvas(props: any): JSX.Element {
 
   const loadConfig = useCallback(
     async (config: ConfigType) => {
-      if (isMobile) {
-        props.newConfig.scene.brightness /= 4;
-        props.newConfig.scene.brightness =
-          props.newConfig.scene.brightness < 0
-            ? 0
-            : props.newConfig.scene.brightness;
-      }
-      deepMergeObjects(props.newConfig, config);
-
       if (!isMobileOnly) {
         if (config.texts && config.texts["title"]) {
           config.texts["title"].text = "";
@@ -304,12 +295,6 @@ function RenderCanvas(props: any): JSX.Element {
 
   useEffect(() => {
     init();
-
-    if (staticItems.current && currentConfig.current) {
-      staticItems.current.setAnalyser(props.player.getAnalyser());
-      loadConfig(currentConfig.current);
-    }
-
     animate();
     handleResize();
     return () => {
@@ -318,6 +303,45 @@ function RenderCanvas(props: any): JSX.Element {
       }
     };
   }, []);
+
+  // React to config changes: merge new config, load scene, signal ready
+  useEffect(() => {
+    if (
+      props.newConfig &&
+      manda_scene.current &&
+      staticItems.current &&
+      composer.current
+    ) {
+      // Apply mobile brightness reduction
+      if (isMobile && props.newConfig.scene) {
+        props.newConfig.scene.brightness /= 4;
+        props.newConfig.scene.brightness =
+          props.newConfig.scene.brightness < 0
+            ? 0
+            : props.newConfig.scene.brightness;
+      }
+
+      // Merge new config values into current config
+      deepMergeObjects(props.newConfig, currentConfig.current);
+
+      loadConfig(currentConfig.current).then(() => {
+        if (props.onSceneReady) {
+          props.onSceneReady();
+        }
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.newConfig]);
+
+  // Update audio analyser when music starts playing
+  useEffect(() => {
+    if (props.isPlay && staticItems.current && props.player) {
+      const analyser = props.player.getAnalyser();
+      if (analyser) {
+        staticItems.current.setAnalyser(analyser);
+      }
+    }
+  }, [props.isPlay, props.player]);
 
   useWindowResize(handleResize);
 

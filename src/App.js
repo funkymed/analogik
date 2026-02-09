@@ -129,6 +129,25 @@ function App(props) {
   const isMouseMovingRef = useRef(false);
   const tweenAnimRef = useRef();
 
+  // Scene synchronization
+  const sceneReadyResolveRef = useRef(null);
+  const isSceneReadyRef = useRef(false);
+
+  const onSceneReady = useCallback(() => {
+    isSceneReadyRef.current = true;
+    if (sceneReadyResolveRef.current) {
+      sceneReadyResolveRef.current();
+      sceneReadyResolveRef.current = null;
+    }
+  }, []);
+
+  const waitForSceneReady = useCallback(() => {
+    if (isSceneReadyRef.current) return Promise.resolve();
+    return new Promise((resolve) => {
+      sceneReadyResolveRef.current = resolve;
+    });
+  }, []);
+
   const years = getYears();
   const [open, setOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
@@ -326,7 +345,8 @@ function App(props) {
           let _conf = false;
           if (currentTrack.shader) {
             setNewconfigOffset(currentTrack.shader);
-            setNewConfig(ConfigVariations[currentTrack.shader]);
+            // Spread to create a new reference so React detects the change
+            setNewConfig({ ...ConfigVariations[currentTrack.shader] });
             _conf = ConfigVariations[currentTrack.shader];
           }
 
@@ -346,32 +366,35 @@ function App(props) {
           getPlayer();
           setIsLoading(true);
           setIsPlay(false);
+          isSceneReadyRef.current = false;
 
-          // Preload before load track - PARALLEL LOADING
+          // 1. Preload all assets in parallel (wait for completion)
           if (_conf) {
             console.log("[Preload] Starting parallel asset preload...");
             const startTime = performance.now();
-
-            // Parallelize independent asset loading
-            Promise.all([
-              preloadImage(_conf.scene.background),
-              preloadAudio(`./mods/${currentTrack.url}`),
-              Promise.all([
-                preloadFont("./fonts/Lobster-Regular.ttf"),
-                preloadFont("./fonts/KdamThmorPro-Regular.ttf")
-              ]),
-              preloadHDR("./images/empty_warehouse_01_2k.hdr")
-            ])
-            .then(() => {
-              const loadTime = performance.now() - startTime;
-              console.log(`[Preload] All assets loaded successfully in ${loadTime.toFixed(2)}ms`);
-            })
-            .catch((error) => {
+            try {
+              await Promise.all([
+                preloadImage(_conf.scene.background),
+                preloadAudio(`./mods/${currentTrack.url}`),
+                Promise.all([
+                  preloadFont("./fonts/Lobster-Regular.ttf"),
+                  preloadFont("./fonts/KdamThmorPro-Regular.ttf")
+                ]),
+                preloadHDR("./images/empty_warehouse_01_2k.hdr")
+              ]);
+              console.log(`[Preload] All assets loaded in ${(performance.now() - startTime).toFixed(2)}ms`);
+            } catch (error) {
               console.error("[Preload] Error loading assets:", error);
-            });
+            }
           }
 
-          setTimeout(loadTrack, 1000);
+          // 2. Wait for 3D scene to be fully initialized
+          console.log("[Scene] Waiting for 3D scene...");
+          await waitForSceneReady();
+          console.log("[Scene] Ready, starting music...");
+
+          // 3. Load and play track (assets are cached, so this is fast)
+          loadTrack();
         })
         .start();
     }
@@ -499,7 +522,6 @@ function App(props) {
       <div ref={mainView}>
         {player.current &&
         currentTrack &&
-        player.current.currentPlayingNode &&
         newConfig ? (
           <React.Suspense fallback={<Loader />}>
             <RenderCanvas
@@ -509,6 +531,7 @@ function App(props) {
               setIsPlay={setIsPlay}
               newConfig={newConfig}
               onClickCanvas={onClickCanvas}
+              onSceneReady={onSceneReady}
             />
           </React.Suspense>
         ) : null}

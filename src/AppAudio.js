@@ -1,10 +1,9 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import App from "./App";
 import ActivateAudio from "./ActivateAudio";
 
 function AppAudio() {
   const ctx = new (window.AudioContext || window.webkitAudioContext)();
-  const state = ctx.state === "running";
   const [audioLock, setAudioLock] = useState(true); 
   const [context, setContext] = useState(audioLock ? false : ctx);
 
