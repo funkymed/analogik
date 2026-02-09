@@ -1,5 +1,4 @@
-import { ConfigVariations } from "./Components/ConfigVariations";
-import { getRandomOffset } from "./tools";
+// ConfigVariations and getRandomOffset imports removed - not used in this file
 
 const tracks = [
   {
@@ -973,7 +972,6 @@ export const getTrackByUrl = (url) => {
   for (let t of tracks) {
     if (t.url === url) {
       return t;
-      break;
     }
   }
   return false;

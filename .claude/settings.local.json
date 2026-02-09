@@ -9,7 +9,10 @@
       "Bash(git checkout:*)",
       "Bash(git add:*)",
       "Bash(git push:*)",
-      "Bash(npx eslint:*)"
+      "Bash(npx eslint:*)",
+      "Bash(git commit:*)",
+      "Bash(timeout 30 npm start:*)",
+      "Bash(grep:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

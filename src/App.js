@@ -26,6 +26,21 @@ import { isMobile } from "react-device-detect";
 // Lazy load RenderCanvas to reduce initial bundle size
 const RenderCanvas = React.lazy(() => import("./Components/RenderCanvas.tsx"));
 
+// Hoisted static styles
+const MUSIC_ICON_BUTTON_STYLE = {
+  position: "absolute",
+  bottom: 15,
+  right: 15,
+  filter: "drop-shadow(0px 0px 20px #000000)",
+};
+
+const INFO_ICON_BUTTON_STYLE = {
+  position: "absolute",
+  top: 15,
+  right: 15,
+  filter: "drop-shadow(0px 0px 20px #000000)",
+};
+
 // Custom preload functions for parallel asset loading
 const preloadImage = (url) => {
   return new Promise((resolve, reject) => {
@@ -208,8 +223,8 @@ function App(props) {
     let isNext = false;
     const posOffset = currentTrack.pos ? currentTrack.pos - 1 : 0;
 
-    isPrev = posOffset > 0 ? true : false;
-    isNext = posOffset < tracks.length - 1 ? true : false;
+    isPrev = posOffset > 0;
+    isNext = posOffset < tracks.length -1;
 
     setIsPrevTrack(isPrev);
     setIsNextTrack(isNext);
@@ -410,9 +425,9 @@ function App(props) {
       playlist = mods;
     }
 
-    for (let r in playlist) {
-      playlist[r].pos = parseInt(r) + 1;
-    }
+    playlist.forEach((track, index) => {
+      track.pos = index + 1;
+    });
 
     setCurrentPlaylist(playlist);
     setCurrentTrack(playlist[0]);
@@ -437,7 +452,7 @@ function App(props) {
         setCurrentTrack={setCurrentTrack}
         filterAuthor={filterAuthor}
       />
-      {isLoading ? <Loader /> : ""}
+      {isLoading ? <Loader /> : null}
       <PlayerControl
         player={player.current}
         currentTrack={currentTrack}
@@ -461,13 +476,7 @@ function App(props) {
         className={!isMouseMoving ? "hide" : ""}
         appearance="primary"
         icon={<MusicIcon />}
-        style={{
-          position: "absolute",
-          bottom: 15,
-          right: 15,
-          // zoom: 1.4,
-          filter: "drop-shadow(0px 0px 20px #000000)",
-        }}
+        style={MUSIC_ICON_BUTTON_STYLE}
         onClick={() => setOpen(true)}
         circle
         size={isMobile ? "sm" : "lg"}
@@ -482,13 +491,7 @@ function App(props) {
         className={!isMouseMoving ? "hide" : ""}
         appearance="primary"
         icon={<InfoIcon />}
-        style={{
-          position: "absolute",
-          top: 15,
-          right: 15,
-          // zoom: 1.4,
-          filter: "drop-shadow(0px 0px 20px #000000)",
-        }}
+        style={INFO_ICON_BUTTON_STYLE}
         onClick={() => setAboutOpen(true)}
         circle
         size={isMobile ? "sm" : "lg"}

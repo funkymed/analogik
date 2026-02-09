@@ -17,7 +17,7 @@ function ActivateAudio(props) {
     return (
       <span key={`ath-${c}`} style={{ color: c % 2 === 0 ? "#DDD" : "#8AD" }}>
         {txt}
-        {c % modulo === moduloFit ? <br /> : ""}
+        {c % modulo === moduloFit ? <br /> : null}
       </span>
     );
   };

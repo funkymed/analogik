@@ -14,6 +14,60 @@ import useKeypress from "react-use-keypress";
 import { isMobile } from "react-device-detect";
 import { useWindowResize } from "../hooks/useWindowResize";
 
+// Hoisted static styles
+const VOLUME_CONTAINER_STYLE = {
+  width: 100,
+  position: "absolute",
+  bottom: 15,
+  left: 15,
+};
+
+const BUTTON_GROUP_STYLE = {
+  filter: "drop-shadow(0px 1px 18px #000000)",
+};
+
+const TRACK_COUNTER_STYLE = {
+  textAlign: "center",
+};
+
+const BUTTON_GROUP_CONTAINER_STYLE = {
+  position: "absolute",
+  top: 15,
+  left: 15,
+};
+
+const FLEX_GRID_ITEM_STYLE = {
+  pointerEvents: "none",
+};
+
+const TITLE_CONTENT_STYLE = {
+  fontFamily: "Kdam Thmor Pro",
+  textAlign: "center",
+  margin: 50,
+  padding: 20,
+  pointerEvents: "none",
+};
+
+const TITLE_H4_STYLE = {
+  color: "#333",
+  fontSize: 40,
+  fontFamily: "Permanent Marker",
+  filter: "drop-shadow(0px 0px 5px #17467aAA)",
+};
+
+const AUTHOR_STYLE = {
+  fontFamily: "Lobster",
+  fontSize: 25,
+  color: "#555555",
+  filter: "drop-shadow(0px 0px 5px #FFFFFF88)",
+  fontStyle: "italic",
+};
+
+const OCTETS_STYLE = {
+  color: "#333",
+  filter: "drop-shadow(0px 0px 2px #000000EE)",
+};
+
 function PlayerControl({
   player,
   isPlay,
@@ -125,9 +179,9 @@ function PlayerControl({
 
   return (
     <>
-      {!isMobile ? (
+      {!isMobile && (
         <div
-          style={{ width: 100, position: "absolute", bottom: 15, left: 15 }}
+          style={VOLUME_CONTAINER_STYLE}
           className={!isMouseMoving ? "hide" : ""}
         >
           <label>Volume </label>
@@ -141,8 +195,6 @@ function PlayerControl({
             }}
           />
         </div>
-      ) : (
-        ""
       )}
 
       <div
@@ -175,7 +227,7 @@ function PlayerControl({
         )}
       </div>
 
-      {!isMobile ? (
+      {!isMobile && (
         <div
           ref={topTitle}
           className={!isMouseMoving ? "hide" : ""}
@@ -195,19 +247,15 @@ function PlayerControl({
           Change track <b>← →</b> - Volume <b>↑ ↓</b> - use keyboard to display
           information <b>(i)</b> and playlist <b>(p)</b>
         </div>
-      ) : (
-        ""
       )}
 
       <div
-        style={{ position: "absolute", top: 15, left: 15 }}
+        style={BUTTON_GROUP_CONTAINER_STYLE}
         className={!isMouseMoving ? "hide" : ""}
       >
         <ButtonGroup
           size="sm"
-          style={{
-            filter: "drop-shadow(0px 1px 18px #000000)",
-          }}
+          style={BUTTON_GROUP_STYLE}
         >
           <IconButton
             icon={<PrevIcon />}
@@ -247,7 +295,7 @@ function PlayerControl({
           />
         </ButtonGroup>
         <br />
-        <div style={{ textAlign: "center" }}>
+        <div style={TRACK_COUNTER_STYLE}>
           {currentTrack.pos} / {lengthTracks}
         </div>
       </div>
@@ -262,7 +310,7 @@ function PlayerControl({
           pointerEvents: "none",
         }}
       >
-        <FlexboxGrid.Item colspan={10} style={{ pointerEvents: "none" }}>
+        <FlexboxGrid.Item colspan={10} style={FLEX_GRID_ITEM_STYLE}>
           <div
             ref={titlePanel}
             style={{
@@ -276,43 +324,15 @@ function PlayerControl({
               background: "rgba(255,255,255, 0.05)",
             }}
           >
-            <div
-              style={{
-                fontFamily: "Kdam Thmor Pro",
-                textAlign: "center",
-                margin: 50,
-                padding: 20,
-                pointerEvents: "none",
-              }}
-            >
-              <h4
-                style={{
-                  color: "#333",
-                  fontSize: 40,
-                  fontFamily: "Permanent Marker",
-                  filter: "drop-shadow(0px 0px 5px #17467aAA)",
-                }}
-              >
+            <div style={TITLE_CONTENT_STYLE}>
+              <h4 style={TITLE_H4_STYLE}>
                 {title}
               </h4>
-              <b
-                style={{
-                  fontFamily: "Lobster",
-                  fontSize: 25,
-                  color: "#555555",
-                  filter: "drop-shadow(0px 0px 5px #FFFFFF88)",
-                  fontStyle: "italic",
-                }}
-              >
+              <b style={AUTHOR_STYLE}>
                 by {authors} in {currentTrack.year}
               </b>
               <br />
-              <p
-                style={{
-                  color: "#333",
-                  filter: "drop-shadow(0px 0px 2px #000000EE)",
-                }}
-              >
+              <p style={OCTETS_STYLE}>
                 {octets} octets
               </p>
             </div>

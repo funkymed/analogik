@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import reportWebVitals from "./reportWebVitals";
 import AppAudio from "./AppAudio";
+// eslint-disable-next-line no-unused-vars
 import DisableDevtool from "disable-devtool";
 
 // DisableDevtool({
