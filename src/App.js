@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import IconButton from "rsuite/IconButton";
 import CustomProvider from "rsuite/CustomProvider";
 import {
@@ -102,7 +102,6 @@ const preloadHDR = (url) => {
   });
 };
 
-let tweenAnim;
 function App(props) {
   const ChiptuneJsPlayer = window["ChiptuneJsPlayer"];
   const ChiptuneJsConfig = window["ChiptuneJsConfig"];
@@ -113,6 +112,7 @@ function App(props) {
   const requestRef = useRef();
   const mouseTimeoutRef = useRef();
   const isMouseMovingRef = useRef(false);
+  const tweenAnimRef = useRef();
 
   const years = getYears();
   const [open, setOpen] = useState(false);
@@ -144,7 +144,10 @@ function App(props) {
   );
 
   // tracks
-  const [mods, setMods] = useState(getTracks(year, author, selection));
+  const mods = useMemo(
+    () => getTracks(year, author, selection),
+    [year, author, selection]
+  );
   const [currentPlaylist, setCurrentPlaylist] = useState([]);
   const [isCustomPlaylist, setIsCustomPlaylist] = useState(false);
   const [isPrevTrack, setIsPrevTrack] = useState(false);
@@ -153,54 +156,54 @@ function App(props) {
   // mouse
   const [isMouseMoving, setIsMouseMoving] = useState(false);
 
-  const playOffset = (order) => {
+  const playOffset = useCallback((order) => {
     const track =
       currentPlaylist[parseInt(currentTrack.pos - 1) + order] ?? false;
     if (track) {
       setCurrentTrack(track);
     }
-  };
+  }, [currentPlaylist, currentTrack]);
 
-  const nextTrack = () => {
+  const nextTrack = useCallback(() => {
     playOffset(1);
-  };
+  }, [playOffset]);
 
-  const prevTrack = () => {
+  const prevTrack = useCallback(() => {
     playOffset(-1);
-  };
+  }, [playOffset]);
 
-  const filterSelection = (s) => {
+  const filterSelection = useCallback((s) => {
     setYear(0);
     setAuthor(0);
     setSelection(s);
     setAuthors(getAuthors(0, s));
-  };
+  }, []);
 
-  const filterYear = (y) => {
+  const filterYear = useCallback((y) => {
     setAuthor(0);
     setYear(y);
     setAuthors(getAuthors(y, selection));
-  };
+  }, [selection]);
 
-  const filterAuthor = (a, reset) => {
+  const filterAuthor = useCallback((a, reset) => {
     if (reset) {
       filterYear(0);
       filterSelection("all");
     }
     setAuthor(a);
-  };
+  }, [filterYear, filterSelection]);
 
-  const setPlayerVolume = (value) => {
+  const setPlayerVolume = useCallback((value) => {
     setVolume(value);
     player.current.setVolume(value);
-  };
+  }, []);
 
-  const togglePlay = () => {
-    setIsPlay(!isPlay);
+  const togglePlay = useCallback(() => {
+    setIsPlay((prev) => !prev);
     player.current.togglePause();
-  };
+  }, []);
 
-  const updateControlBtn = () => {
+  const updateControlBtn = useCallback(() => {
     let isPrev = false;
     let isNext = false;
     const posOffset = currentTrack.pos ? currentTrack.pos - 1 : 0;
@@ -210,12 +213,12 @@ function App(props) {
 
     setIsPrevTrack(isPrev);
     setIsNextTrack(isNext);
-  };
+  }, [currentTrack]);
 
-  const onClickCanvas = (e) => {
+  const onClickCanvas = useCallback((e) => {
     const pos = e.screenX / window.innerWidth;
     player.current.seek(pos * player.current.duration());
-  };
+  }, []);
 
   useKeypress("i", () => {
     setOpen(false);
@@ -226,7 +229,7 @@ function App(props) {
     setOpen(!open);
   });
 
-  const getPlayer = () => {
+  const getPlayer = useCallback(() => {
     const config = new ChiptuneJsConfig({
       repeatCount: 0,
       volume: defaultVolume,
@@ -235,7 +238,7 @@ function App(props) {
 
     player.current = new ChiptuneJsPlayer(config);
     player.current.pause();
-  };
+  }, [props.context]);
 
   useEffect(() => {
     getPlayer();
@@ -285,8 +288,6 @@ function App(props) {
   }, []);
 
   useEffect(() => {
-    const modsList = getTracks(year, author, selection);
-    setMods(modsList);
     updateRouteHttp(
       year,
       author,
@@ -294,17 +295,17 @@ function App(props) {
       currentTrack ? currentTrack.pos : null,
       newconfigOffset
     );
-  }, [year, author, selection, getTracks, newconfigOffset]);
+  }, [year, author, selection, currentTrack, newconfigOffset]);
 
   useEffect(() => {
-    if (tweenAnim) {
-      TWEEN.remove(tweenAnim);
+    if (tweenAnimRef.current) {
+      TWEEN.remove(tweenAnimRef.current);
     }
 
     if (mainView.current) {
       const animTime = 300;
       mainView.current.style.opacity = 1;
-      tweenAnim = new TWEEN.Tween(mainView.current.style)
+      tweenAnimRef.current = new TWEEN.Tween(mainView.current.style)
         .to({ opacity: 0 }, animTime)
         .onComplete(async () => {
           let _conf = false;
@@ -361,7 +362,7 @@ function App(props) {
     }
   }, [currentTrack]);
 
-  const loadTrack = () => {
+  const loadTrack = useCallback(() => {
     const animTime = 300;
     player.current.load(`./mods/${currentTrack.url}`).then((buffer) => {
       setIsLoading(false);
@@ -380,23 +381,23 @@ function App(props) {
       setMeta(player.current.metadata());
       setDuration(player.current.duration());
 
-      if (tweenAnim) {
-        TWEEN.remove(tweenAnim);
+      if (tweenAnimRef.current) {
+        TWEEN.remove(tweenAnimRef.current);
       }
       mainView.current.style.opacity = 0;
-      tweenAnim = new TWEEN.Tween(mainView.current.style)
+      tweenAnimRef.current = new TWEEN.Tween(mainView.current.style)
         .to({ opacity: 1 }, animTime)
         .delay(animTime)
         .start();
     });
-  };
+  }, [currentTrack, isNextTrack, nextTrack, updateControlBtn]);
 
   const animationLoop = () => {
     TWEEN.update();
     requestRef.current = requestAnimationFrame(animationLoop);
   };
 
-  const PlayListControl = (clear) => {
+  const PlayListControl = useCallback((clear) => {
     player.current.pause();
     player.current.seek(0);
 
@@ -415,7 +416,7 @@ function App(props) {
 
     setCurrentPlaylist(playlist);
     setCurrentTrack(playlist[0]);
-  };
+  }, [mods]);
 
   return (
     <CustomProvider theme="dark">

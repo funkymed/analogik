@@ -25,6 +25,7 @@ import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
 import { deepMergeObjects } from "../tools.js";
 import Sparks from "./sparks.js";
 import { isMobile, isMobileOnly } from "react-device-detect";
+import { useWindowResize } from "../hooks/useWindowResize";
 
 const isEditor = getHttpParam("editor");
 
@@ -302,11 +303,6 @@ function RenderCanvas(props: any): JSX.Element {
   }, [time]);
 
   useEffect(() => {
-    const resizeHandler = () => {
-      handleResize();
-    };
-    window.addEventListener("resize", resizeHandler);
-
     init();
 
     if (staticItems.current && currentConfig.current) {
@@ -317,12 +313,13 @@ function RenderCanvas(props: any): JSX.Element {
     animate();
     handleResize();
     return () => {
-      window.removeEventListener("resize", resizeHandler);
       if (animateId.current) {
         cancelAnimationFrame(animateId.current);
       }
     };
   }, []);
+
+  useWindowResize(handleResize);
 
   useEffect(() => {
     if (canvasRef.current) {

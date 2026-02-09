@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import IconButton from "rsuite/IconButton";
 import ButtonGroup from "rsuite/ButtonGroup";
 import Slider from "rsuite/Slider";
@@ -12,8 +12,7 @@ import { Capitalize } from "../utils";
 import TWEEN from "@tweenjs/tween.js";
 import useKeypress from "react-use-keypress";
 import { isMobile } from "react-device-detect";
-
-let tweenAnim;
+import { useWindowResize } from "../hooks/useWindowResize";
 
 function PlayerControl({
   player,
@@ -33,22 +32,17 @@ function PlayerControl({
   isMouseMoving,
   isLoading,
 }) {
-  const [playing, setPlaying] = useState(false);
-
   const FlexContent = useRef();
   const titlePanel = useRef();
   const bottomTitle = useRef();
   const topTitle = useRef();
+  const tweenAnimRef = useRef();
 
   const handleResize = useCallback(() => {
     if (FlexContent.current) {
       FlexContent.current.style.height = `${window.innerHeight}px`;
     }
   }, []);
-
-  useEffect(() => {
-    setPlaying(isPlay);
-  }, [isPlay, setIsPlay, playing]);
 
   useEffect(() => {
     if (isLoading) {
@@ -62,7 +56,7 @@ function PlayerControl({
   }, [isLoading]);
 
   useEffect(() => {
-    if (tweenAnim) TWEEN.remove(tweenAnim);
+    if (tweenAnimRef.current) TWEEN.remove(tweenAnimRef.current);
 
     if (bottomTitle.current) {
       bottomTitle.current.style.opacity = 0;
@@ -73,17 +67,17 @@ function PlayerControl({
       }
       titlePanel.current.style.opacity = 0;
       const timeAnim = 250;
-      tweenAnim = new TWEEN.Tween(titlePanel.current.style)
+      tweenAnimRef.current = new TWEEN.Tween(titlePanel.current.style)
         .to({ opacity: 1 }, timeAnim)
         .delay(2000)
         .easing(TWEEN.Easing.Sinusoidal.InOut)
         .onComplete(() => {
-          tweenAnim = new TWEEN.Tween(titlePanel.current.style)
+          tweenAnimRef.current = new TWEEN.Tween(titlePanel.current.style)
             .to({ opacity: 0 }, timeAnim)
             .delay(2000)
             .easing(TWEEN.Easing.Sinusoidal.InOut)
             .onComplete(() => {
-              tweenAnim = new TWEEN.Tween(bottomTitle.current.style)
+              tweenAnimRef.current = new TWEEN.Tween(bottomTitle.current.style)
                 .to({ opacity: 0.85 }, timeAnim / 2)
                 .easing(TWEEN.Easing.Sinusoidal.InOut)
                 .start();
@@ -92,32 +86,30 @@ function PlayerControl({
         })
         .start();
     }
-
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
   }, [meta, isPlay]);
 
-  const getTitle = () => {
+  useWindowResize(handleResize);
+
+  const title = useMemo(() => {
     return (
       `${currentTrack.pos}. ` +
       String(meta.title ? meta.title : currentTrack.filename).toUpperCase()
     );
-  };
-  const getAuthors = () => {
+  }, [currentTrack, meta]);
+
+  const authors = useMemo(() => {
     const a = currentTrack.author;
-    const authors = [];
+    const authorsList = [];
     for (let c in a) {
-      authors.push(Capitalize(a[c]));
+      authorsList.push(Capitalize(a[c]));
     }
 
-    return authors.join(" & ");
-  };
+    return authorsList.join(" & ");
+  }, [currentTrack]);
 
-  const getOctets = (n) => {
-    return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-  };
+  const octets = useMemo(() => {
+    return size.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  }, [size]);
 
   useKeypress(" ", togglePlay);
   useKeypress("ArrowLeft", prevTrack);
@@ -171,14 +163,14 @@ function PlayerControl({
       >
         {isMobile ? (
           <>
-            <b>{getTitle()}</b> by {getAuthors()} <br />
+            <b>{title}</b> by {authors} <br />
             in {currentTrack.year} <br />
-            {getOctets(size)} octets
+            {octets} octets
           </>
         ) : (
           <>
-            <b>{getTitle()}</b> by {getAuthors()} in {currentTrack.year} (
-            {getOctets(size)} octets)
+            <b>{title}</b> by {authors} in {currentTrack.year} (
+            {octets} octets)
           </>
         )}
       </div>
@@ -301,7 +293,7 @@ function PlayerControl({
                   filter: "drop-shadow(0px 0px 5px #17467aAA)",
                 }}
               >
-                {getTitle()}
+                {title}
               </h4>
               <b
                 style={{
@@ -312,7 +304,7 @@ function PlayerControl({
                   fontStyle: "italic",
                 }}
               >
-                by {getAuthors()} in {currentTrack.year}
+                by {authors} in {currentTrack.year}
               </b>
               <br />
               <p
@@ -321,7 +313,7 @@ function PlayerControl({
                   filter: "drop-shadow(0px 0px 2px #000000EE)",
                 }}
               >
-                {getOctets(size)} octets
+                {octets} octets
               </p>
             </div>
           </div>
