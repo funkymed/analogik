@@ -16,7 +16,11 @@
       "Bash(npx knip:*)",
       "Bash(npx depcheck:*)",
       "Bash(npm install:*)",
-      "Bash(test:*)"
+      "Bash(test:*)",
+      "Bash(node:*)",
+      "Bash(npm run dev:*)",
+      "Bash(curl:*)",
+      "Bash(npm run preview:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
