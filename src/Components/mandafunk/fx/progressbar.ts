@@ -16,10 +16,6 @@ export const progressbar = function (
     var cH = ctx.canvas.height
     ctx.clearRect(0, 0, cW + 2, cH)
 
-    if (bgColor) {
-        // ctx.fillStyle = bgColor
-        // ctx.fillRect(0, 0, cW, cH)
-    }
     ctx.fillStyle = `rgba(${color},${opacity ?? 1})`
     ctx.fillRect(0, cH / 2 - 1, cW, 4)
 

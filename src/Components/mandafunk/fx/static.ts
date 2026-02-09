@@ -174,14 +174,12 @@ export class StaticItems {
     this.progressbarObj.visible = this.config.progressbar.show;
 
     if (this.textureSpectrum && this.textureSpectrum.context && this.analyser) {
-      // if (this.config.vumeters.spectrum.show) {
       spectrum(
         this.textureSpectrum.context,
         this.config.vumeters.spectrum,
         this.analyser
       );
       this.textureSpectrum.texture.needsUpdate = true;
-      // }
 
       if (this.config.vumeters.oscilloscop.show) {
         oscillo(

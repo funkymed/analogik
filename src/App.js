@@ -23,10 +23,8 @@ import PlaylistDrawer from "./Components/PlayListDrawer.js";
 import Loader from "./Components/Loader.js";
 import { isMobile } from "react-device-detect";
 
-// Lazy load RenderCanvas to reduce initial bundle size
 const RenderCanvas = React.lazy(() => import("./Components/RenderCanvas.tsx"));
 
-// Hoisted static styles
 const MUSIC_ICON_BUTTON_STYLE = {
   position: "absolute",
   bottom: 15,
@@ -41,18 +39,11 @@ const INFO_ICON_BUTTON_STYLE = {
   filter: "drop-shadow(0px 0px 20px #000000)",
 };
 
-// Custom preload functions for parallel asset loading
 const preloadImage = (url) => {
   return new Promise((resolve, reject) => {
     const img = new Image();
-    img.onload = () => {
-      console.log(`[Preload] Image loaded: ${url}`);
-      resolve(img);
-    };
-    img.onerror = (err) => {
-      console.error(`[Preload] Failed to load image: ${url}`, err);
-      reject(err);
-    };
+    img.onload = () => resolve(img);
+    img.onerror = (err) => reject(err);
     img.src = url;
   });
 };
@@ -66,14 +57,8 @@ const preloadAudio = (url) => {
         }
         return response.blob();
       })
-      .then((blob) => {
-        console.log(`[Preload] Audio loaded: ${url}`);
-        resolve(blob);
-      })
-      .catch((err) => {
-        console.error(`[Preload] Failed to load audio: ${url}`, err);
-        reject(err);
-      });
+      .then((blob) => resolve(blob))
+      .catch((err) => reject(err));
   });
 };
 
@@ -86,14 +71,8 @@ const preloadFont = (url) => {
         }
         return response.blob();
       })
-      .then((blob) => {
-        console.log(`[Preload] Font loaded: ${url}`);
-        resolve(blob);
-      })
-      .catch((err) => {
-        console.error(`[Preload] Failed to load font: ${url}`, err);
-        reject(err);
-      });
+      .then((blob) => resolve(blob))
+      .catch((err) => reject(err));
   });
 };
 
@@ -106,14 +85,8 @@ const preloadHDR = (url) => {
         }
         return response.blob();
       })
-      .then((blob) => {
-        console.log(`[Preload] HDR loaded: ${url}`);
-        resolve(blob);
-      })
-      .catch((err) => {
-        console.error(`[Preload] Failed to load HDR: ${url}`, err);
-        reject(err);
-      });
+      .then((blob) => resolve(blob))
+      .catch((err) => reject(err));
   });
 };
 
@@ -130,7 +103,6 @@ function App(props) {
   const isMouseMovingRef = useRef(false);
   const tweenAnimRef = useRef();
 
-  // Scene synchronization
   const sceneReadyResolveRef = useRef(null);
   const isSceneReadyRef = useRef(false);
 
@@ -154,7 +126,6 @@ function App(props) {
   const [aboutOpen, setAboutOpen] = useState(false);
   const [volume, setVolume] = useState(defaultVolume);
 
-  // tracks
   const [isPlay, setIsPlay] = useState(0);
   const [currentTrack, setCurrentTrack] = useState(
     getTrackByPos(getHttpParam("track"))
@@ -167,7 +138,6 @@ function App(props) {
     getHttpParam("config") || null
   );
 
-  // filters
   const [year, setYear] = useState(getHttpParam("year") || 0);
   const [author, setAuthor] = useState(getHttpParam("author") || 0);
   const [authors, setAuthors] = useState(
@@ -177,7 +147,6 @@ function App(props) {
     getHttpParam("selection") || "all"
   );
 
-  // tracks
   const mods = useMemo(
     () => getTracks(year, author, selection),
     [year, author, selection]
@@ -187,7 +156,6 @@ function App(props) {
   const [isPrevTrack, setIsPrevTrack] = useState(false);
   const [isNextTrack, setIsNextTrack] = useState(false);
 
-  // mouse
   const [isMouseMoving, setIsMouseMoving] = useState(false);
 
   const playOffset = useCallback((order) => {
@@ -279,7 +247,7 @@ function App(props) {
     getPlayer();
     setCurrentPlaylist(tracks);
     if (!currentTrack) {
-      setCurrentTrack(tracks[0]); //getRandomItem(tracks);
+      setCurrentTrack(tracks[0]);
     } else {
       const confOffset = newconfigOffset
         ? newconfigOffset
@@ -347,7 +315,6 @@ function App(props) {
           let _conf = false;
           if (currentTrack.shader) {
             setNewconfigOffset(currentTrack.shader);
-            // Spread to create a new reference so React detects the change
             setNewConfig({ ...ConfigVariations[currentTrack.shader] });
             _conf = ConfigVariations[currentTrack.shader];
           }
@@ -370,10 +337,7 @@ function App(props) {
           setIsPlay(false);
           isSceneReadyRef.current = false;
 
-          // 1. Preload all assets in parallel (wait for completion)
           if (_conf) {
-            console.log("[Preload] Starting parallel asset preload...");
-            const startTime = performance.now();
             try {
               await Promise.all([
                 preloadImage(_conf.scene.background),
@@ -384,18 +348,13 @@ function App(props) {
                 ]),
                 preloadHDR("./images/empty_warehouse_01_2k.hdr")
               ]);
-              console.log(`[Preload] All assets loaded in ${(performance.now() - startTime).toFixed(2)}ms`);
             } catch (error) {
               console.error("[Preload] Error loading assets:", error);
             }
           }
 
-          // 2. Wait for 3D scene to be fully initialized
-          console.log("[Scene] Waiting for 3D scene...");
           await waitForSceneReady();
-          console.log("[Scene] Ready, starting music...");
 
-          // 3. Load and play track (assets are cached, so this is fast)
           loadTrack();
         })
         .start();
@@ -409,17 +368,17 @@ function App(props) {
       setIsLoading(false);
       updateControlBtn();
 
-      player.current.pause();
-      player.current.play(buffer);
-      player.current.seek(0);
-
       if (isNextTrack) {
         player.current.onEnded(nextTrack);
       }
 
-      setIsPlay(true);
       setSize(buffer.byteLength);
+
+      player.current.play(buffer);
       setMeta(player.current.metadata());
+      player.current.pause();
+      player.current.seek(0);
+      setIsPlay(true);
 
       if (tweenAnimRef.current) {
         TWEEN.remove(tweenAnimRef.current);
@@ -428,6 +387,9 @@ function App(props) {
       tweenAnimRef.current = new TWEEN.Tween(mainView.current.style)
         .to({ opacity: 1 }, animTime)
         .delay(animTime)
+        .onComplete(() => {
+          player.current.togglePause();
+        })
         .start();
     });
   }, [currentTrack, isNextTrack, nextTrack, updateControlBtn]);

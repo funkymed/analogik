@@ -77,7 +77,6 @@ export const updateImageFast = function (
     const width: number = Math.round((material.map?.image.width ?? 1) * zoom);
     const height: number = Math.round((material.map?.image.height ?? 1) * zoom);
 
-    console.log(width, height);
     const plane: PlaneGeometry = new PlaneGeometry(width, height);
     meshObj.geometry = plane;
   }

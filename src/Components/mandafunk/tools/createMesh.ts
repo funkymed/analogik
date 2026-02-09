@@ -49,7 +49,5 @@ export const createMesh = function (
     mesh.position.set(options.x || 0, options.y || 0, options.z || 0)
     mesh.rotation.set(options.rotationX || 0, options.rotationY || 0, options.rotationZ || 0)
 
-    // mesh.material.blending = AdditiveBlending
-
     return mesh
 }

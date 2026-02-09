@@ -217,8 +217,6 @@ function RenderCanvas(props: any): JSX.Element {
     renderer.current.autoClearColor = true;
     renderer.current.setPixelRatio(window.devicePixelRatio);
 
-    // document.body.appendChild(renderer.domElement)
-
     // Composer
     composer.current = new Composer(
       renderer.current,
@@ -258,10 +256,7 @@ function RenderCanvas(props: any): JSX.Element {
   }, [props.analyser, props.audioContext, props.player]);
 
   const render = (time: number) => {
-    // renderer.render(scene, camera)
     if (composer.current) {
-      // camera.current.position.x = Math.sin(time) * 5;
-      // camera.current.position.y = Math.cos(time) * 2;
       composer.current.rendering(time);
     }
   };
@@ -333,15 +328,19 @@ function RenderCanvas(props: any): JSX.Element {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.newConfig]);
 
-  // Update player reference and audio analyser when player changes or music starts
+  // Update player reference when player changes
   useEffect(() => {
     if (staticItems.current && props.player) {
       staticItems.current.setPlayer(props.player);
-      if (props.isPlay) {
-        const analyser = props.player.getAnalyser();
-        if (analyser) {
-          staticItems.current.setAnalyser(analyser);
-        }
+    }
+  }, [props.player, props.playerVersion]);
+
+  // Update audio analyser when music starts playing
+  useEffect(() => {
+    if (staticItems.current && props.player && props.isPlay) {
+      const analyser = props.player.getAnalyser();
+      if (analyser) {
+        staticItems.current.setAnalyser(analyser);
       }
     }
   }, [props.isPlay, props.player, props.playerVersion]);

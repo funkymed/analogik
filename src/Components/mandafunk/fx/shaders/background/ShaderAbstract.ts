@@ -119,10 +119,6 @@ export abstract class ShaderAbstract implements BackgroundShader {
   }
 
   update(time: number): void {
-    // if (this.staticItems) {
-    //     this.uniforms.iChannel1.value = this.staticItems.textureSpectrum.texture
-    // }
-
     if (!isMobileOnly) {
       const sinSpeed = this.config.scene.shader_sin_cos_speed || 1;
       const sinSpace = this.config.scene.shader_sin_cos_space || 1;

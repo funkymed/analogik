@@ -32,7 +32,6 @@ export default {
     bloom: { show: true, strength: 0.34, threshold: 0.43, radius: 1 },
     static: { show: false, amount: 0.05, size: 5 },
     rgb: { show: true, amount: 0.004, angle: 0.65 },
-    // hue: { show: true, hue: 0.77, saturation: 0 },
   },
   texts: {
     title: {

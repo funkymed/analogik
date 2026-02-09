@@ -803,15 +803,10 @@ const tracks = [
   },
 ];
 
-// tracks.sort(compare);
 let pos = 1;
 let startShader = 11;
 const endShader = 16;
 for (let t in tracks) {
-  // const confOffset = getRandomOffset(
-  //   ConfigVariations,
-  //   tracks[t - 1] ? tracks[t - 1].shader : -1
-  // );
   tracks[t].shader = startShader;
   startShader++;
   if (startShader > endShader) {
