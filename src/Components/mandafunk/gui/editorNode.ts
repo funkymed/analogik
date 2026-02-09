@@ -31,9 +31,9 @@ export class EditorNode {
         this.graph = new LGraph()
     }
 
-    updateConfig(name: string, item: string, value: string, configItem: any) {
+    async updateConfig(name: string, item: string, value: string, configItem: any) {
         if (name.indexOf('Scene') != -1) {
-            this.scene.updateSceneBackground(this.config)
+            await this.scene.updateSceneBackground(this.config)
         } else if (name.indexOf('Composer') != -1) {
             this.composer.updateComposer(this.config)
         } else if (

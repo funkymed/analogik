@@ -1,4 +1,4 @@
-import { Button } from "rsuite";
+import Button from "rsuite/Button";
 
 function AuthorList(props) {
   return (

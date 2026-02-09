@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { IconButton, CustomProvider } from "rsuite";
-import Preloader from "assets-preloader";
+import IconButton from "rsuite/IconButton";
+import CustomProvider from "rsuite/CustomProvider";
 import {
   tracks,
   getTracks,
@@ -11,7 +11,6 @@ import {
 import TWEEN from "@tweenjs/tween.js";
 import PlayerControl from "./Components/PlayerControl";
 import useKeypress from "react-use-keypress";
-import RenderCanvas from "./Components/RenderCanvas.tsx";
 import MusicIcon from "@rsuite/icons/legacy/Music";
 import InfoIcon from "@rsuite/icons/legacy/InfoCircle";
 import AboutDrawer from "./Components/AboutDrawer.js";
@@ -24,7 +23,85 @@ import PlaylistDrawer from "./Components/PlayListDrawer.js";
 import Loader from "./Components/Loader.js";
 import { isMobile } from "react-device-detect";
 
-let mouseTimeout;
+// Lazy load RenderCanvas to reduce initial bundle size
+const RenderCanvas = React.lazy(() => import("./Components/RenderCanvas.tsx"));
+
+// Custom preload functions for parallel asset loading
+const preloadImage = (url) => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      console.log(`[Preload] Image loaded: ${url}`);
+      resolve(img);
+    };
+    img.onerror = (err) => {
+      console.error(`[Preload] Failed to load image: ${url}`, err);
+      reject(err);
+    };
+    img.src = url;
+  });
+};
+
+const preloadAudio = (url) => {
+  return new Promise((resolve, reject) => {
+    fetch(url)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.blob();
+      })
+      .then((blob) => {
+        console.log(`[Preload] Audio loaded: ${url}`);
+        resolve(blob);
+      })
+      .catch((err) => {
+        console.error(`[Preload] Failed to load audio: ${url}`, err);
+        reject(err);
+      });
+  });
+};
+
+const preloadFont = (url) => {
+  return new Promise((resolve, reject) => {
+    fetch(url)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.blob();
+      })
+      .then((blob) => {
+        console.log(`[Preload] Font loaded: ${url}`);
+        resolve(blob);
+      })
+      .catch((err) => {
+        console.error(`[Preload] Failed to load font: ${url}`, err);
+        reject(err);
+      });
+  });
+};
+
+const preloadHDR = (url) => {
+  return new Promise((resolve, reject) => {
+    fetch(url)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.blob();
+      })
+      .then((blob) => {
+        console.log(`[Preload] HDR loaded: ${url}`);
+        resolve(blob);
+      })
+      .catch((err) => {
+        console.error(`[Preload] Failed to load HDR: ${url}`, err);
+        reject(err);
+      });
+  });
+};
+
 let tweenAnim;
 function App(props) {
   const ChiptuneJsPlayer = window["ChiptuneJsPlayer"];
@@ -34,6 +111,8 @@ function App(props) {
   const player = useRef();
   const mainView = useRef();
   const requestRef = useRef();
+  const mouseTimeoutRef = useRef();
+  const isMouseMovingRef = useRef(false);
 
   const years = getYears();
   const [open, setOpen] = useState(false);
@@ -170,26 +249,37 @@ function App(props) {
       currentTrack.shader = currentTrack.shader || confOffset;
     }
 
-    const handleMouse = (event) => {
-      setIsMouseMoving(true);
-      document.querySelector("body").style.cursor = "auto";
-      if (mouseTimeout) {
-        clearTimeout(mouseTimeout);
+    const bodyEl = document.body;
+    bodyEl.style.cursor = "none";
+
+    const handleMouse = () => {
+      if (!isMouseMovingRef.current) {
+        isMouseMovingRef.current = true;
+        setIsMouseMoving(true);
+        bodyEl.style.cursor = "auto";
       }
-      mouseTimeout = setTimeout(() => {
+
+      if (mouseTimeoutRef.current) {
+        clearTimeout(mouseTimeoutRef.current);
+      }
+
+      mouseTimeoutRef.current = setTimeout(() => {
+        isMouseMovingRef.current = false;
         setIsMouseMoving(false);
-        document.querySelector("body").style.cursor = "none";
+        bodyEl.style.cursor = "none";
       }, 100);
     };
-    document.querySelector("body").style.cursor = "none";
 
-    window.addEventListener("mousemove", handleMouse);
+    window.addEventListener("mousemove", handleMouse, { passive: true });
 
     requestRef.current = requestAnimationFrame(animationLoop);
 
     return () => {
       player.current.pause();
       window.removeEventListener("mousemove", handleMouse);
+      if (mouseTimeoutRef.current) {
+        clearTimeout(mouseTimeoutRef.current);
+      }
       cancelAnimationFrame(requestRef.current);
     };
   }, []);
@@ -240,22 +330,32 @@ function App(props) {
           getPlayer();
           setIsLoading(true);
           setIsPlay(false);
-          setTimeout(loadTrack, 1000);
-          // Preload before load track
-          if (_conf) {
-            const assets = [
-              _conf.scene.background,
-              `./mods/${currentTrack.url}`,
-              "./fonts/Lobster-Regular.ttf",
-              "./fonts/KdamThmorPro-Regular.ttf",
-              "./images/empty_warehouse_01_2k.hdr",
-            ];
 
-            const loader = new Preloader(assets);
-            loader.load().then(() => {
-              console.log("success");
+          // Preload before load track - PARALLEL LOADING
+          if (_conf) {
+            console.log("[Preload] Starting parallel asset preload...");
+            const startTime = performance.now();
+
+            // Parallelize independent asset loading
+            Promise.all([
+              preloadImage(_conf.scene.background),
+              preloadAudio(`./mods/${currentTrack.url}`),
+              Promise.all([
+                preloadFont("./fonts/Lobster-Regular.ttf"),
+                preloadFont("./fonts/KdamThmorPro-Regular.ttf")
+              ]),
+              preloadHDR("./images/empty_warehouse_01_2k.hdr")
+            ])
+            .then(() => {
+              const loadTime = performance.now() - startTime;
+              console.log(`[Preload] All assets loaded successfully in ${loadTime.toFixed(2)}ms`);
+            })
+            .catch((error) => {
+              console.error("[Preload] Error loading assets:", error);
             });
           }
+
+          setTimeout(loadTrack, 1000);
         })
         .start();
     }
@@ -397,17 +497,17 @@ function App(props) {
         currentTrack &&
         player.current.currentPlayingNode &&
         newConfig ? (
-          <RenderCanvas
-            player={player.current}
-            audioContext={props.context}
-            isPlay={isPlay}
-            setIsPlay={setIsPlay}
-            newConfig={newConfig}
-            onClickCanvas={onClickCanvas}
-          />
-        ) : (
-          ""
-        )}
+          <React.Suspense fallback={<Loader />}>
+            <RenderCanvas
+              player={player.current}
+              audioContext={props.context}
+              isPlay={isPlay}
+              setIsPlay={setIsPlay}
+              newConfig={newConfig}
+              onClickCanvas={onClickCanvas}
+            />
+          </React.Suspense>
+        ) : null}
       </div>
     </CustomProvider>
   );

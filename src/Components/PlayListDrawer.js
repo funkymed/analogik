@@ -1,4 +1,10 @@
-import { Col, Drawer, Grid, Radio, RadioGroup, Row, Button } from "rsuite";
+import Col from "rsuite/Col";
+import Drawer from "rsuite/Drawer";
+import Grid from "rsuite/Grid";
+import Radio from "rsuite/Radio";
+import RadioGroup from "rsuite/RadioGroup";
+import Row from "rsuite/Row";
+import Button from "rsuite/Button";
 import TracksList from "../Components/TrackList";
 import AuthorList from "../Components/AuthorList";
 import YearList from "../Components/YearList";

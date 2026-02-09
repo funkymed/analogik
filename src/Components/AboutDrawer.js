@@ -1,4 +1,8 @@
-import { Drawer, FlexboxGrid, Whisper, Popover, Button } from "rsuite";
+import Drawer from "rsuite/Drawer";
+import FlexboxGrid from "rsuite/FlexboxGrid";
+import Whisper from "rsuite/Whisper";
+import Popover from "rsuite/Popover";
+import Button from "rsuite/Button";
 import authors from "../authors";
 import { useEffect, useState } from "react";
 import { getTracksByAuthor, getTracksCoop } from "../tracks";

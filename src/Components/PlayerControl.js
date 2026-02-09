@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { IconButton, ButtonGroup, Slider, FlexboxGrid } from "rsuite";
+import IconButton from "rsuite/IconButton";
+import ButtonGroup from "rsuite/ButtonGroup";
+import Slider from "rsuite/Slider";
+import FlexboxGrid from "rsuite/FlexboxGrid";
 import PauseIcon from "@rsuite/icons/legacy/Pause";
 import NextIcon from "@rsuite/icons/legacy/PageNext";
 import PrevIcon from "@rsuite/icons/legacy/PagePrevious";

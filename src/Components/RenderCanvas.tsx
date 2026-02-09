@@ -77,7 +77,7 @@ function RenderCanvas(props: any): JSX.Element {
   }, [time]);
 
   const loadConfig = useCallback(
-    (config: ConfigType) => {
+    async (config: ConfigType) => {
       if (isMobile) {
         props.newConfig.scene.brightness /= 4;
         props.newConfig.scene.brightness =
@@ -95,7 +95,7 @@ function RenderCanvas(props: any): JSX.Element {
       }
 
       if (manda_scene.current && staticItems.current && composer.current) {
-        manda_scene.current.updateSceneBackground(config);
+        await manda_scene.current.updateSceneBackground(config);
         manda_scene.current.clearScene();
         updateImages(manda_scene.current.getScene(), config);
         updateTexts(manda_scene.current.getScene(), config);

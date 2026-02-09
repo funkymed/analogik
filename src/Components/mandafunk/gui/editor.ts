@@ -93,10 +93,10 @@ export class Editor {
     this.updateConfig(config);
   }
 
-  updateAll() {
+  async updateAll() {
     this.staticItems.update(this.config);
     this.composer.updateComposer(this.config);
-    this.scene.updateSceneBackground(this.config);
+    await this.scene.updateSceneBackground(this.config);
   }
 
   updateGui(config: ConfigType) {
@@ -165,8 +165,8 @@ export class Editor {
 
     // SCENE
     const sceneFolder = this.gui.addFolder("Scene");
-    addObjectToFolder(sceneFolder, config.scene, function (value: any) {
-      self.scene.updateSceneBackground(config);
+    addObjectToFolder(sceneFolder, config.scene, async function (value: any) {
+      await self.scene.updateSceneBackground(config);
     });
 
     // MUSIC
