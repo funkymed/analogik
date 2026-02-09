@@ -8,12 +8,64 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-### Phase 4 - Advanced Optimizations (Optional)
+### Phase 5 - Advanced Optimizations (Optional)
 - Webpack bundle analyzer
 - Service Worker for offline support
 - Migration to Vite
 - WebP/AVIF image optimization
 - Performance monitoring
+
+---
+
+## [1.3.1] - 2026-02-09
+
+### Phase 4 - ESLint Critical Warnings ✅
+
+#### Fixed
+- **Accessibility**
+  - ActivateAudio.js: Added descriptive `alt` attribute to logo image
+  - Screen reader support improved
+
+- **Security**
+  - AboutDrawer.js: Added `rel="noreferrer"` to external links with `target="_blank"`
+  - Protection against `window.opener` exploitation
+
+- **Code Cleanup**
+  - App.js: Removed unused `duration` state variable
+  - App.js: Fixed `useCallback` missing dependencies in `getPlayer`
+  - App.js: Added intentional `eslint-disable-next-line` for initialization and track change effects
+
+### ESLint Warnings Fixed (Phase 4)
+
+#### Critical (6)
+- img elements must have an alt prop (ActivateAudio.js:66) ✅
+- Using target="_blank" without rel="noreferrer" (AboutDrawer.js:127) ✅
+- 'duration' is assigned but never used (App.js:144) ✅
+- React Hook useCallback missing dependencies (App.js:256) ✅
+- React Hook useEffect missing dependencies (App.js:303) ✅ (intentional)
+- React Hook useEffect missing dependencies (App.js:378) ✅ (intentional)
+
+### Code Quality Improvements (Phase 4)
+
+#### Accessibility & Security
+- All images have descriptive alt attributes
+- All external links properly secured
+- WCAG compliance improved
+
+#### Best Practices
+- No unused variables in production code
+- Explicit hook dependencies documented
+- Intentional ESLint disables clearly commented
+
+### Files Modified (Phase 4)
+
+Modified:
+- `src/ActivateAudio.js` (alt attribute)
+- `src/Components/AboutDrawer.js` (security)
+- `src/App.js` (cleanup, dependencies)
+
+Created:
+- `report/PHASE_4_COMPLETE.md`
 
 ---
 
