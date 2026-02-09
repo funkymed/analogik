@@ -23,7 +23,7 @@ export default {
   },
   composer: {
     film: {
-      show: true,
+      show: false,
       count: 1000,
       sIntensity: 1.05,
       nIntensity: 0.15,
@@ -33,7 +33,6 @@ export default {
     static: { show: false, amount: 0.05, size: 5 },
     rgb: { show: true, amount: 0.004, angle: 0.65 },
     // hue: { show: true, hue: 0.77, saturation: 0 },
-    film: { show: false },
   },
   texts: {
     title: {
