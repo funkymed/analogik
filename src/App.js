@@ -141,7 +141,6 @@ function App(props) {
   );
   const [size, setSize] = useState(0);
   const [meta, setMeta] = useState(0);
-  const [duration, setDuration] = useState(0);
   const [isLoading, setIsLoading] = useState(0);
   const [newConfig, setNewConfig] = useState(null);
   const [newconfigOffset, setNewconfigOffset] = useState(
@@ -253,7 +252,7 @@ function App(props) {
 
     player.current = new ChiptuneJsPlayer(config);
     player.current.pause();
-  }, [props.context]);
+  }, [ChiptuneJsConfig, ChiptuneJsPlayer, props.context]);
 
   useEffect(() => {
     getPlayer();
@@ -300,6 +299,7 @@ function App(props) {
       }
       cancelAnimationFrame(requestRef.current);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -375,6 +375,7 @@ function App(props) {
         })
         .start();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTrack]);
 
   const loadTrack = useCallback(() => {
@@ -394,7 +395,6 @@ function App(props) {
       setIsPlay(true);
       setSize(buffer.byteLength);
       setMeta(player.current.metadata());
-      setDuration(player.current.duration());
 
       if (tweenAnimRef.current) {
         TWEEN.remove(tweenAnimRef.current);

@@ -66,6 +66,7 @@ function ActivateAudio(props) {
                 <img
                   className="home-img"
                   src="./logo512-cover.png"
+                  alt="Analogik Music Disk - Click to enter"
                   onClick={props.unlockAudio}
                 />
               </Whisper>

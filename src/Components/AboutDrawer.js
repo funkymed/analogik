@@ -124,7 +124,7 @@ function AboutDrawer(props) {
                     {getMessageTrack(author.nickname)}
                     {getMessageCoop(author.nickname)}
                     {author.url ? (
-                      <a href={author.url} target="_blank">
+                      <a href={author.url} target="_blank" rel="noreferrer">
                         {author.url}
                       </a>
                     ) : (
