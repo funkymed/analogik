@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Analogik Music Disk</title>
+    <meta charset="utf-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="Web site created using create-react-app"
+    />
+    <link rel="apple-touch-icon" href="/logo512.png" />
+    <meta
+      property="og:title"
+      content="Analogik : Chiptune Netlabel (Demoscene)"
+    />
+    <meta property="og:url" content="https://analogik.funkylab.fr" />
+    <meta
+      property="og:image"
+      content="https://analogik.funkylab.fr/logo512-cover.png"
+    />
+    <meta
+      property="og:description"
+      content="All the Chiptunes from the Netlabel Analogik (2000-2002)."
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1,user-scalable=no"
+    />
+
+    <style type="text/css">
+      @font-face {
+        font-family: "East Sea Dokdo";
+        src: url("/fonts/EastSeaDokdo-Regular.woff") format("woff"),
+          url("/fonts/EastSeaDokdo-Regular.ttf") format("truetype");
+      }
+
+      @font-face {
+        font-family: "Alfa Slab One";
+        src: url("/fonts/AlfaSlabOne-Regular.woff") format("woff"),
+          url("/fonts/AlfaSlabOne-Regular.ttf") format("truetype");
+      }
+
+      @font-face {
+        font-family: "Lobster";
+        src: url("/fonts/Lobster-Regular.woff") format("woff"),
+          url("/fonts/Lobster-Regular.ttf") format("truetype");
+      }
+
+      @font-face {
+        font-family: "Pacifico";
+        src: url("/fonts/Pacifico-Regular.woff") format("woff"),
+          url("/fonts/Pacifico-Regular.ttf") format("truetype");
+      }
+
+      @font-face {
+        font-family: "Permanent Marker";
+        src: url("/fonts/PermanentMarker-Regular.woff") format("woff"),
+          url("/fonts/PermanentMarker-Regular.ttf") format("truetype");
+      }
+
+      @font-face {
+        font-family: "Kdam Thmor Pro";
+        src: url("/fonts/KdamThmorPro-Regular.woff") format("woff"),
+          url("/fonts/KdamThmorPro-Regular.ttf") format("truetype");
+      }
+      body,
+      html {
+        font-family: "East Sea Dokdo", cursive;
+        font-family: "Alfa Slab One", cursive;
+        font-family: "Lobster", cursive;
+        font-family: "Pacifico", cursive;
+        font-family: "Permanent Marker", cursive;
+        font-family: "Kdam Thmor Pro", cursive;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="font_preload" style="opacity: 0">
+      <span style="font-family: 'East Sea Dokdo'"></span>
+      <span style="font-family: 'Lobster'"></span>
+      <span style="font-family: 'Kdam Thmor Pro'"></span>
+    </div>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+
+    <!-- External scripts -->
+    <script src="/chiptune2.js"></script>
+    <script src="/libopenmpt.js"></script>
+
+    <!-- Vite entry point -->
+    <script type="module" src="/src/index.js"></script>
+  </body>
+</html>

@@ -1,17 +1,27 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import App from "./App";
 import ActivateAudio from "./ActivateAudio";
 
+const isElectron = !!(window.electronAPI);
+const isElectrobun = !!(window.electrobun);
+const isDesktop = isElectron || isElectrobun;
+
 function AppAudio() {
   const ctx = new (window.AudioContext || window.webkitAudioContext)();
-  const state = ctx.state === "running";
-  const [audioLock, setAudioLock] = useState(true); //!state);
-  const [context, setContext] = useState(audioLock ? false : ctx);
+  const [audioLock, setAudioLock] = useState(!isDesktop);
+  const [context, setContext] = useState(isDesktop ? ctx : false);
 
   const updatedContext = () => {
     setContext(ctx);
     setAudioLock(false);
   };
+
+  // Auto-unlock audio in desktop apps (no user gesture required)
+  useEffect(() => {
+    if (isDesktop) {
+      ctx.resume();
+    }
+  }, []);
 
   const unlockAudio = () => {
     ctx.createGain();
@@ -24,12 +34,6 @@ function AppAudio() {
       };
     }
   };
-
-  // useEffect(() => {
-  //   if (state) {
-  //     // updatedContext();
-  //   }
-  // }, []);
 
   return audioLock ? (
     <ActivateAudio unlockAudio={unlockAudio} />

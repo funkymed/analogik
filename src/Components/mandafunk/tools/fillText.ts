@@ -23,6 +23,5 @@ export function fillText(text: string, font: string, size: number, color: string
     ctx.strokeStyle = color || 'black'
     ctx.strokeText(text, posX, posY)
 
-    // document.body.appendChild(canvas);
     return canvas
 }

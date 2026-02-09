@@ -1,13 +1,5 @@
 import { hextoRGB } from "../tools/color.ts";
 
-// function getColor(magnitude: number): string {
-//     const r: number = magnitude * 0.95
-//     const g: number = magnitude
-//     const b: number = magnitude * 0.25
-
-//     return [r, g, b].join(',')
-// }
-
 function drawGradiant(
   w: number,
   h: number,

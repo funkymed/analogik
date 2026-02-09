@@ -106,14 +106,3 @@ export const configDefault: ConfigType = {
     texts: [],
 }
 
-const updaters: any = []
-
-export const addUpdater = function (updater: Function) {
-    updaters.push(updater)
-}
-
-export const updateAll = function () {
-    for (let i of updaters) {
-        updaters[i]()
-    }
-}
