@@ -81,9 +81,17 @@ electron-start:
 build-all:
 	cd electron && yarn build
 
-## Build MacOsx
+## Build Mac (Intel + Silicon)
 build-mac:
 	cd electron && yarn build-mac
+
+## Build Mac Intel (x64)
+build-mac-intel:
+	cd electron && yarn build-mac-intel
+
+## Build Mac Silicon (arm64)
+build-mac-silicon:
+	cd electron && yarn build-mac-silicon
 
 ## Build Windows
 build-win:

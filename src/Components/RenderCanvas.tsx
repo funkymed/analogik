@@ -333,15 +333,18 @@ function RenderCanvas(props: any): JSX.Element {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.newConfig]);
 
-  // Update audio analyser when music starts playing
+  // Update player reference and audio analyser when player changes or music starts
   useEffect(() => {
-    if (props.isPlay && staticItems.current && props.player) {
-      const analyser = props.player.getAnalyser();
-      if (analyser) {
-        staticItems.current.setAnalyser(analyser);
+    if (staticItems.current && props.player) {
+      staticItems.current.setPlayer(props.player);
+      if (props.isPlay) {
+        const analyser = props.player.getAnalyser();
+        if (analyser) {
+          staticItems.current.setAnalyser(analyser);
+        }
       }
     }
-  }, [props.isPlay, props.player]);
+  }, [props.isPlay, props.player, props.playerVersion]);
 
   useWindowResize(handleResize);
 

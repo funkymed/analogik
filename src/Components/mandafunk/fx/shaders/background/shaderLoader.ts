@@ -99,12 +99,17 @@ export async function loadShader(name: string): Promise<any> {
     // Charge le module du shader dynamiquement
     const module = await loader();
 
-    // Récupère la classe du shader (ex: PlasmaShader, LaserShader, etc.)
-    const shaderClassName = `${name}Shader`;
-    const ShaderClass: ShaderConstructor = module[shaderClassName];
+    // Récupère la classe exportée du shader
+    // Cherche d'abord par convention (ex: PlasmaShader), sinon prend le premier export classe
+    const ShaderClass: ShaderConstructor =
+      module[`${name}Shader`] ||
+      module.default ||
+      Object.values(module).find(
+        (exp: any) => typeof exp === 'function' && exp.prototype
+      );
 
     if (!ShaderClass) {
-      throw new Error(`Shader class "${shaderClassName}" not found in module`);
+      throw new Error(`No shader class found in module for "${name}"`);
     }
 
     // Retourne une nouvelle instance du shader

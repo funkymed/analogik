@@ -7,7 +7,7 @@
   "homepage": "https://analogik.funkylab.fr",
   "description": "Analogik MusicDisk",
   "license": "UNLICENSED",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "main": "main.js",
   "devDependencies": {
     "@electron/fuses": "^1.8.0",
@@ -18,7 +18,9 @@
     "postinstall": "./node_modules/.bin/electron-builder install-app-deps",
     "start": "./node_modules/.bin/electron .",
     "build": "./node_modules/.bin/electron-builder build -mwl",
-    "build-mac": "./node_modules/.bin/electron-builder build --mac",
+    "build-mac": "./node_modules/.bin/electron-builder build --mac --x64 --arm64",
+    "build-mac-intel": "./node_modules/.bin/electron-builder build --mac --x64",
+    "build-mac-silicon": "./node_modules/.bin/electron-builder build --mac --arm64",
     "build-win": "./node_modules/.bin/electron-builder build --win",
     "build-linux": "./node_modules/.bin/electron-builder build --linux"
   },

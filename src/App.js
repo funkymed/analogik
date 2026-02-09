@@ -123,6 +123,7 @@ function App(props) {
 
   const defaultVolume = 80;
   const player = useRef();
+  const [playerVersion, setPlayerVersion] = useState(0);
   const mainView = useRef();
   const requestRef = useRef();
   const mouseTimeoutRef = useRef();
@@ -271,6 +272,7 @@ function App(props) {
 
     player.current = new ChiptuneJsPlayer(config);
     player.current.pause();
+    setPlayerVersion((v) => v + 1);
   }, [ChiptuneJsConfig, ChiptuneJsPlayer, props.context]);
 
   useEffect(() => {
@@ -526,6 +528,7 @@ function App(props) {
           <React.Suspense fallback={<Loader />}>
             <RenderCanvas
               player={player.current}
+              playerVersion={playerVersion}
               audioContext={props.context}
               isPlay={isPlay}
               setIsPlay={setIsPlay}
