@@ -3,20 +3,22 @@ import App from "./App";
 import ActivateAudio from "./ActivateAudio";
 
 const isElectron = !!(window.electronAPI);
+const isTauri = !!(window.__TAURI__);
+const isDesktop = isElectron || isTauri;
 
 function AppAudio() {
   const ctx = new (window.AudioContext || window.webkitAudioContext)();
-  const [audioLock, setAudioLock] = useState(!isElectron);
-  const [context, setContext] = useState(isElectron ? ctx : false);
+  const [audioLock, setAudioLock] = useState(!isDesktop);
+  const [context, setContext] = useState(isDesktop ? ctx : false);
 
   const updatedContext = () => {
     setContext(ctx);
     setAudioLock(false);
   };
 
-  // Auto-unlock audio in Electron (no user gesture required)
+  // Auto-unlock audio in desktop apps (no user gesture required)
   useEffect(() => {
-    if (isElectron) {
+    if (isDesktop) {
       ctx.resume();
     }
   }, []);

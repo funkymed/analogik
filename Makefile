@@ -106,6 +106,29 @@ cp-nfo:
 	cd nfo && ./copy.sh
 
 ## --
+Tauri:
+
+## Test Tauri App
+tauri-start:
+	npm run tauri:dev
+
+## Build Tauri (all platforms)
+tauri-build:
+	npm run tauri:build
+
+## Build Tauri Mac Universal
+tauri-build-mac:
+	npm run tauri:build-mac
+
+## Build Tauri Windows
+tauri-build-win:
+	npm run tauri:build-win
+
+## Build Tauri Linux
+tauri-build-linux:
+	npm run tauri:build-linux
+
+## --
 Extra:
 
 ## Do All
