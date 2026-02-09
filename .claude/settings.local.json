@@ -37,7 +37,9 @@
       "Bash(EOF)",
       "Bash(rustup target add:*)",
       "Bash(rustup default:*)",
-      "Bash(rustup target list:*)"
+      "Bash(rustup target list:*)",
+      "Bash(open:*)",
+      "Bash(log show:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

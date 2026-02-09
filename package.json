@@ -20,12 +20,7 @@
     "build": "vite build",
     "build:check": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "type-check": "tsc --noEmit",
-    "electrobun:dev": "electrobun dev",
-    "electrobun:build": "electrobun build",
-    "electrobun:build-mac": "electrobun build --mac",
-    "electrobun:build-win": "electrobun build --win",
-    "electrobun:build-linux": "electrobun build --linux"
+    "type-check": "tsc --noEmit"
   },
   "eslintConfig": {
     "extends": [
@@ -39,7 +34,6 @@
     "@types/react-dom": "^19.2.3",
     "@types/three": "^0.160.0",
     "@vitejs/plugin-react": "^4.7.0",
-    "electrobun": "^1.12.1",
     "typescript": "^5.9.3",
     "vite": "^6.4.1"
   }

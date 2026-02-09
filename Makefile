@@ -106,29 +106,6 @@ cp-nfo:
 	cd nfo && ./copy.sh
 
 ## --
-Electrobun:
-
-## Test Electrobun App
-electrobun-start:
-	npm run electrobun:dev
-
-## Build Electrobun (all platforms)
-electrobun-build:
-	npm run electrobun:build
-
-## Build Electrobun Mac Universal
-electrobun-build-mac:
-	npm run electrobun:build-mac
-
-## Build Electrobun Windows
-electrobun-build-win:
-	npm run electrobun:build-win
-
-## Build Electrobun Linux
-electrobun-build-linux:
-	npm run electrobun:build-linux
-
-## --
 Extra:
 
 ## Do All
