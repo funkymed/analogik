@@ -10,9 +10,9 @@
   "version": "1.0.0",
   "main": "main.js",
   "devDependencies": {
-    "electron": "^29.1.5",
-    "electron-builder": "^24.13.3",
-    "electron-packager": "^17.1.2"
+    "@electron/fuses": "^1.8.0",
+    "electron": "^39.0.0",
+    "electron-builder": "^25.1.8"
   },
   "scripts": {
     "postinstall": "./node_modules/.bin/electron-builder install-app-deps",
@@ -20,14 +20,14 @@
     "build": "./node_modules/.bin/electron-builder build -mwl",
     "build-mac": "./node_modules/.bin/electron-builder build --mac",
     "build-win": "./node_modules/.bin/electron-builder build --win",
-    "build-linux": "./node_modules/.bin/electron-builder build --linux",
-    "pack-mac": "./node_modules/.bin/electron-packager . --platform=darwin",
-    "pack-win": "./node_modules/.bin/electron-packager . med-umd --platform=win32",
-    "pack-linux": "./node_modules/.bin/electron-packager . med-umd --platform=linux"
+    "build-linux": "./node_modules/.bin/electron-builder build --linux"
   },
   "build": {
     "appId": "com.analogik.musicdisk",
     "productName": "analogik-musicdisk",
+    "asar": true,
+    "compression": "maximum",
+    "afterPack": "./scripts/afterPack.js",
     "mac": {
       "icon": "build/logo512.png",
       "mergeASARs": true,
@@ -51,28 +51,32 @@
     },
     "linux": {
       "icon": "build/logo512.png",
-      "target": {
-        "target": "default",
-        "arch": [
-          "x64"
-        ]
-      }
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "deb",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
     },
     "files": [
       "build/logo512.png",
       "logo512.png",
       "main.js",
+      "preload.js",
+      "menu.js",
+      "windowState.js",
       "build/**/*",
+      "!build/**/*.map",
       "!node_modules/**/*",
       "!dist/**/*"
     ]
-  },
-  "files": [
-    "build/logo512.png",
-    "logo512.png",
-    "main.js",
-    "build/**/*",
-    "!node_modules/**/*",
-    "!dist/**/*"
-  ]
+  }
 }

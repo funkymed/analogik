@@ -28,6 +28,11 @@ yarn-error.log*
 # electron
 electron/*
 !electron/main.js
+!electron/preload.js
+!electron/menu.js
+!electron/windowState.js
+!electron/scripts
+!electron/scripts/afterPack.js
 !electron/package.json
 !electron/yarn.lock
 !electron/logo512.png

@@ -65,7 +65,13 @@ electron-install:
 cp-build:
 	rm -rf electron/build
 	cp -r build electron
-	sed -i 's#/static#./static#g' electron/build/index.html
+	sed -i.bak 's#"/assets/#"./assets/#g' electron/build/index.html
+	sed -i.bak 's#"/fonts/#"./fonts/#g' electron/build/index.html
+	sed -i.bak 's#"/favicon.ico#"./favicon.ico#g' electron/build/index.html
+	sed -i.bak 's#"/logo512.png#"./logo512.png#g' electron/build/index.html
+	sed -i.bak 's#src="/chiptune2.js#src="./chiptune2.js#g' electron/build/index.html
+	sed -i.bak 's#src="/libopenmpt.js#src="./libopenmpt.js#g' electron/build/index.html
+	rm -f electron/build/index.html.bak
 
 ## Test Electron App
 electron-start:
