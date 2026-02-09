@@ -1,5 +1,4 @@
-import { ConfigVariations } from "./Components/ConfigVariations";
-import { getRandomOffset } from "./tools";
+// ConfigVariations and getRandomOffset imports removed - not used in this file
 
 const tracks = [
   {
@@ -804,15 +803,10 @@ const tracks = [
   },
 ];
 
-// tracks.sort(compare);
 let pos = 1;
 let startShader = 11;
 const endShader = 16;
 for (let t in tracks) {
-  // const confOffset = getRandomOffset(
-  //   ConfigVariations,
-  //   tracks[t - 1] ? tracks[t - 1].shader : -1
-  // );
   tracks[t].shader = startShader;
   startShader++;
   if (startShader > endShader) {
@@ -958,26 +952,6 @@ export function getTracks(year, author, selection) {
   return selectedTracks;
 }
 
-export const getPosTrack = (track, arr) => {
-  for (let t in arr) {
-    if (track.url === arr[t].url) {
-      return t;
-    }
-  }
-};
-
-export const getTrackByUrl = (url) => {
-  if (!url) {
-    return false;
-  }
-  for (let t of tracks) {
-    if (t.url === url) {
-      return t;
-      break;
-    }
-  }
-  return false;
-};
 
 export const getTrackByPos = (pos) => {
   return tracks[pos - 1] ? tracks[pos - 1] : false;

@@ -1,9 +1,4 @@
-import {
-  isDesktop,
-  isMobile,
-  isMobileOnly,
-  isTablet,
-} from "react-device-detect";
+// Device detection imports removed - not used in this file
 
 export const deepMergeObjects = (obj1, obj2) => {
   for (const key in obj1) {

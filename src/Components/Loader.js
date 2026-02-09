@@ -1,4 +1,4 @@
-import { Loader as LoaderRsuite } from "rsuite";
+import LoaderRsuite from "rsuite/Loader";
 import { getRandomItem } from "../tools";
 const Loader = () => {
   return (

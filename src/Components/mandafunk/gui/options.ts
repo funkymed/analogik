@@ -1,4 +1,4 @@
-import { shaders } from "../fx/shaders/background/index.ts";
+import { availableShaders } from "../fx/shaders/background/shaderLoader.ts";
 
 export const selectImagesPochette: string[] = [
   "",
@@ -73,7 +73,5 @@ export const varFont: string[] = [
 
 export const varAlign = ["left", "center"];
 
-export const varShader = [""];
-for (let k in shaders) {
-  varShader.push(k);
-}
+// Liste des shaders disponibles pour le GUI (sans les charger)
+export const varShader = ["", ...availableShaders];

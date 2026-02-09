@@ -25,6 +25,7 @@ import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
 import { deepMergeObjects } from "../tools.js";
 import Sparks from "./sparks.js";
 import { isMobile, isMobileOnly } from "react-device-detect";
+import { useWindowResize } from "../hooks/useWindowResize";
 
 const isEditor = getHttpParam("editor");
 
@@ -77,16 +78,7 @@ function RenderCanvas(props: any): JSX.Element {
   }, [time]);
 
   const loadConfig = useCallback(
-    (config: ConfigType) => {
-      if (isMobile) {
-        props.newConfig.scene.brightness /= 4;
-        props.newConfig.scene.brightness =
-          props.newConfig.scene.brightness < 0
-            ? 0
-            : props.newConfig.scene.brightness;
-      }
-      deepMergeObjects(props.newConfig, config);
-
+    async (config: ConfigType) => {
       if (!isMobileOnly) {
         if (config.texts && config.texts["title"]) {
           config.texts["title"].text = "";
@@ -95,7 +87,7 @@ function RenderCanvas(props: any): JSX.Element {
       }
 
       if (manda_scene.current && staticItems.current && composer.current) {
-        manda_scene.current.updateSceneBackground(config);
+        await manda_scene.current.updateSceneBackground(config);
         manda_scene.current.clearScene();
         updateImages(manda_scene.current.getScene(), config);
         updateTexts(manda_scene.current.getScene(), config);
@@ -225,8 +217,6 @@ function RenderCanvas(props: any): JSX.Element {
     renderer.current.autoClearColor = true;
     renderer.current.setPixelRatio(window.devicePixelRatio);
 
-    // document.body.appendChild(renderer.domElement)
-
     // Composer
     composer.current = new Composer(
       renderer.current,
@@ -266,10 +256,7 @@ function RenderCanvas(props: any): JSX.Element {
   }, [props.analyser, props.audioContext, props.player]);
 
   const render = (time: number) => {
-    // renderer.render(scene, camera)
     if (composer.current) {
-      // camera.current.position.x = Math.sin(time) * 5;
-      // camera.current.position.y = Math.cos(time) * 2;
       composer.current.rendering(time);
     }
   };
@@ -302,27 +289,63 @@ function RenderCanvas(props: any): JSX.Element {
   }, [time]);
 
   useEffect(() => {
-    const resizeHandler = () => {
-      handleResize();
-    };
-    window.addEventListener("resize", resizeHandler);
-
     init();
-
-    if (staticItems.current && currentConfig.current) {
-      staticItems.current.setAnalyser(props.player.getAnalyser());
-      loadConfig(currentConfig.current);
-    }
-
     animate();
     handleResize();
     return () => {
-      window.removeEventListener("resize", resizeHandler);
       if (animateId.current) {
         cancelAnimationFrame(animateId.current);
       }
     };
   }, []);
+
+  // React to config changes: merge new config, load scene, signal ready
+  useEffect(() => {
+    if (
+      props.newConfig &&
+      manda_scene.current &&
+      staticItems.current &&
+      composer.current
+    ) {
+      // Apply mobile brightness reduction
+      if (isMobile && props.newConfig.scene) {
+        props.newConfig.scene.brightness /= 4;
+        props.newConfig.scene.brightness =
+          props.newConfig.scene.brightness < 0
+            ? 0
+            : props.newConfig.scene.brightness;
+      }
+
+      // Merge new config values into current config
+      deepMergeObjects(props.newConfig, currentConfig.current);
+
+      loadConfig(currentConfig.current).then(() => {
+        if (props.onSceneReady) {
+          props.onSceneReady();
+        }
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.newConfig]);
+
+  // Update player reference when player changes
+  useEffect(() => {
+    if (staticItems.current && props.player) {
+      staticItems.current.setPlayer(props.player);
+    }
+  }, [props.player, props.playerVersion]);
+
+  // Update audio analyser when music starts playing
+  useEffect(() => {
+    if (staticItems.current && props.player && props.isPlay) {
+      const analyser = props.player.getAnalyser();
+      if (analyser) {
+        staticItems.current.setAnalyser(analyser);
+      }
+    }
+  }, [props.isPlay, props.player, props.playerVersion]);
+
+  useWindowResize(handleResize);
 
   useEffect(() => {
     if (canvasRef.current) {

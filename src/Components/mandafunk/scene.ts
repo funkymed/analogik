@@ -3,7 +3,7 @@ import { canvas2texture, canvasTexture } from "./tools/canvas2texture.ts";
 import { ConfigType } from "./types/config.ts";
 import { configDefault } from "./config.ts";
 import { deepClone } from "./tools/deepClone.ts";
-import { shaders } from "./fx/shaders/background/index.ts";
+import { loadShader } from "./fx/shaders/background/shaderLoader.ts";
 import { StaticItems } from "./fx/static.ts";
 import { isMobile } from "react-device-detect";
 
@@ -65,21 +65,27 @@ export class MandaScene {
     this.scene.background.repeat.y = factor > 1 ? 1 : factor;
   }
 
-  updateSceneBackground(config: ConfigType) {
+  async updateSceneBackground(config: ConfigType) {
     this.config = config;
-    this.addShaderBackground();
+    await this.addShaderBackground();
     if (config.scene.bgColor) {
       this.scene.background = new Color(config.scene.bgColor);
     }
 
     if (config.scene.background) {
-      this.background = new Image();
-      this.background.onload = this.onLoad.bind(this);
-      this.background.src = config.scene.background;
+      await new Promise<void>((resolve) => {
+        this.background = new Image();
+        this.background.onload = () => {
+          this.onLoad();
+          resolve();
+        };
+        this.background.onerror = () => resolve();
+        this.background.src = config.scene.background;
+      });
     }
   }
 
-  addShaderBackground() {
+  async addShaderBackground() {
     this.scene.background = null;
     if (this.shader) {
       this.shader.clear();
@@ -87,9 +93,15 @@ export class MandaScene {
     if (!this.config.scene.shader || this.config.scene.shader === "") {
       return false;
     }
-    this.shader = new shaders[this.config.scene.shader]();
 
-    this.shader.init(this.config, this.scene, this.staticItems);
+    try {
+      // Chargement dynamique du shader spécifique
+      this.shader = await loadShader(this.config.scene.shader);
+      await this.shader.init(this.config, this.scene, this.staticItems);
+    } catch (error) {
+      console.error(`Failed to load shader: ${this.config.scene.shader}`, error);
+      return false;
+    }
   }
 
   updateShader(time: number) {

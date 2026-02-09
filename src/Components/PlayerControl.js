@@ -1,5 +1,8 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { IconButton, ButtonGroup, Slider, FlexboxGrid } from "rsuite";
+import { useCallback, useEffect, useMemo, useRef } from "react";
+import IconButton from "rsuite/IconButton";
+import ButtonGroup from "rsuite/ButtonGroup";
+import Slider from "rsuite/Slider";
+import FlexboxGrid from "rsuite/FlexboxGrid";
 import PauseIcon from "@rsuite/icons/legacy/Pause";
 import NextIcon from "@rsuite/icons/legacy/PageNext";
 import PrevIcon from "@rsuite/icons/legacy/PagePrevious";
@@ -9,8 +12,61 @@ import { Capitalize } from "../utils";
 import TWEEN from "@tweenjs/tween.js";
 import useKeypress from "react-use-keypress";
 import { isMobile } from "react-device-detect";
+import { useWindowResize } from "../hooks/useWindowResize";
 
-let tweenAnim;
+// Hoisted static styles
+const VOLUME_CONTAINER_STYLE = {
+  width: 100,
+  position: "absolute",
+  bottom: 15,
+  left: 15,
+};
+
+const BUTTON_GROUP_STYLE = {
+  filter: "drop-shadow(0px 1px 18px #000000)",
+};
+
+const TRACK_COUNTER_STYLE = {
+  textAlign: "center",
+};
+
+const BUTTON_GROUP_CONTAINER_STYLE = {
+  position: "absolute",
+  top: 15,
+  left: 15,
+};
+
+const FLEX_GRID_ITEM_STYLE = {
+  pointerEvents: "none",
+};
+
+const TITLE_CONTENT_STYLE = {
+  fontFamily: "Kdam Thmor Pro",
+  textAlign: "center",
+  margin: 50,
+  padding: 20,
+  pointerEvents: "none",
+};
+
+const TITLE_H4_STYLE = {
+  color: "#333",
+  fontSize: 40,
+  fontFamily: "Permanent Marker",
+  filter: "drop-shadow(0px 0px 5px #17467aAA)",
+};
+
+const AUTHOR_STYLE = {
+  fontFamily: "Lobster",
+  fontSize: 25,
+  color: "#555555",
+  filter: "drop-shadow(0px 0px 5px #FFFFFF88)",
+  fontStyle: "italic",
+};
+
+const OCTETS_STYLE = {
+  color: "#333",
+  filter: "drop-shadow(0px 0px 2px #000000EE)",
+};
 
 function PlayerControl({
   player,
@@ -30,22 +86,17 @@ function PlayerControl({
   isMouseMoving,
   isLoading,
 }) {
-  const [playing, setPlaying] = useState(false);
-
   const FlexContent = useRef();
   const titlePanel = useRef();
   const bottomTitle = useRef();
   const topTitle = useRef();
+  const tweenAnimRef = useRef();
 
   const handleResize = useCallback(() => {
     if (FlexContent.current) {
       FlexContent.current.style.height = `${window.innerHeight}px`;
     }
   }, []);
-
-  useEffect(() => {
-    setPlaying(isPlay);
-  }, [isPlay, setIsPlay, playing]);
 
   useEffect(() => {
     if (isLoading) {
@@ -59,7 +110,7 @@ function PlayerControl({
   }, [isLoading]);
 
   useEffect(() => {
-    if (tweenAnim) TWEEN.remove(tweenAnim);
+    if (tweenAnimRef.current) TWEEN.remove(tweenAnimRef.current);
 
     if (bottomTitle.current) {
       bottomTitle.current.style.opacity = 0;
@@ -70,17 +121,17 @@ function PlayerControl({
       }
       titlePanel.current.style.opacity = 0;
       const timeAnim = 250;
-      tweenAnim = new TWEEN.Tween(titlePanel.current.style)
+      tweenAnimRef.current = new TWEEN.Tween(titlePanel.current.style)
         .to({ opacity: 1 }, timeAnim)
         .delay(2000)
         .easing(TWEEN.Easing.Sinusoidal.InOut)
         .onComplete(() => {
-          tweenAnim = new TWEEN.Tween(titlePanel.current.style)
+          tweenAnimRef.current = new TWEEN.Tween(titlePanel.current.style)
             .to({ opacity: 0 }, timeAnim)
             .delay(2000)
             .easing(TWEEN.Easing.Sinusoidal.InOut)
             .onComplete(() => {
-              tweenAnim = new TWEEN.Tween(bottomTitle.current.style)
+              tweenAnimRef.current = new TWEEN.Tween(bottomTitle.current.style)
                 .to({ opacity: 0.85 }, timeAnim / 2)
                 .easing(TWEEN.Easing.Sinusoidal.InOut)
                 .start();
@@ -89,32 +140,30 @@ function PlayerControl({
         })
         .start();
     }
-
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
   }, [meta, isPlay]);
 
-  const getTitle = () => {
+  useWindowResize(handleResize);
+
+  const title = useMemo(() => {
     return (
       `${currentTrack.pos}. ` +
       String(meta.title ? meta.title : currentTrack.filename).toUpperCase()
     );
-  };
-  const getAuthors = () => {
+  }, [currentTrack, meta]);
+
+  const authors = useMemo(() => {
     const a = currentTrack.author;
-    const authors = [];
+    const authorsList = [];
     for (let c in a) {
-      authors.push(Capitalize(a[c]));
+      authorsList.push(Capitalize(a[c]));
     }
 
-    return authors.join(" & ");
-  };
+    return authorsList.join(" & ");
+  }, [currentTrack]);
 
-  const getOctets = (n) => {
-    return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-  };
+  const octets = useMemo(() => {
+    return size.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  }, [size]);
 
   useKeypress(" ", togglePlay);
   useKeypress("ArrowLeft", prevTrack);
@@ -130,9 +179,9 @@ function PlayerControl({
 
   return (
     <>
-      {!isMobile ? (
+      {!isMobile && (
         <div
-          style={{ width: 100, position: "absolute", bottom: 15, left: 15 }}
+          style={VOLUME_CONTAINER_STYLE}
           className={!isMouseMoving ? "hide" : ""}
         >
           <label>Volume </label>
@@ -146,8 +195,6 @@ function PlayerControl({
             }}
           />
         </div>
-      ) : (
-        ""
       )}
 
       <div
@@ -168,19 +215,19 @@ function PlayerControl({
       >
         {isMobile ? (
           <>
-            <b>{getTitle()}</b> by {getAuthors()} <br />
+            <b>{title}</b> by {authors} <br />
             in {currentTrack.year} <br />
-            {getOctets(size)} octets
+            {octets} octets
           </>
         ) : (
           <>
-            <b>{getTitle()}</b> by {getAuthors()} in {currentTrack.year} (
-            {getOctets(size)} octets)
+            <b>{title}</b> by {authors} in {currentTrack.year} (
+            {octets} octets)
           </>
         )}
       </div>
 
-      {!isMobile ? (
+      {!isMobile && (
         <div
           ref={topTitle}
           className={!isMouseMoving ? "hide" : ""}
@@ -200,19 +247,15 @@ function PlayerControl({
           Change track <b>← →</b> - Volume <b>↑ ↓</b> - use keyboard to display
           information <b>(i)</b> and playlist <b>(p)</b>
         </div>
-      ) : (
-        ""
       )}
 
       <div
-        style={{ position: "absolute", top: 15, left: 15 }}
+        style={BUTTON_GROUP_CONTAINER_STYLE}
         className={!isMouseMoving ? "hide" : ""}
       >
         <ButtonGroup
           size="sm"
-          style={{
-            filter: "drop-shadow(0px 1px 18px #000000)",
-          }}
+          style={BUTTON_GROUP_STYLE}
         >
           <IconButton
             icon={<PrevIcon />}
@@ -252,7 +295,7 @@ function PlayerControl({
           />
         </ButtonGroup>
         <br />
-        <div style={{ textAlign: "center" }}>
+        <div style={TRACK_COUNTER_STYLE}>
           {currentTrack.pos} / {lengthTracks}
         </div>
       </div>
@@ -267,7 +310,7 @@ function PlayerControl({
           pointerEvents: "none",
         }}
       >
-        <FlexboxGrid.Item colspan={10} style={{ pointerEvents: "none" }}>
+        <FlexboxGrid.Item colspan={10} style={FLEX_GRID_ITEM_STYLE}>
           <div
             ref={titlePanel}
             style={{
@@ -281,44 +324,16 @@ function PlayerControl({
               background: "rgba(255,255,255, 0.05)",
             }}
           >
-            <div
-              style={{
-                fontFamily: "Kdam Thmor Pro",
-                textAlign: "center",
-                margin: 50,
-                padding: 20,
-                pointerEvents: "none",
-              }}
-            >
-              <h4
-                style={{
-                  color: "#333",
-                  fontSize: 40,
-                  fontFamily: "Permanent Marker",
-                  filter: "drop-shadow(0px 0px 5px #17467aAA)",
-                }}
-              >
-                {getTitle()}
+            <div style={TITLE_CONTENT_STYLE}>
+              <h4 style={TITLE_H4_STYLE}>
+                {title}
               </h4>
-              <b
-                style={{
-                  fontFamily: "Lobster",
-                  fontSize: 25,
-                  color: "#555555",
-                  filter: "drop-shadow(0px 0px 5px #FFFFFF88)",
-                  fontStyle: "italic",
-                }}
-              >
-                by {getAuthors()} in {currentTrack.year}
+              <b style={AUTHOR_STYLE}>
+                by {authors} in {currentTrack.year}
               </b>
               <br />
-              <p
-                style={{
-                  color: "#333",
-                  filter: "drop-shadow(0px 0px 2px #000000EE)",
-                }}
-              >
-                {getOctets(size)} octets
+              <p style={OCTETS_STYLE}>
+                {octets} octets
               </p>
             </div>
           </div>

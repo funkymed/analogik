@@ -13,7 +13,6 @@ export const convertHMS = function (value: any): string {
     if (seconds < 10) {
         seconds = '0' + seconds
     }
-    //return hours+':'+minutes+':'+seconds; // Return is HH : MM : SS
     minutes = isNaN(minutes) ? '00' : minutes
     seconds = isNaN(seconds) ? '00' : seconds
     return minutes + ':' + seconds // Return is HH : MM : SS

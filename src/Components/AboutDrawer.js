@@ -1,4 +1,8 @@
-import { Drawer, FlexboxGrid, Whisper, Popover, Button } from "rsuite";
+import Drawer from "rsuite/Drawer";
+import FlexboxGrid from "rsuite/FlexboxGrid";
+import Whisper from "rsuite/Whisper";
+import Popover from "rsuite/Popover";
+import Button from "rsuite/Button";
 import authors from "../authors";
 import { useEffect, useState } from "react";
 import { getTracksByAuthor, getTracksCoop } from "../tracks";
@@ -8,18 +12,14 @@ import { isMobile } from "react-device-detect";
 function AboutDrawer(props) {
   const [countries, setCountries] = useState([]);
   useEffect(() => {
-    const ct = [];
-    authors.map((author) => {
-      if (
-        author.country &&
-        author.country !== "?" &&
-        ct.indexOf(author.country) === -1
-      ) {
-        ct.push(author.country);
+    const countriesSet = new Set();
+    authors.forEach((author) => {
+      if (author.country && author.country !== "?") {
+        countriesSet.add(author.country);
       }
-      ct.sort();
-      setCountries(ct);
     });
+    const sortedCountries = Array.from(countriesSet).sort();
+    setCountries(sortedCountries);
   }, []);
 
   const getMessageTrack = (author) => {
@@ -112,10 +112,10 @@ function AboutDrawer(props) {
         <p>All artists who participated :</p>
 
         <FlexboxGrid style={{ fontSize: 16 }}>
-          {authors.map((author, k) => {
+          {authors.map((author) => {
             return (
               <Whisper
-                key={`whishper-author-${k}`}
+                key={author.nickname}
                 enterable
                 placement="top"
                 // followCursor={true}
@@ -124,7 +124,7 @@ function AboutDrawer(props) {
                     {getMessageTrack(author.nickname)}
                     {getMessageCoop(author.nickname)}
                     {author.url ? (
-                      <a href={author.url} target="_blank">
+                      <a href={author.url} target="_blank" rel="noreferrer">
                         {author.url}
                       </a>
                     ) : (
@@ -134,7 +134,6 @@ function AboutDrawer(props) {
                 }
               >
                 <Button
-                  key={`button-author-${k}`}
                   appearance="subtle"
                   className="btn-glass"
                   onClick={() => {

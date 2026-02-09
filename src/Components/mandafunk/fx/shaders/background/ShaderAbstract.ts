@@ -59,20 +59,28 @@ export abstract class ShaderAbstract implements BackgroundShader {
     };
   }
 
-  init(config: ConfigType, scene: Scene, staticItems: StaticItems): void {
+  async init(config: ConfigType, scene: Scene, staticItems: StaticItems): Promise<void> {
     this.config = config;
     this.scene = scene;
     this.staticItems = staticItems;
 
-    // this.uniforms.diffuse.value = {r:1,g:.2,b:.2}
     if (config.scene.background) {
       const loader = new TextureLoader();
-      const background = loader.load(this.config.scene.background);
-      background.minFilter = NearestFilter;
-      background.magFilter = NearestFilter;
-      background.wrapS = RepeatWrapping;
-      background.wrapT = RepeatWrapping;
-      this.uniforms.iChannel0.value = background;
+      await new Promise<void>((resolve) => {
+        loader.load(
+          this.config.scene.background,
+          (background) => {
+            background.minFilter = NearestFilter;
+            background.magFilter = NearestFilter;
+            background.wrapS = RepeatWrapping;
+            background.wrapT = RepeatWrapping;
+            this.uniforms.iChannel0.value = background;
+            resolve();
+          },
+          undefined,
+          () => resolve()
+        );
+      });
     }
 
     this.uniforms.iChannel1.value = staticItems.textureSpectrum.texture;
@@ -111,10 +119,6 @@ export abstract class ShaderAbstract implements BackgroundShader {
   }
 
   update(time: number): void {
-    // if (this.staticItems) {
-    //     this.uniforms.iChannel1.value = this.staticItems.textureSpectrum.texture
-    // }
-
     if (!isMobileOnly) {
       const sinSpeed = this.config.scene.shader_sin_cos_speed || 1;
       const sinSpace = this.config.scene.shader_sin_cos_space || 1;

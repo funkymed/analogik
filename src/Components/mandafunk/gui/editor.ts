@@ -93,10 +93,10 @@ export class Editor {
     this.updateConfig(config);
   }
 
-  updateAll() {
+  async updateAll() {
     this.staticItems.update(this.config);
     this.composer.updateComposer(this.config);
-    this.scene.updateSceneBackground(this.config);
+    await this.scene.updateSceneBackground(this.config);
   }
 
   updateGui(config: ConfigType) {
@@ -104,43 +104,11 @@ export class Editor {
     let self: Editor = this;
 
     const guiButtons = {
-      save: function () {
-        console.log(JSON.stringify(config));
-      },
+      save: function () {},
       addText: function () {
-        const countTexts = Object.keys(config.texts).length;
-        const key = `text-${countTexts + 1}`;
-        // config.texts['text-' + (countTexts + 1)] = {
-        //     show: true,
-        //     text: 'Default text',
-        //     order: 0,
-        //     x: 0,
-        //     y: 0,
-        //     z: -650,
-        //     rotationX: 0,
-        //     rotationY: 0,
-        //     rotationZ: 0,
-        //     size: 18,
-        //     color: '#FFFFFF',
-        //     opacity: 0.75,
-        // }
         self.updateGui(config);
       },
       addImage: function () {
-        const countTexts = Object.keys(config.images).length;
-        const key = `image-${countTexts + 1}`;
-        console.log(key);
-        // config.images['image-' + (countTexts + 1)] = {
-        //     show: true,
-        //     path: './images/w1.jpg',
-        //     x: 0,
-        //     y: 0,
-        //     z: -2,
-        //     rotationX: 0,
-        //     rotationY: 0,
-        //     rotationZ: 0,
-        //     order: 0,
-        // }
         self.updateGui(config);
       },
       delete: function () {},
@@ -165,8 +133,8 @@ export class Editor {
 
     // SCENE
     const sceneFolder = this.gui.addFolder("Scene");
-    addObjectToFolder(sceneFolder, config.scene, function (value: any) {
-      self.scene.updateSceneBackground(config);
+    addObjectToFolder(sceneFolder, config.scene, async function (value: any) {
+      await self.scene.updateSceneBackground(config);
     });
 
     // MUSIC
@@ -213,8 +181,6 @@ export class Editor {
           self.updateText(config);
         });
         folder.add(guiButtons, "delete", item).onChange(function () {
-          // config.texts[item] = undefined
-          console.log("delete", item);
           self.updateGui(config);
           self.updateAll();
         });
@@ -233,7 +199,6 @@ export class Editor {
           }
         });
         folder.add(guiButtons, "delete", key).onChange(function () {
-          // delete config.images[key]
           self.updateGui(config);
           self.updateAll();
         });

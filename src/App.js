@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
-import { IconButton, CustomProvider } from "rsuite";
-import Preloader from "assets-preloader";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import IconButton from "rsuite/IconButton";
+import CustomProvider from "rsuite/CustomProvider";
 import {
   tracks,
   getTracks,
@@ -11,7 +11,6 @@ import {
 import TWEEN from "@tweenjs/tween.js";
 import PlayerControl from "./Components/PlayerControl";
 import useKeypress from "react-use-keypress";
-import RenderCanvas from "./Components/RenderCanvas.tsx";
 import MusicIcon from "@rsuite/icons/legacy/Music";
 import InfoIcon from "@rsuite/icons/legacy/InfoCircle";
 import AboutDrawer from "./Components/AboutDrawer.js";
@@ -24,37 +23,121 @@ import PlaylistDrawer from "./Components/PlayListDrawer.js";
 import Loader from "./Components/Loader.js";
 import { isMobile } from "react-device-detect";
 
-let mouseTimeout;
-let tweenAnim;
+const RenderCanvas = React.lazy(() => import("./Components/RenderCanvas.tsx"));
+
+const MUSIC_ICON_BUTTON_STYLE = {
+  position: "absolute",
+  bottom: 15,
+  right: 15,
+  filter: "drop-shadow(0px 0px 20px #000000)",
+};
+
+const INFO_ICON_BUTTON_STYLE = {
+  position: "absolute",
+  top: 15,
+  right: 15,
+  filter: "drop-shadow(0px 0px 20px #000000)",
+};
+
+const preloadImage = (url) => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = (err) => reject(err);
+    img.src = url;
+  });
+};
+
+const preloadAudio = (url) => {
+  return new Promise((resolve, reject) => {
+    fetch(url)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.blob();
+      })
+      .then((blob) => resolve(blob))
+      .catch((err) => reject(err));
+  });
+};
+
+const preloadFont = (url) => {
+  return new Promise((resolve, reject) => {
+    fetch(url)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.blob();
+      })
+      .then((blob) => resolve(blob))
+      .catch((err) => reject(err));
+  });
+};
+
+const preloadHDR = (url) => {
+  return new Promise((resolve, reject) => {
+    fetch(url)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.blob();
+      })
+      .then((blob) => resolve(blob))
+      .catch((err) => reject(err));
+  });
+};
+
 function App(props) {
   const ChiptuneJsPlayer = window["ChiptuneJsPlayer"];
   const ChiptuneJsConfig = window["ChiptuneJsConfig"];
 
   const defaultVolume = 80;
   const player = useRef();
+  const [playerVersion, setPlayerVersion] = useState(0);
   const mainView = useRef();
   const requestRef = useRef();
+  const mouseTimeoutRef = useRef();
+  const isMouseMovingRef = useRef(false);
+  const tweenAnimRef = useRef();
+
+  const sceneReadyResolveRef = useRef(null);
+  const isSceneReadyRef = useRef(false);
+
+  const onSceneReady = useCallback(() => {
+    isSceneReadyRef.current = true;
+    if (sceneReadyResolveRef.current) {
+      sceneReadyResolveRef.current();
+      sceneReadyResolveRef.current = null;
+    }
+  }, []);
+
+  const waitForSceneReady = useCallback(() => {
+    if (isSceneReadyRef.current) return Promise.resolve();
+    return new Promise((resolve) => {
+      sceneReadyResolveRef.current = resolve;
+    });
+  }, []);
 
   const years = getYears();
   const [open, setOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
   const [volume, setVolume] = useState(defaultVolume);
 
-  // tracks
   const [isPlay, setIsPlay] = useState(0);
   const [currentTrack, setCurrentTrack] = useState(
     getTrackByPos(getHttpParam("track"))
   );
   const [size, setSize] = useState(0);
   const [meta, setMeta] = useState(0);
-  const [duration, setDuration] = useState(0);
   const [isLoading, setIsLoading] = useState(0);
   const [newConfig, setNewConfig] = useState(null);
   const [newconfigOffset, setNewconfigOffset] = useState(
     getHttpParam("config") || null
   );
 
-  // filters
   const [year, setYear] = useState(getHttpParam("year") || 0);
   const [author, setAuthor] = useState(getHttpParam("author") || 0);
   const [authors, setAuthors] = useState(
@@ -64,79 +147,80 @@ function App(props) {
     getHttpParam("selection") || "all"
   );
 
-  // tracks
-  const [mods, setMods] = useState(getTracks(year, author, selection));
+  const mods = useMemo(
+    () => getTracks(year, author, selection),
+    [year, author, selection]
+  );
   const [currentPlaylist, setCurrentPlaylist] = useState([]);
   const [isCustomPlaylist, setIsCustomPlaylist] = useState(false);
   const [isPrevTrack, setIsPrevTrack] = useState(false);
   const [isNextTrack, setIsNextTrack] = useState(false);
 
-  // mouse
   const [isMouseMoving, setIsMouseMoving] = useState(false);
 
-  const playOffset = (order) => {
+  const playOffset = useCallback((order) => {
     const track =
       currentPlaylist[parseInt(currentTrack.pos - 1) + order] ?? false;
     if (track) {
       setCurrentTrack(track);
     }
-  };
+  }, [currentPlaylist, currentTrack]);
 
-  const nextTrack = () => {
+  const nextTrack = useCallback(() => {
     playOffset(1);
-  };
+  }, [playOffset]);
 
-  const prevTrack = () => {
+  const prevTrack = useCallback(() => {
     playOffset(-1);
-  };
+  }, [playOffset]);
 
-  const filterSelection = (s) => {
+  const filterSelection = useCallback((s) => {
     setYear(0);
     setAuthor(0);
     setSelection(s);
     setAuthors(getAuthors(0, s));
-  };
+  }, []);
 
-  const filterYear = (y) => {
+  const filterYear = useCallback((y) => {
     setAuthor(0);
     setYear(y);
     setAuthors(getAuthors(y, selection));
-  };
+  }, [selection]);
 
-  const filterAuthor = (a, reset) => {
+  const filterAuthor = useCallback((a, reset) => {
     if (reset) {
       filterYear(0);
       filterSelection("all");
     }
     setAuthor(a);
-  };
+  }, [filterYear, filterSelection]);
 
-  const setPlayerVolume = (value) => {
+  const setPlayerVolume = useCallback((value) => {
     setVolume(value);
     player.current.setVolume(value);
-  };
+  }, []);
 
-  const togglePlay = () => {
-    setIsPlay(!isPlay);
+  const togglePlay = useCallback(() => {
+    setIsPlay((prev) => !prev);
     player.current.togglePause();
-  };
+  }, []);
 
-  const updateControlBtn = () => {
+  const updateControlBtn = useCallback(() => {
     let isPrev = false;
     let isNext = false;
     const posOffset = currentTrack.pos ? currentTrack.pos - 1 : 0;
 
-    isPrev = posOffset > 0 ? true : false;
-    isNext = posOffset < tracks.length - 1 ? true : false;
+    isPrev = posOffset > 0;
+    isNext = posOffset < tracks.length -1;
 
     setIsPrevTrack(isPrev);
     setIsNextTrack(isNext);
-  };
+  }, [currentTrack]);
 
-  const onClickCanvas = (e) => {
+  const onClickCanvas = useCallback((e) => {
     const pos = e.screenX / window.innerWidth;
     player.current.seek(pos * player.current.duration());
-  };
+  }, []);
 
   useKeypress("i", () => {
     setOpen(false);
@@ -147,7 +231,7 @@ function App(props) {
     setOpen(!open);
   });
 
-  const getPlayer = () => {
+  const getPlayer = useCallback(() => {
     const config = new ChiptuneJsConfig({
       repeatCount: 0,
       volume: defaultVolume,
@@ -156,13 +240,14 @@ function App(props) {
 
     player.current = new ChiptuneJsPlayer(config);
     player.current.pause();
-  };
+    setPlayerVersion((v) => v + 1);
+  }, [ChiptuneJsConfig, ChiptuneJsPlayer, props.context]);
 
   useEffect(() => {
     getPlayer();
     setCurrentPlaylist(tracks);
     if (!currentTrack) {
-      setCurrentTrack(tracks[0]); //getRandomItem(tracks);
+      setCurrentTrack(tracks[0]);
     } else {
       const confOffset = newconfigOffset
         ? newconfigOffset
@@ -170,33 +255,43 @@ function App(props) {
       currentTrack.shader = currentTrack.shader || confOffset;
     }
 
-    const handleMouse = (event) => {
-      setIsMouseMoving(true);
-      document.querySelector("body").style.cursor = "auto";
-      if (mouseTimeout) {
-        clearTimeout(mouseTimeout);
+    const bodyEl = document.body;
+    bodyEl.style.cursor = "none";
+
+    const handleMouse = () => {
+      if (!isMouseMovingRef.current) {
+        isMouseMovingRef.current = true;
+        setIsMouseMoving(true);
+        bodyEl.style.cursor = "auto";
       }
-      mouseTimeout = setTimeout(() => {
+
+      if (mouseTimeoutRef.current) {
+        clearTimeout(mouseTimeoutRef.current);
+      }
+
+      mouseTimeoutRef.current = setTimeout(() => {
+        isMouseMovingRef.current = false;
         setIsMouseMoving(false);
-        document.querySelector("body").style.cursor = "none";
+        bodyEl.style.cursor = "none";
       }, 100);
     };
-    document.querySelector("body").style.cursor = "none";
 
-    window.addEventListener("mousemove", handleMouse);
+    window.addEventListener("mousemove", handleMouse, { passive: true });
 
     requestRef.current = requestAnimationFrame(animationLoop);
 
     return () => {
       player.current.pause();
       window.removeEventListener("mousemove", handleMouse);
+      if (mouseTimeoutRef.current) {
+        clearTimeout(mouseTimeoutRef.current);
+      }
       cancelAnimationFrame(requestRef.current);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    const modsList = getTracks(year, author, selection);
-    setMods(modsList);
     updateRouteHttp(
       year,
       author,
@@ -204,23 +299,23 @@ function App(props) {
       currentTrack ? currentTrack.pos : null,
       newconfigOffset
     );
-  }, [year, author, selection, getTracks, newconfigOffset]);
+  }, [year, author, selection, currentTrack, newconfigOffset]);
 
   useEffect(() => {
-    if (tweenAnim) {
-      TWEEN.remove(tweenAnim);
+    if (tweenAnimRef.current) {
+      TWEEN.remove(tweenAnimRef.current);
     }
 
     if (mainView.current) {
       const animTime = 300;
       mainView.current.style.opacity = 1;
-      tweenAnim = new TWEEN.Tween(mainView.current.style)
+      tweenAnimRef.current = new TWEEN.Tween(mainView.current.style)
         .to({ opacity: 0 }, animTime)
         .onComplete(async () => {
           let _conf = false;
           if (currentTrack.shader) {
             setNewconfigOffset(currentTrack.shader);
-            setNewConfig(ConfigVariations[currentTrack.shader]);
+            setNewConfig({ ...ConfigVariations[currentTrack.shader] });
             _conf = ConfigVariations[currentTrack.shader];
           }
 
@@ -240,63 +335,71 @@ function App(props) {
           getPlayer();
           setIsLoading(true);
           setIsPlay(false);
-          setTimeout(loadTrack, 1000);
-          // Preload before load track
-          if (_conf) {
-            const assets = [
-              _conf.scene.background,
-              `./mods/${currentTrack.url}`,
-              "./fonts/Lobster-Regular.ttf",
-              "./fonts/KdamThmorPro-Regular.ttf",
-              "./images/empty_warehouse_01_2k.hdr",
-            ];
+          isSceneReadyRef.current = false;
 
-            const loader = new Preloader(assets);
-            loader.load().then(() => {
-              console.log("success");
-            });
+          if (_conf) {
+            try {
+              await Promise.all([
+                preloadImage(_conf.scene.background),
+                preloadAudio(`./mods/${currentTrack.url}`),
+                Promise.all([
+                  preloadFont("./fonts/Lobster-Regular.ttf"),
+                  preloadFont("./fonts/KdamThmorPro-Regular.ttf")
+                ]),
+                preloadHDR("./images/empty_warehouse_01_2k.hdr")
+              ]);
+            } catch (error) {
+              console.error("[Preload] Error loading assets:", error);
+            }
           }
+
+          await waitForSceneReady();
+
+          loadTrack();
         })
         .start();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTrack]);
 
-  const loadTrack = () => {
+  const loadTrack = useCallback(() => {
     const animTime = 300;
     player.current.load(`./mods/${currentTrack.url}`).then((buffer) => {
       setIsLoading(false);
       updateControlBtn();
 
-      player.current.pause();
-      player.current.play(buffer);
-      player.current.seek(0);
-
       if (isNextTrack) {
         player.current.onEnded(nextTrack);
       }
 
-      setIsPlay(true);
       setSize(buffer.byteLength);
-      setMeta(player.current.metadata());
-      setDuration(player.current.duration());
 
-      if (tweenAnim) {
-        TWEEN.remove(tweenAnim);
+      player.current.play(buffer);
+      setMeta(player.current.metadata());
+      player.current.pause();
+      player.current.seek(0);
+      setIsPlay(true);
+
+      if (tweenAnimRef.current) {
+        TWEEN.remove(tweenAnimRef.current);
       }
       mainView.current.style.opacity = 0;
-      tweenAnim = new TWEEN.Tween(mainView.current.style)
+      tweenAnimRef.current = new TWEEN.Tween(mainView.current.style)
         .to({ opacity: 1 }, animTime)
         .delay(animTime)
+        .onComplete(() => {
+          player.current.togglePause();
+        })
         .start();
     });
-  };
+  }, [currentTrack, isNextTrack, nextTrack, updateControlBtn]);
 
   const animationLoop = () => {
     TWEEN.update();
     requestRef.current = requestAnimationFrame(animationLoop);
   };
 
-  const PlayListControl = (clear) => {
+  const PlayListControl = useCallback((clear) => {
     player.current.pause();
     player.current.seek(0);
 
@@ -309,13 +412,13 @@ function App(props) {
       playlist = mods;
     }
 
-    for (let r in playlist) {
-      playlist[r].pos = parseInt(r) + 1;
-    }
+    playlist.forEach((track, index) => {
+      track.pos = index + 1;
+    });
 
     setCurrentPlaylist(playlist);
     setCurrentTrack(playlist[0]);
-  };
+  }, [mods]);
 
   return (
     <CustomProvider theme="dark">
@@ -336,7 +439,7 @@ function App(props) {
         setCurrentTrack={setCurrentTrack}
         filterAuthor={filterAuthor}
       />
-      {isLoading ? <Loader /> : ""}
+      {isLoading ? <Loader /> : null}
       <PlayerControl
         player={player.current}
         currentTrack={currentTrack}
@@ -360,13 +463,7 @@ function App(props) {
         className={!isMouseMoving ? "hide" : ""}
         appearance="primary"
         icon={<MusicIcon />}
-        style={{
-          position: "absolute",
-          bottom: 15,
-          right: 15,
-          // zoom: 1.4,
-          filter: "drop-shadow(0px 0px 20px #000000)",
-        }}
+        style={MUSIC_ICON_BUTTON_STYLE}
         onClick={() => setOpen(true)}
         circle
         size={isMobile ? "sm" : "lg"}
@@ -381,13 +478,7 @@ function App(props) {
         className={!isMouseMoving ? "hide" : ""}
         appearance="primary"
         icon={<InfoIcon />}
-        style={{
-          position: "absolute",
-          top: 15,
-          right: 15,
-          // zoom: 1.4,
-          filter: "drop-shadow(0px 0px 20px #000000)",
-        }}
+        style={INFO_ICON_BUTTON_STYLE}
         onClick={() => setAboutOpen(true)}
         circle
         size={isMobile ? "sm" : "lg"}
@@ -395,19 +486,20 @@ function App(props) {
       <div ref={mainView}>
         {player.current &&
         currentTrack &&
-        player.current.currentPlayingNode &&
         newConfig ? (
-          <RenderCanvas
-            player={player.current}
-            audioContext={props.context}
-            isPlay={isPlay}
-            setIsPlay={setIsPlay}
-            newConfig={newConfig}
-            onClickCanvas={onClickCanvas}
-          />
-        ) : (
-          ""
-        )}
+          <React.Suspense fallback={<Loader />}>
+            <RenderCanvas
+              player={player.current}
+              playerVersion={playerVersion}
+              audioContext={props.context}
+              isPlay={isPlay}
+              setIsPlay={setIsPlay}
+              newConfig={newConfig}
+              onClickCanvas={onClickCanvas}
+              onSceneReady={onSceneReady}
+            />
+          </React.Suspense>
+        ) : null}
       </div>
     </CustomProvider>
   );
