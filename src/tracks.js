@@ -957,25 +957,6 @@ export function getTracks(year, author, selection) {
   return selectedTracks;
 }
 
-export const getPosTrack = (track, arr) => {
-  for (let t in arr) {
-    if (track.url === arr[t].url) {
-      return t;
-    }
-  }
-};
-
-export const getTrackByUrl = (url) => {
-  if (!url) {
-    return false;
-  }
-  for (let t of tracks) {
-    if (t.url === url) {
-      return t;
-    }
-  }
-  return false;
-};
 
 export const getTrackByPos = (pos) => {
   return tracks[pos - 1] ? tracks[pos - 1] : false;
