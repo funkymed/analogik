@@ -8,12 +8,143 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-### Phase 5 - Advanced Optimizations (Optional)
-- Webpack bundle analyzer
-- Service Worker for offline support
-- Migration to Vite
+### Planned
+- Auto-update via electron-updater
+- Code signing macOS (Apple Developer) + Windows
+- CI/CD GitHub Actions pour builds multi-plateforme
 - WebP/AVIF image optimization
-- Performance monitoring
+- Service Worker for offline support
+
+---
+
+## [2.0.0] - 2026-02-09
+
+### Migration CRA to Vite + React 19
+
+#### Added
+- **Vite 6.4.1** as build tool (replaces Create React App)
+  - `vite.config.ts` with JSX support for .js files, manual chunk splitting
+  - `tsconfig.json` (root) with `moduleResolution: "bundler"`
+  - `tsconfig.node.json` for Vite config compilation
+  - `src/vite-env.d.ts` for Vite environment types
+- **React 19** upgrade from React 18.2
+- **TypeScript 5.9** upgrade from 5.1
+- **Scene synchronization system** in App.js
+  - `onSceneReady` / `waitForSceneReady` Promise-based mechanism
+  - 3D scene fully initializes before music playback starts
+  - Async texture loading in `ShaderAbstract.ts` and `scene.ts`
+
+#### Changed
+- **Build system**: CRA (webpack + Babel) replaced by Vite (esbuild + Rollup)
+- **Entry point**: `public/index.html` moved to root `index.html` with Vite module script
+- **Package scripts**: `dev`, `start`, `build`, `preview`, `type-check`
+- **Asset loading**: Scene background and shader textures now properly awaited
+  - `ShaderAbstract.init()` is now async with Promise-wrapped TextureLoader
+  - `updateSceneBackground()` wraps image load in Promise
+  - `addShaderBackground()` awaits `shader.init()`
+  - `BackgroundShader` interface updated: `init()` returns `Promise<void>`
+- **RenderCanvas.tsx**: Config changes and analyser sync handled via dedicated useEffects
+
+#### Removed
+- `react-scripts` (Create React App)
+- `web-vitals`
+- `@babel/plugin-proposal-private-property-in-object`
+- `reportWebVitals` from `src/index.js`
+- `src/tsconfig.json` (superseded by root config)
+
+#### Fixed
+- Duplicate `film` key in `src/Components/variations/config3.js`
+- Music starting before 3D scene was fully loaded
+- Texture loading race conditions (callback-based to Promise-based)
+
+### Performance (Vite vs CRA)
+- Dev server startup: **168ms** (was ~30s)
+- HMR: **instant** (was ~3s)
+- Production build: **7.4s** (was 60-120s)
+- No Babel transpilation needed for modern browsers
+
+### Build Output (Vite)
+```
+index.js              276.93 kB (gzip: 84.73 kB)
+vendor-three.js       492.90 kB (gzip: 126.83 kB)
+vendor-ui.js          220.12 kB (gzip: 68.28 kB)
+RenderCanvas.js       339.90 kB (gzip: 91.18 kB)
+vendor-tween.js        12.24 kB (gzip: 3.54 kB)
+56 shader chunks       0.67-14.3 kB each
+```
+
+---
+
+## [1.4.0] - 2026-02-09
+
+### Electron Modernization
+
+#### Added
+- **Electron 39.5.1** upgrade from 29.1.5 (Chromium 142, Node 22.20, V8 14.2)
+- **electron-builder 25.1.8** upgrade from 24.13.3
+- **Security hardening**
+  - `contextIsolation: true` - preload script isolated from renderer
+  - `sandbox: true` - OS-level process sandboxing
+  - `nodeIntegration: false` - Node.js APIs blocked in renderer
+  - `webSecurity: true` - same-origin policy enforced
+  - Content Security Policy (CSP) headers via session
+  - Navigation restricted to `file:` protocol only
+  - New window creation blocked
+- **`electron/preload.js`** - Secure bridge via `contextBridge`
+  - Exposes: `quit()`, `toggleFullscreen()`, `isFullscreen()`, `getAppVersion()`
+  - Minimal API surface, no direct Node.js access
+- **`electron/menu.js`** - Native application menu
+  - macOS: About, Hide, Quit
+  - View: Toggle Fullscreen (Ctrl+Cmd+F / F11), DevTools, Reload
+  - Window: Minimize, Close
+- **`electron/windowState.js`** - Window state persistence
+  - Saves/restores size, position, fullscreen, maximized state
+  - JSON file in `userData` directory
+  - Zero external dependencies
+- **`electron/scripts/afterPack.js`** - Electron Fuses configuration
+  - `RunAsNode`: disabled
+  - `EnableNodeCliInspectArguments`: disabled
+  - `EnableNodeOptionsEnvironmentVariable`: disabled
+  - `OnlyLoadAppFromAsar`: enabled
+- **`@electron/fuses`** dependency for production security hardening
+- **Linux targets**: AppImage + deb (explicit)
+
+#### Changed
+- **`electron/main.js`** rewritten with secure defaults and modular architecture
+- **`Makefile` cp-build**: Updated sed commands for Vite asset paths (`/assets/` to `./assets/`, etc.)
+- **Build config**: ASAR explicit, compression maximum, sourcemaps excluded
+
+#### Removed
+- `electron-packager` (redundant with electron-builder)
+- `pack-*` scripts
+- `allowRunningInsecureContent` setting
+- `experimentalFeatures` setting
+- Duplicate `loadFile()` / `loadURL()` call
+- Duplicate top-level `files` array in package.json
+
+#### Security Summary
+| Setting | Before | After |
+|---------|--------|-------|
+| nodeIntegration | true | **false** |
+| contextIsolation | false | **true** |
+| sandbox | false | **true** |
+| CSP | none | **full policy** |
+| Fuses | default | **hardened** |
+| Navigation | unrestricted | **file: only** |
+| New windows | allowed | **blocked** |
+
+### Files Created
+- `electron/preload.js`
+- `electron/menu.js`
+- `electron/windowState.js`
+- `electron/scripts/afterPack.js`
+
+### Files Modified
+- `electron/main.js`
+- `electron/package.json`
+- `electron/yarn.lock`
+- `Makefile`
+- `.gitignore`
 
 ---
 
