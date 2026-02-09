@@ -73,9 +73,15 @@ export class MandaScene {
     }
 
     if (config.scene.background) {
-      this.background = new Image();
-      this.background.onload = this.onLoad.bind(this);
-      this.background.src = config.scene.background;
+      await new Promise<void>((resolve) => {
+        this.background = new Image();
+        this.background.onload = () => {
+          this.onLoad();
+          resolve();
+        };
+        this.background.onerror = () => resolve();
+        this.background.src = config.scene.background;
+      });
     }
   }
 
@@ -91,7 +97,7 @@ export class MandaScene {
     try {
       // Chargement dynamique du shader spécifique
       this.shader = await loadShader(this.config.scene.shader);
-      this.shader.init(this.config, this.scene, this.staticItems);
+      await this.shader.init(this.config, this.scene, this.staticItems);
     } catch (error) {
       console.error(`Failed to load shader: ${this.config.scene.shader}`, error);
       return false;

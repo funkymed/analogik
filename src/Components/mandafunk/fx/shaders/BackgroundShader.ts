@@ -8,7 +8,7 @@ export interface BackgroundShader {
     uniforms: any
     shaderMaterial: ShaderMaterial
     mesh: Mesh
-    init(config: ConfigType, scene: Scene, staticItems: StaticItems): void
+    init(config: ConfigType, scene: Scene, staticItems: StaticItems): Promise<void>
     update(time: number): void
     clear(): void
     afterInit(): void
