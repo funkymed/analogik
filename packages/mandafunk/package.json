@@ -1,0 +1,73 @@
+{
+  "name": "@mandarine/mandafunk",
+  "version": "1.0.0",
+  "description": "WebGL visualization engine for chiptune music with GLSL shaders and Three.js",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./config": {
+      "import": {
+        "types": "./dist/config/index.d.ts",
+        "default": "./dist/config/index.js"
+      },
+      "require": {
+        "types": "./dist/config/index.d.cts",
+        "default": "./dist/config/index.cjs"
+      }
+    },
+    "./core": {
+      "import": {
+        "types": "./dist/core/MandaRenderer.d.ts",
+        "default": "./dist/core/MandaRenderer.js"
+      },
+      "require": {
+        "types": "./dist/core/MandaRenderer.d.cts",
+        "default": "./dist/core/MandaRenderer.cjs"
+      }
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite build --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "three": ">=0.150.0 <1.0.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.160.0",
+    "typescript": "^5.9.3",
+    "vite": "^6.4.1",
+    "vite-plugin-dts": "^4.5.0"
+  },
+  "keywords": [
+    "webgl",
+    "three.js",
+    "visualization",
+    "music",
+    "shader",
+    "glsl",
+    "chiptune"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mandarine/analogik",
+    "directory": "packages/mandafunk"
+  }
+}

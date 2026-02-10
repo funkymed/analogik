@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
+    "jsx": "react-jsx",
+    "strict": true,
+    "noEmit": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "./dist",
+    "rootDir": ".",
+    "baseUrl": ".",
+    "paths": {
+      "@mandarine/mandafunk": ["."],
+      "@mandarine/mandafunk/*": ["./*"]
+    }
+  },
+  "include": [
+    "index.ts",
+    "config/**/*.ts",
+    "core/**/*.ts",
+    "fx/**/*.ts",
+    "shaders/**/*.ts"
+  ],
+  "exclude": ["node_modules", "dist"]
+}

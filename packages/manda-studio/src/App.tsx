@@ -1,0 +1,131 @@
+import { useCallback, useEffect, useRef } from "react";
+import { useStudioStore } from "@/store/useStudioStore.ts";
+import { seedSamplePresets } from "@/db/samplePresets";
+import { useAudioContext } from "@/hooks/useAudioContext.ts";
+import { useFps } from "@/hooks/useFps.ts";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts.ts";
+import { useThumbnailCapture } from "@/hooks/useThumbnailCapture.ts";
+import { PreviewCanvas } from "@/components/PreviewCanvas.tsx";
+import { PlayerControls } from "@/components/PlayerControls.tsx";
+import { PanelTabs } from "@/components/PanelTabs.tsx";
+import { StatusBar } from "@/components/StatusBar.tsx";
+import { ScenePanel } from "@/components/panels/ScenePanel.tsx";
+import { VumetersPanel } from "@/components/panels/VumetersPanel.tsx";
+import { ComposerPanel } from "@/components/panels/ComposerPanel.tsx";
+import { TextsImagesPanel } from "@/components/panels/TextsImagesPanel.tsx";
+import { LibraryDrawer } from "@/components/library/LibraryDrawer.tsx";
+import { GanttTimeline } from "@/components/gantt/GanttTimeline.tsx";
+import { useGanttBridge } from "@/hooks/useGanttBridge.ts";
+import { usePlaybackEngine } from "@/hooks/usePlaybackEngine.ts";
+import { ToastContainer } from "@/components/ui/Toast.tsx";
+import { KeyboardShortcutsHelp } from "@/components/ui/KeyboardShortcutsHelp.tsx";
+import { BookOpen } from "lucide-react";
+
+function App() {
+  const activePanel = useStudioStore((s) => s.activePanel);
+  const setActivePanel = useStudioStore((s) => s.setActivePanel);
+  const config = useStudioStore((s) => s.config);
+  const setCaptureThumbnail = useStudioStore((s) => s.setCaptureThumbnail);
+
+  const libraryOpen = useStudioStore((s) => s.libraryOpen);
+  const setLibraryOpen = useStudioStore((s) => s.setLibraryOpen);
+
+  const { audioContext, analyserNode } = useAudioContext();
+
+  const fps = useFps();
+  const { setCanvas: setPreviewCanvas, capture: captureThumbnail } =
+    useThumbnailCapture();
+
+  useKeyboardShortcuts();
+  useGanttBridge();
+
+  const { setRenderer: setPlaybackRenderer, addAudioFile, getAudioBuffer } =
+    usePlaybackEngine(audioContext, analyserNode);
+
+  // Seed sample presets on first launch
+  const seeded = useRef(false);
+  useEffect(() => {
+    if (seeded.current) return;
+    seeded.current = true;
+    void seedSamplePresets();
+  }, []);
+
+  // Store the capture function in the global store so library UI can use it.
+  useEffect(() => {
+    setCaptureThumbnail(captureThumbnail);
+    return () => setCaptureThumbnail(null);
+  }, [captureThumbnail, setCaptureThumbnail]);
+
+  const handlePanelChange = useCallback(
+    (panel: string) => {
+      setActivePanel(panel as typeof activePanel);
+    },
+    [setActivePanel],
+  );
+
+  return (
+    <div className="flex h-screen w-screen flex-col bg-zinc-950 text-zinc-100">
+      {/* Header */}
+      <header className="flex h-10 shrink-0 items-center justify-between border-b border-zinc-800 px-4">
+        <h1 className="text-sm font-semibold tracking-wide text-zinc-300">
+          MandaStudio
+        </h1>
+        <button
+          type="button"
+          onClick={() => setLibraryOpen(true)}
+          className="flex items-center gap-1.5 rounded-md px-2 py-1 text-xs text-zinc-400 transition-colors hover:bg-zinc-800 hover:text-zinc-200"
+          title="Open Library"
+        >
+          <BookOpen size={14} />
+          Library
+        </button>
+      </header>
+
+      {/* Main content */}
+      <div className="flex min-h-0 flex-1">
+        {/* Left sidebar */}
+        <aside className="flex w-72 shrink-0 flex-col border-r border-zinc-800">
+          <PanelTabs
+            activePanel={activePanel}
+            onPanelChange={handlePanelChange}
+          />
+
+          <div className="flex-1 overflow-y-auto p-3">
+            {activePanel === "scene" && <ScenePanel />}
+            {activePanel === "vumeters" && <VumetersPanel />}
+            {activePanel === "composer" && <ComposerPanel />}
+            {activePanel === "texts" && <TextsImagesPanel panelType="texts" />}
+            {activePanel === "images" && <TextsImagesPanel panelType="images" />}
+          </div>
+        </aside>
+
+        {/* Right area: preview + player */}
+        <div className="flex min-w-0 flex-1 flex-col">
+          <PreviewCanvas
+            className="flex-1"
+            audioContext={audioContext}
+            analyserNode={analyserNode}
+            config={config}
+            onRendererReady={setPlaybackRenderer}
+            onCanvasReady={setPreviewCanvas}
+          />
+
+          <GanttTimeline onLoadAudioFile={addAudioFile} getAudioBuffer={getAudioBuffer} />
+
+          <PlayerControls />
+        </div>
+      </div>
+
+      {/* Status bar */}
+      <StatusBar
+        shaderName={config.scene.shader || undefined}
+        fps={fps}
+      />
+      <LibraryDrawer open={libraryOpen} onClose={() => setLibraryOpen(false)} />
+      <KeyboardShortcutsHelp />
+      <ToastContainer />
+    </div>
+  );
+}
+
+export default App;
