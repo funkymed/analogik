@@ -30,6 +30,8 @@ export class PlaybackEngine {
   private currentShader: string | undefined;
   /** Flag to avoid overlapping async loadConfig calls. */
   private loadingConfig = false;
+  /** Last config reference pushed to renderer — skip updateConfig if unchanged. */
+  private lastPushedConfig: ConfigType | null = null;
 
   /** Callback to update the gantt store's currentTime. Throttled. */
   private onTimeUpdate: ((time: number) => void) | null = null;
@@ -97,6 +99,7 @@ export class PlaybackEngine {
     this.stopLoop();
     this.currentTime = 0;
     this.lastSceneId = null;
+    this.lastPushedConfig = null;
     this.onTimeUpdate?.(0);
     this.audioEngine?.stopAll();
   }
@@ -104,6 +107,7 @@ export class PlaybackEngine {
   seek(time: number): void {
     this.currentTime = Math.max(0, time);
     this.lastFrameTime = null; // reset delta so next frame doesn't jump
+    this.lastPushedConfig = null; // force re-evaluation after seek
     this.onTimeUpdate?.(this.currentTime);
   }
 
@@ -199,6 +203,7 @@ export class PlaybackEngine {
     if (newSceneId !== this.lastSceneId) {
       this.lastSceneId = newSceneId;
       this.currentShader = undefined; // force shader reload on scene change
+      this.lastPushedConfig = null;   // force config push on scene change
       this.onSceneChange?.(newSceneId);
     }
 
@@ -216,19 +221,21 @@ export class PlaybackEngine {
   private pushConfigToRenderer(config: ConfigType): void {
     if (!this.renderer) return;
 
+    // Skip if the config reference is the same as last frame (no change).
+    // This is the common case when a scene has no active sequences/keyframes:
+    // evaluator returns scene.baseConfig directly, same reference every frame.
+    if (config === this.lastPushedConfig) return;
+    this.lastPushedConfig = config;
+
     const shaderChanged = config.scene?.shader !== this.currentShader;
 
     if (shaderChanged && !this.loadingConfig) {
       this.currentShader = config.scene?.shader;
       this.loadingConfig = true;
-      // No need to clone: evaluator already returns a fresh object,
-      // and loadConfig clones internally.
       void this.renderer.loadConfig(config).then(() => {
         this.loadingConfig = false;
       });
     } else if (!shaderChanged && !this.loadingConfig) {
-      // No need to clone: evaluator returns a fresh object,
-      // and updateConfig does mergeConfig internally.
       this.renderer.updateConfig(config);
     }
     // If loadingConfig is true, skip updates until the async load finishes

@@ -18,6 +18,7 @@ import {
 
 import { MandaRenderer } from "@mandafunk/core/MandaRenderer";
 import type { ConfigType } from "@mandafunk/config/types";
+import { useGanttStore } from "@/store/useGanttStore.ts";
 
 // ---------------------------------------------------------------------------
 // Props
@@ -150,14 +151,20 @@ export function PreviewCanvas({
   }, [audioContext, analyserNode]);
 
   // ---------------------------------------------------------------------------
-  // Sync live config changes to the renderer
+  // Sync live config changes to the renderer (only when user edits, NOT during
+  // playback — PlaybackEngine already pushes config directly to the renderer).
   // ---------------------------------------------------------------------------
 
   const prevShaderRef = useRef<string | undefined>(config.scene?.shader);
+  const isPlaying = useGanttStore((s) => s.isPlaying);
 
   useEffect(() => {
     const renderer = rendererRef.current;
     if (!renderer || !initialized) return;
+
+    // During playback, PlaybackEngine drives the renderer directly at 60fps.
+    // Skip this React-driven sync to avoid duplicate expensive GPU updates.
+    if (isPlaying) return;
 
     const shaderChanged = config.scene?.shader !== prevShaderRef.current;
     prevShaderRef.current = config.scene?.shader;
@@ -169,7 +176,7 @@ export function PreviewCanvas({
       // Non-shader changes can use sync updateConfig (merges internally).
       renderer.updateConfig(config);
     }
-  }, [config, initialized]);
+  }, [config, initialized, isPlaying]);
 
   // ---------------------------------------------------------------------------
   // ResizeObserver
