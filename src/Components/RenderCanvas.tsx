@@ -279,7 +279,7 @@ function RenderCanvas(props: any): JSX.Element {
       );
       staticItems.current.rendering(time.current);
     }
-    if (sparks.current && props.newConfig.scene.sparks === true) {
+    if (sparks.current && currentConfig.current?.scene?.sparks === true) {
       for (let p of sparks.current) {
         p.rendering(time.current);
       }
