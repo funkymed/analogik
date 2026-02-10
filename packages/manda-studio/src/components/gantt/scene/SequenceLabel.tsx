@@ -1,5 +1,6 @@
 import type { Ref } from "react";
-import { GripVertical, X } from "lucide-react";
+import GripVertical from "lucide-react/dist/esm/icons/grip-vertical.js";
+import X from "lucide-react/dist/esm/icons/x.js";
 import type { SequenceType } from "@/timeline/ganttTypes.ts";
 
 interface SequenceLabelProps {

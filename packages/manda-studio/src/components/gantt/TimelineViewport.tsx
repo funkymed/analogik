@@ -42,7 +42,14 @@ export function TimelineViewport({ children }: TimelineViewportProps) {
     }
   }, [currentTime, pixelsPerSecond, followPlayhead, isPlaying]);
 
+  // Use refs to read latest values without re-attaching the wheel listener.
+  const ppsRef = useRef(pixelsPerSecond);
+  ppsRef.current = pixelsPerSecond;
+  const trackHeightRef = useRef(trackHeight);
+  trackHeightRef.current = trackHeight;
+
   // Shift+wheel = horizontal zoom, Ctrl+wheel = vertical zoom
+  // Attached once — reads mutable refs to avoid listener churn during zoom.
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
@@ -51,17 +58,17 @@ export function TimelineViewport({ children }: TimelineViewportProps) {
       if (e.shiftKey) {
         e.preventDefault();
         const factor = e.deltaY > 0 ? 1 / 1.15 : 1.15;
-        setPixelsPerSecond(pixelsPerSecond * factor);
+        setPixelsPerSecond(ppsRef.current * factor);
       } else if (e.ctrlKey || e.metaKey) {
         e.preventDefault();
         const factor = e.deltaY > 0 ? 1 / 1.15 : 1.15;
-        setTrackHeight(trackHeight * factor);
+        setTrackHeight(trackHeightRef.current * factor);
       }
     };
 
     el.addEventListener("wheel", handleWheel, { passive: false });
     return () => el.removeEventListener("wheel", handleWheel);
-  }, [pixelsPerSecond, setPixelsPerSecond, trackHeight, setTrackHeight]);
+  }, [setPixelsPerSecond, setTrackHeight]);
 
   const handleScroll = useCallback(() => {
     const el = scrollRef.current;

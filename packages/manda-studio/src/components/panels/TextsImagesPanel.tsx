@@ -1,5 +1,6 @@
-import { useCallback } from "react";
-import { Plus, Trash2 } from "lucide-react";
+import { useCallback, useMemo } from "react";
+import Plus from "lucide-react/dist/esm/icons/plus.js";
+import Trash2 from "lucide-react/dist/esm/icons/trash-2.js";
 import type { TextType, ImageType } from "@mandafunk/config/types";
 import { useStudioStore } from "@/store/useStudioStore";
 import { LabeledSlider } from "@/components/ui/LabeledSlider";
@@ -391,10 +392,12 @@ export function TextsImagesPanel({ panelType }: TextsImagesPanelProps) {
   const pushHistory = useStudioStore((s) => s.pushHistory);
 
   const isTexts = panelType === "texts";
-  const items = isTexts
-    ? toRecord<TextType>(config.texts as Record<string, TextType> | TextType[] | undefined)
-    : toRecord<ImageType>(config.images as Record<string, ImageType> | ImageType[] | undefined);
-  const entries = Object.entries(items);
+  const entries = useMemo(() => {
+    const items = isTexts
+      ? toRecord<TextType>(config.texts as Record<string, TextType> | TextType[] | undefined)
+      : toRecord<ImageType>(config.images as Record<string, ImageType> | ImageType[] | undefined);
+    return Object.entries(items);
+  }, [isTexts, config.texts, config.images]);
 
   const handleAdd = useCallback(() => {
     pushHistory();

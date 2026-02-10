@@ -107,7 +107,8 @@ export function PreviewCanvas({
 
       await renderer.init();
 
-      await renderer.loadConfig(structuredClone(config));
+      // loadConfig clones internally — no need to clone here.
+      await renderer.loadConfig(config);
 
       if (disposed) {
         renderer.dispose();
@@ -162,11 +163,11 @@ export function PreviewCanvas({
     prevShaderRef.current = config.scene?.shader;
 
     if (shaderChanged) {
-      // Shader change requires full async loadConfig
-      void renderer.loadConfig(structuredClone(config));
+      // Shader change requires full async loadConfig (clones internally).
+      void renderer.loadConfig(config);
     } else {
-      // Non-shader changes can use sync updateConfig
-      renderer.updateConfig(structuredClone(config));
+      // Non-shader changes can use sync updateConfig (merges internally).
+      renderer.updateConfig(config);
     }
   }, [config, initialized]);
 

@@ -1,5 +1,5 @@
 import { useCallback, useRef } from "react";
-import { Plus } from "lucide-react";
+import Plus from "lucide-react/dist/esm/icons/plus.js";
 import { useGanttStore } from "@/store/useGanttStore.ts";
 import { AudioClipBlock } from "./AudioClipBlock.tsx";
 

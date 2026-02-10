@@ -1,5 +1,8 @@
 import { useState, useCallback, useEffect, useRef } from "react";
-import { X, Upload, FileJson, ClipboardPaste } from "lucide-react";
+import X from "lucide-react/dist/esm/icons/x.js";
+import Upload from "lucide-react/dist/esm/icons/upload.js";
+import FileJson from "lucide-react/dist/esm/icons/file-json.js";
+import ClipboardPaste from "lucide-react/dist/esm/icons/clipboard-paste.js";
 import { useTimelineExport } from "@/hooks/useTimelineExport.ts";
 
 // ---------------------------------------------------------------------------

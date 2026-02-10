@@ -1,4 +1,8 @@
-import { Activity, Image, Layers, Sparkles, Type } from "lucide-react";
+import Activity from "lucide-react/dist/esm/icons/activity.js";
+import Image from "lucide-react/dist/esm/icons/image.js";
+import Layers from "lucide-react/dist/esm/icons/layers.js";
+import Sparkles from "lucide-react/dist/esm/icons/sparkles.js";
+import Type from "lucide-react/dist/esm/icons/type.js";
 import type { PanelName } from "@/store/useStudioStore.ts";
 
 interface PanelTabsProps {

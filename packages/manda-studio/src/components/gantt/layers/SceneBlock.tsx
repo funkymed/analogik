@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ChevronRight, ChevronDown, X } from "lucide-react";
+import ChevronRight from "lucide-react/dist/esm/icons/chevron-right.js";
+import ChevronDown from "lucide-react/dist/esm/icons/chevron-down.js";
+import X from "lucide-react/dist/esm/icons/x.js";
 import { ResizeHandle } from "../shared/ResizeHandle.tsx";
 import type { TimelineScene } from "@/timeline/ganttTypes.ts";
 
@@ -32,6 +34,12 @@ export function SceneBlock({
   // --- Drag to move ---
   const dragStartRef = useRef<{ clientX: number; startTime: number } | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const dragCleanupRef = useRef<(() => void) | null>(null);
+
+  // Cleanup drag listeners on unmount to prevent leaks
+  useEffect(() => {
+    return () => { dragCleanupRef.current?.(); };
+  }, []);
 
   const handlePointerDown = useCallback(
     (e: React.PointerEvent) => {
@@ -52,12 +60,18 @@ export function SceneBlock({
       const handlePointerUp = () => {
         dragStartRef.current = null;
         setIsDragging(false);
+        dragCleanupRef.current = null;
         window.removeEventListener("pointermove", handlePointerMove);
         window.removeEventListener("pointerup", handlePointerUp);
       };
 
       window.addEventListener("pointermove", handlePointerMove);
       window.addEventListener("pointerup", handlePointerUp);
+
+      dragCleanupRef.current = () => {
+        window.removeEventListener("pointermove", handlePointerMove);
+        window.removeEventListener("pointerup", handlePointerUp);
+      };
     },
     [onSelect, scene.startTime, pixelsPerSecond, onMove],
   );

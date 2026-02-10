@@ -12,4 +12,19 @@ export default defineConfig({
       '@mandafunk': path.resolve(__dirname, '../mandafunk'),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          // Vendor splitting by resolved module path for optimal caching.
+          if (id.includes('node_modules/three/')) return 'vendor-three';
+          if (id.includes('node_modules/react-dom/')) return 'vendor-react';
+          if (id.includes('node_modules/react/')) return 'vendor-react';
+          if (id.includes('node_modules/@dnd-kit/')) return 'vendor-dnd';
+          if (id.includes('node_modules/dexie/')) return 'vendor-db';
+        },
+      },
+    },
+    chunkSizeWarningLimit: 800,
+  },
 })

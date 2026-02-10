@@ -25,21 +25,20 @@ const panelByIndex: Record<string, PanelName> = {
  * - ?                 : Show keyboard shortcuts help
  */
 export function useKeyboardShortcuts(): void {
-  const undo = useStudioStore((s) => s.undo);
-  const redo = useStudioStore((s) => s.redo);
-  const togglePlay = useStudioStore((s) => s.setPlaying);
-  const getIsPlaying = () => useStudioStore.getState().isPlaying;
-
+  // Read store actions inside the handler via getState() to avoid
+  // re-attaching the listener every time a store reference changes.
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       const meta = e.metaKey || e.ctrlKey;
       const tag = (e.target as HTMLElement).tagName;
       const isInput = tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT";
 
+      const state = useStudioStore.getState();
+
       // Undo: Ctrl/Cmd + Z (without Shift)
       if (meta && !e.shiftKey && e.key === "z") {
         e.preventDefault();
-        undo();
+        state.undo();
         toast("Undo", "info");
         return;
       }
@@ -47,7 +46,7 @@ export function useKeyboardShortcuts(): void {
       // Redo: Ctrl/Cmd + Shift + Z
       if (meta && e.shiftKey && (e.key === "Z" || e.key === "z")) {
         e.preventDefault();
-        redo();
+        state.redo();
         toast("Redo", "info");
         return;
       }
@@ -55,7 +54,6 @@ export function useKeyboardShortcuts(): void {
       // Save: Ctrl/Cmd + S
       if (meta && !e.shiftKey && e.key === "s") {
         e.preventDefault();
-        const state = useStudioStore.getState();
         const thumbnail = state.captureThumbnail?.() ?? "";
         const now = new Date();
         const name = `Preset ${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")} ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
@@ -68,7 +66,6 @@ export function useKeyboardShortcuts(): void {
       // Export: Ctrl/Cmd + E
       if (meta && !e.shiftKey && e.key === "e") {
         e.preventDefault();
-        const state = useStudioStore.getState();
         state.setShowExportDialog(!state.showExportDialog);
         return;
       }
@@ -76,7 +73,6 @@ export function useKeyboardShortcuts(): void {
       // Library: Ctrl/Cmd + L
       if (meta && !e.shiftKey && e.key === "l") {
         e.preventDefault();
-        const state = useStudioStore.getState();
         state.setLibraryOpen(!state.libraryOpen);
         return;
       }
@@ -84,7 +80,7 @@ export function useKeyboardShortcuts(): void {
       // Panel switch: Ctrl/Cmd + 1-5
       if (meta && !e.shiftKey && e.key in panelByIndex) {
         e.preventDefault();
-        useStudioStore.getState().setActivePanel(panelByIndex[e.key]);
+        state.setActivePanel(panelByIndex[e.key]);
         return;
       }
 
@@ -94,7 +90,6 @@ export function useKeyboardShortcuts(): void {
         (meta && e.key === "/")
       ) {
         e.preventDefault();
-        const state = useStudioStore.getState();
         state.setShowShortcutsHelp(!state.showShortcutsHelp);
         return;
       }
@@ -103,11 +98,11 @@ export function useKeyboardShortcuts(): void {
       if (e.key === " " || e.code === "Space") {
         if (isInput) return;
         e.preventDefault();
-        togglePlay(!getIsPlaying());
+        state.setPlaying(!state.isPlaying);
       }
     }
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [undo, redo, togglePlay]);
+  }, []);
 }

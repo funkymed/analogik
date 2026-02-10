@@ -7,12 +7,13 @@ import type { MultiAudioEngine } from "@/audio/MultiAudioEngine.ts";
 /**
  * PlaybackEngine drives timeline playback outside of React.
  *
- * It runs a RAF loop that:
+ * It runs a single RAF loop that:
  * 1. Advances currentTime based on wall-clock delta
- * 2. Evaluates the timeline to find the active scene's config
- * 3. Pushes config to the MandaRenderer directly (60fps)
- * 4. Syncs audio clips via MultiAudioEngine
- * 5. Updates the gantt store's currentTime at ~10fps (for UI playhead)
+ * 2. Calls onTick to get the latest timeline from the store
+ * 3. Evaluates the timeline to find the active scene's config
+ * 4. Pushes config to the MandaRenderer directly (60fps)
+ * 5. Syncs audio clips via MultiAudioEngine
+ * 6. Updates the gantt store's currentTime at ~10fps (for UI playhead)
  */
 export class PlaybackEngine {
   private renderer: MandaRenderer | null = null;
@@ -36,6 +37,8 @@ export class PlaybackEngine {
   private onPlaybackEnd: (() => void) | null = null;
   /** Callback when the active scene changes. */
   private onSceneChange: ((sceneId: string | null) => void) | null = null;
+  /** Callback to get the latest timeline on each tick (avoids importing store). */
+  private onTick: (() => Timeline) | null = null;
 
   /** Last scene id to detect scene transitions. */
   private lastSceneId: string | null = null;
@@ -66,6 +69,10 @@ export class PlaybackEngine {
 
   setOnSceneChange(cb: ((sceneId: string | null) => void) | null): void {
     this.onSceneChange = cb;
+  }
+
+  setOnTick(cb: (() => Timeline) | null): void {
+    this.onTick = cb;
   }
 
   // -----------------------------------------------------------------------
@@ -113,7 +120,7 @@ export class PlaybackEngine {
   }
 
   // -----------------------------------------------------------------------
-  // RAF loop
+  // RAF loop (single loop — no secondary RAF needed in the hook)
   // -----------------------------------------------------------------------
 
   private startLoop(): void {
@@ -132,16 +139,22 @@ export class PlaybackEngine {
       // Advance time
       this.currentTime += deltaMs / 1000;
 
-      // Schedule next frame before heavy work
-      this.rafId = requestAnimationFrame(tick);
-
-      // Evaluate timeline and push to renderer
-      this.evaluate();
+      // Get the latest timeline from the hook and evaluate
+      if (this.onTick) {
+        const timeline = this.onTick();
+        this.evaluateWithTimeline(timeline);
+      }
 
       // Throttled store update for UI
       if (timestamp - this.lastStoreUpdateTime >= PlaybackEngine.STORE_UPDATE_INTERVAL) {
         this.lastStoreUpdateTime = timestamp;
         this.onTimeUpdate?.(this.currentTime);
+      }
+
+      // Schedule next frame AFTER work so stop() during evaluation
+      // doesn't cause an extra tick.
+      if (this.playing) {
+        this.rafId = requestAnimationFrame(tick);
       }
     };
 
@@ -162,9 +175,7 @@ export class PlaybackEngine {
 
   /**
    * Evaluate the timeline at currentTime.
-   * Must be called with a `timeline` argument, or it reads from the
-   * gantt store directly. We pass the timeline in to avoid importing
-   * the store here (keeping this class standalone).
+   * Called from the single RAF loop via onTick, or externally for seeks.
    */
   evaluateWithTimeline(timeline: Timeline): void {
     const result = evaluateTimelineAtTime(timeline, this.currentTime);
@@ -202,12 +213,6 @@ export class PlaybackEngine {
     }
   }
 
-  /** Internal evaluate - reads timeline from the import. */
-  private evaluate(): void {
-    // We need the timeline - import the store lazily to avoid circular deps
-    // The hook that creates this engine will call evaluateWithTimeline instead
-  }
-
   private pushConfigToRenderer(config: ConfigType): void {
     if (!this.renderer) return;
 
@@ -216,11 +221,15 @@ export class PlaybackEngine {
     if (shaderChanged && !this.loadingConfig) {
       this.currentShader = config.scene?.shader;
       this.loadingConfig = true;
-      void this.renderer.loadConfig(structuredClone(config)).then(() => {
+      // No need to clone: evaluator already returns a fresh object,
+      // and loadConfig clones internally.
+      void this.renderer.loadConfig(config).then(() => {
         this.loadingConfig = false;
       });
     } else if (!shaderChanged && !this.loadingConfig) {
-      this.renderer.updateConfig(structuredClone(config));
+      // No need to clone: evaluator returns a fresh object,
+      // and updateConfig does mergeConfig internally.
+      this.renderer.updateConfig(config);
     }
     // If loadingConfig is true, skip updates until the async load finishes
   }
@@ -249,5 +258,6 @@ export class PlaybackEngine {
     this.onTimeUpdate = null;
     this.onPlaybackEnd = null;
     this.onSceneChange = null;
+    this.onTick = null;
   }
 }

@@ -19,6 +19,8 @@ export function usePlaybackEngine(
 ): UsePlaybackEngineReturn {
   const engineRef = useRef<PlaybackEngine | null>(null);
   const multiAudioRef = useRef<MultiAudioEngine | null>(null);
+  /** Track blob URLs so we can revoke them on dispose. */
+  const blobUrlsRef = useRef<Set<string>>(new Set());
 
   // --- Initialize engines ---
   useEffect(() => {
@@ -42,6 +44,9 @@ export function usePlaybackEngine(
       // Optionally auto-select scene during playback
     });
 
+    // Provide timeline to the engine's single RAF loop (avoids 2nd RAF loop).
+    playback.setOnTick(() => useGanttStore.getState().timeline);
+
     // Apply current master volume
     multiAudio.setMasterVolume(useGanttStore.getState().masterVolume);
 
@@ -53,6 +58,12 @@ export function usePlaybackEngine(
       multiAudio.dispose();
       engineRef.current = null;
       multiAudioRef.current = null;
+
+      // Revoke all tracked blob URLs
+      for (const url of blobUrlsRef.current) {
+        URL.revokeObjectURL(url);
+      }
+      blobUrlsRef.current.clear();
     };
   }, [audioContext, analyserNode]);
 
@@ -70,6 +81,7 @@ export function usePlaybackEngine(
           engine.play();
         } else {
           engine.pause();
+          multiAudio?.stopAll();
         }
       }
 
@@ -94,45 +106,6 @@ export function usePlaybackEngine(
     });
   }, []);
 
-  // --- Drive the evaluation with the latest timeline data ---
-  useEffect(() => {
-    let rafId: number | null = null;
-
-    const tick = () => {
-      const engine = engineRef.current;
-      if (!engine || !engine.isPlaying()) {
-        rafId = null;
-        return;
-      }
-
-      const timeline = useGanttStore.getState().timeline;
-      engine.evaluateWithTimeline(timeline);
-
-      rafId = requestAnimationFrame(tick);
-    };
-
-    const unsub = useGanttStore.subscribe((state, prevState) => {
-      if (state.isPlaying && !prevState.isPlaying) {
-        if (rafId === null) {
-          rafId = requestAnimationFrame(tick);
-        }
-      } else if (!state.isPlaying && prevState.isPlaying) {
-        if (rafId !== null) {
-          cancelAnimationFrame(rafId);
-          rafId = null;
-        }
-        multiAudioRef.current?.stopAll();
-      }
-    });
-
-    return () => {
-      unsub();
-      if (rafId !== null) {
-        cancelAnimationFrame(rafId);
-      }
-    };
-  }, []);
-
   // --- Expose renderer setter ---
   const setRenderer = useCallback((renderer: MandaRenderer | null) => {
     engineRef.current?.setRenderer(renderer);
@@ -144,6 +117,8 @@ export function usePlaybackEngine(
     if (!multiAudio) return;
 
     const blobUrl = URL.createObjectURL(file);
+    // Track immediately so dispose always revokes, even on partial failure.
+    blobUrlsRef.current.add(blobUrl);
 
     try {
       const buffer = await file.arrayBuffer();
@@ -161,6 +136,7 @@ export function usePlaybackEngine(
       });
     } catch (err) {
       console.error("Failed to load audio file:", err);
+      blobUrlsRef.current.delete(blobUrl);
       URL.revokeObjectURL(blobUrl);
     }
   }, []);

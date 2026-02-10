@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from "react";
+import { lazy, Suspense, useCallback, useEffect, useRef } from "react";
 import { useStudioStore } from "@/store/useStudioStore.ts";
 import { seedSamplePresets } from "@/db/samplePresets";
 import { useAudioContext } from "@/hooks/useAudioContext.ts";
@@ -13,13 +13,19 @@ import { ScenePanel } from "@/components/panels/ScenePanel.tsx";
 import { VumetersPanel } from "@/components/panels/VumetersPanel.tsx";
 import { ComposerPanel } from "@/components/panels/ComposerPanel.tsx";
 import { TextsImagesPanel } from "@/components/panels/TextsImagesPanel.tsx";
-import { LibraryDrawer } from "@/components/library/LibraryDrawer.tsx";
 import { GanttTimeline } from "@/components/gantt/GanttTimeline.tsx";
 import { useGanttBridge } from "@/hooks/useGanttBridge.ts";
 import { usePlaybackEngine } from "@/hooks/usePlaybackEngine.ts";
 import { ToastContainer } from "@/components/ui/Toast.tsx";
-import { KeyboardShortcutsHelp } from "@/components/ui/KeyboardShortcutsHelp.tsx";
-import { BookOpen } from "lucide-react";
+import BookOpen from "lucide-react/dist/esm/icons/book-open.js";
+
+// Lazy-loaded components (conditionally rendered drawers/modals)
+const LibraryDrawer = lazy(() =>
+  import("@/components/library/LibraryDrawer.tsx").then((m) => ({ default: m.LibraryDrawer })),
+);
+const KeyboardShortcutsHelp = lazy(() =>
+  import("@/components/ui/KeyboardShortcutsHelp.tsx").then((m) => ({ default: m.KeyboardShortcutsHelp })),
+);
 
 function App() {
   const activePanel = useStudioStore((s) => s.activePanel);
@@ -121,8 +127,10 @@ function App() {
         shaderName={config.scene.shader || undefined}
         fps={fps}
       />
-      <LibraryDrawer open={libraryOpen} onClose={() => setLibraryOpen(false)} />
-      <KeyboardShortcutsHelp />
+      <Suspense fallback={null}>
+        <LibraryDrawer open={libraryOpen} onClose={() => setLibraryOpen(false)} />
+        <KeyboardShortcutsHelp />
+      </Suspense>
       <ToastContainer />
     </div>
   );

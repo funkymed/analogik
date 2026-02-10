@@ -121,9 +121,9 @@ function evaluateKeyframes(
  * with their keyframes on top of the scene's baseConfig.
  */
 function evaluateScene(scene: TimelineScene, time: number): ConfigType {
-  const config = structuredClone(scene.baseConfig) as ConfigType & Record<string, unknown>;
-
-  if (scene.sequences.length === 0) return config;
+  // Fast path: when no sequences exist, no mutations are needed,
+  // so we can return the baseConfig directly. The renderer clones internally.
+  if (scene.sequences.length === 0) return scene.baseConfig;
 
   // Time relative to scene start
   const sceneLocalTime = time - scene.startTime;
@@ -131,17 +131,25 @@ function evaluateScene(scene: TimelineScene, time: number): ConfigType {
   // Sort sequences by order for deterministic layering
   const sorted = [...scene.sequences].sort((a, b) => a.order - b.order);
 
+  // Collect only active sequences to avoid cloning when none are active.
+  const activeSeqs: { seq: Sequence; sequenceTime: number }[] = [];
   for (const seq of sorted) {
-    // Check if sequence is active at this time
     if (
       sceneLocalTime < seq.startOffset ||
       sceneLocalTime >= seq.startOffset + seq.duration
     ) {
       continue;
     }
+    activeSeqs.push({ seq, sequenceTime: sceneLocalTime - seq.startOffset });
+  }
 
-    const sequenceTime = sceneLocalTime - seq.startOffset;
+  // No active sequences: return baseConfig directly (renderer clones internally).
+  if (activeSeqs.length === 0) return scene.baseConfig;
 
+  // Clone only when we actually need to mutate (apply keyframes / sequence overrides).
+  const config = structuredClone(scene.baseConfig) as ConfigType & Record<string, unknown>;
+
+  for (const { seq, sequenceTime } of activeSeqs) {
     // Apply sequence's baseConfig overrides
     applyBaseConfig(config, seq);
 

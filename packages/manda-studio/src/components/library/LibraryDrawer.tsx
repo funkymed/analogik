@@ -5,17 +5,15 @@ import {
   useEffect,
   type KeyboardEvent,
 } from "react";
-import {
-  X,
-  Search,
-  Save,
-  Upload,
-  Download,
-  Copy,
-  Trash2,
-  Play,
-  Loader2,
-} from "lucide-react";
+import X from "lucide-react/dist/esm/icons/x.js";
+import Search from "lucide-react/dist/esm/icons/search.js";
+import Save from "lucide-react/dist/esm/icons/save.js";
+import Upload from "lucide-react/dist/esm/icons/upload.js";
+import Download from "lucide-react/dist/esm/icons/download.js";
+import Copy from "lucide-react/dist/esm/icons/copy.js";
+import Trash2 from "lucide-react/dist/esm/icons/trash-2.js";
+import Play from "lucide-react/dist/esm/icons/play.js";
+import Loader2 from "lucide-react/dist/esm/icons/loader-2.js";
 import { usePresets } from "@/hooks/usePresets";
 import { formatRelativeTime } from "@/utils/formatRelativeTime";
 import type { ScenePreset } from "@/db/types";

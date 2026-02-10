@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from "react";
-import { Search } from "lucide-react";
+import Search from "lucide-react/dist/esm/icons/search.js";
 import { useStudioStore } from "@/store/useStudioStore";
 import { availableShaders } from "@mandafunk/shaders";
 import { LabeledSlider } from "@/components/ui/LabeledSlider";

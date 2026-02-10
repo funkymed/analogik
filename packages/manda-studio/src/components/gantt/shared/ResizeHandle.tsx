@@ -1,4 +1,4 @@
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 interface ResizeHandleProps {
   /** "left" or "right" side of the block. */
@@ -11,6 +11,12 @@ interface ResizeHandleProps {
 
 export function ResizeHandle({ side, onResize, onResizeEnd }: ResizeHandleProps) {
   const startXRef = useRef(0);
+  const cleanupRef = useRef<(() => void) | null>(null);
+
+  // Cleanup resize listeners on unmount to prevent leaks
+  useEffect(() => {
+    return () => { cleanupRef.current?.(); };
+  }, []);
 
   const handlePointerDown = useCallback(
     (e: React.PointerEvent) => {
@@ -24,6 +30,7 @@ export function ResizeHandle({ side, onResize, onResizeEnd }: ResizeHandleProps)
       };
 
       const handlePointerUp = () => {
+        cleanupRef.current = null;
         window.removeEventListener("pointermove", handlePointerMove);
         window.removeEventListener("pointerup", handlePointerUp);
         onResizeEnd();
@@ -31,6 +38,11 @@ export function ResizeHandle({ side, onResize, onResizeEnd }: ResizeHandleProps)
 
       window.addEventListener("pointermove", handlePointerMove);
       window.addEventListener("pointerup", handlePointerUp);
+
+      cleanupRef.current = () => {
+        window.removeEventListener("pointermove", handlePointerMove);
+        window.removeEventListener("pointerup", handlePointerUp);
+      };
     },
     [onResize, onResizeEnd],
   );

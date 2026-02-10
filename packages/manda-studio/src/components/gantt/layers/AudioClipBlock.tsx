@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Volume2, VolumeX, X } from "lucide-react";
+import Volume2 from "lucide-react/dist/esm/icons/volume-2.js";
+import VolumeX from "lucide-react/dist/esm/icons/volume-x.js";
+import X from "lucide-react/dist/esm/icons/x.js";
 import { ResizeHandle } from "../shared/ResizeHandle.tsx";
 import { drawWaveform } from "@/utils/drawWaveform.ts";
 import type { AudioClip } from "@/timeline/ganttTypes.ts";
@@ -40,6 +42,8 @@ export function AudioClipBlock({
     const canvas = canvasRef.current;
     if (!canvas || !audioBuffer) return;
 
+    let rafId: number | null = null;
+
     const draw = () => {
       const rect = canvas.parentElement?.getBoundingClientRect();
       if (!rect) return;
@@ -50,17 +54,36 @@ export function AudioClipBlock({
 
     draw();
 
-    const observer = new ResizeObserver(draw);
+    // Throttle ResizeObserver redraws via RAF to avoid N simultaneous
+    // canvas redraws during timeline zoom operations.
+    const throttledDraw = () => {
+      if (rafId !== null) return;
+      rafId = requestAnimationFrame(() => {
+        rafId = null;
+        draw();
+      });
+    };
+
+    const observer = new ResizeObserver(throttledDraw);
     if (canvas.parentElement) {
       observer.observe(canvas.parentElement);
     }
 
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      if (rafId !== null) cancelAnimationFrame(rafId);
+    };
   }, [audioBuffer, clip.trimStart, clip.duration]);
 
   // --- Drag to move ---
   const dragStartRef = useRef<{ clientX: number; startTime: number } | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const dragCleanupRef = useRef<(() => void) | null>(null);
+
+  // Cleanup drag listeners on unmount to prevent leaks
+  useEffect(() => {
+    return () => { dragCleanupRef.current?.(); };
+  }, []);
 
   const handlePointerDown = useCallback(
     (e: React.PointerEvent) => {
@@ -80,12 +103,18 @@ export function AudioClipBlock({
       const handlePointerUp = () => {
         dragStartRef.current = null;
         setIsDragging(false);
+        dragCleanupRef.current = null;
         window.removeEventListener("pointermove", handlePointerMove);
         window.removeEventListener("pointerup", handlePointerUp);
       };
 
       window.addEventListener("pointermove", handlePointerMove);
       window.addEventListener("pointerup", handlePointerUp);
+
+      dragCleanupRef.current = () => {
+        window.removeEventListener("pointermove", handlePointerMove);
+        window.removeEventListener("pointerup", handlePointerUp);
+      };
     },
     [onSelect, clip.startTime, pixelsPerSecond, onMove],
   );

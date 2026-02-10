@@ -1,17 +1,15 @@
 import { useCallback } from "react";
-import {
-  Play,
-  Pause,
-  Square,
-  Repeat,
-  ZoomIn,
-  ZoomOut,
-  Magnet,
-  Plus,
-  ScanLine,
-  PanelBottomOpen,
-  PanelBottomClose,
-} from "lucide-react";
+import Play from "lucide-react/dist/esm/icons/play.js";
+import Pause from "lucide-react/dist/esm/icons/pause.js";
+import Square from "lucide-react/dist/esm/icons/square.js";
+import Repeat from "lucide-react/dist/esm/icons/repeat.js";
+import ZoomIn from "lucide-react/dist/esm/icons/zoom-in.js";
+import ZoomOut from "lucide-react/dist/esm/icons/zoom-out.js";
+import Magnet from "lucide-react/dist/esm/icons/magnet.js";
+import Plus from "lucide-react/dist/esm/icons/plus.js";
+import ScanLine from "lucide-react/dist/esm/icons/scan-line.js";
+import PanelBottomOpen from "lucide-react/dist/esm/icons/panel-bottom-open.js";
+import PanelBottomClose from "lucide-react/dist/esm/icons/panel-bottom-close.js";
 import { useGanttStore } from "@/store/useGanttStore.ts";
 import { useStudioStore } from "@/store/useStudioStore.ts";
 import { formatTime } from "@/utils/formatTime.ts";

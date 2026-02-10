@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useDroppable } from "@dnd-kit/core";
-import { X } from "lucide-react";
+import X from "lucide-react/dist/esm/icons/x.js";
 import type { Track, TrackAssignment } from "@/timeline/types.ts";
 
 export interface TrackRowProps {

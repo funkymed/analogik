@@ -3,16 +3,22 @@ import { useEffect, useRef, useState } from "react";
 /**
  * Track frames per second using requestAnimationFrame.
  *
+ * The RAF loop only runs while `enabled` is true (default: true).
  * Updates the returned value every 500ms for a smooth, readable
  * display without excessive re-renders.
  */
-export function useFps(): number {
+export function useFps(enabled = true): number {
   const [fps, setFps] = useState(0);
   const frameCountRef = useRef(0);
   const lastUpdateRef = useRef(0);
   const rafIdRef = useRef(0);
 
   useEffect(() => {
+    if (!enabled) {
+      setFps(0);
+      return;
+    }
+
     lastUpdateRef.current = performance.now();
 
     function tick() {
@@ -38,7 +44,7 @@ export function useFps(): number {
     return () => {
       cancelAnimationFrame(rafIdRef.current);
     };
-  }, []);
+  }, [enabled]);
 
   return fps;
 }

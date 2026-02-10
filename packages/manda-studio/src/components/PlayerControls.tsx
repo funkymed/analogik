@@ -1,10 +1,8 @@
-import { useCallback, useRef, useState } from "react";
-import {
-  Pause,
-  Play,
-  Volume2,
-  VolumeX,
-} from "lucide-react";
+import { useCallback, useMemo, useRef, useState } from "react";
+import Pause from "lucide-react/dist/esm/icons/pause.js";
+import Play from "lucide-react/dist/esm/icons/play.js";
+import Volume2 from "lucide-react/dist/esm/icons/volume-2.js";
+import VolumeX from "lucide-react/dist/esm/icons/volume-x.js";
 import * as Slider from "@radix-ui/react-slider";
 import { formatTime } from "@/utils/formatTime.ts";
 import { useGanttStore } from "@/store/useGanttStore.ts";
@@ -62,10 +60,10 @@ export function PlayerControls({
   );
 
   // Build a display string for active audio clips
-  const activeClipNames = audioClips
-    .filter((c) => !c.muted)
-    .map((c) => c.name)
-    .join(", ");
+  const activeClipNames = useMemo(
+    () => audioClips.filter((c) => !c.muted).map((c) => c.name).join(", "),
+    [audioClips],
+  );
 
   const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
 

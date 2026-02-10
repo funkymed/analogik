@@ -11,7 +11,7 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { Plus } from "lucide-react";
+import Plus from "lucide-react/dist/esm/icons/plus.js";
 import type { TimelineScene, SequenceType } from "@/timeline/ganttTypes.ts";
 import { useGanttStore } from "@/store/useGanttStore.ts";
 import { SequenceRow } from "./SequenceRow.tsx";

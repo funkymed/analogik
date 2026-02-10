@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import ChevronDown from "lucide-react/dist/esm/icons/chevron-down.js";
+import ChevronRight from "lucide-react/dist/esm/icons/chevron-right.js";
 
 interface SectionHeaderProps {
   title: string;

@@ -1,5 +1,6 @@
-import { useCallback, useState } from "react";
-import { ChevronUp, ChevronDown } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
+import ChevronUp from "lucide-react/dist/esm/icons/chevron-up.js";
+import ChevronDown from "lucide-react/dist/esm/icons/chevron-down.js";
 import { useGanttStore } from "@/store/useGanttStore.ts";
 import { GanttToolbar } from "./GanttToolbar.tsx";
 import { TimelineRuler } from "./TimelineRuler.tsx";

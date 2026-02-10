@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from "react";
 import { useStudioStore } from "@/store/useStudioStore.ts";
-import { X } from "lucide-react";
+import X from "lucide-react/dist/esm/icons/x.js";
 
 const isMac =
   typeof navigator !== "undefined" &&

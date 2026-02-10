@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { X } from "lucide-react";
+import X from "lucide-react/dist/esm/icons/x.js";
 import type { Keyframe, EasingType } from "@/timeline/ganttTypes.ts";
 import { KeyframeCurvePreview } from "./KeyframeCurvePreview.tsx";
 

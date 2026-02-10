@@ -1,5 +1,9 @@
 import { useState, useCallback, useEffect, useRef } from "react";
-import { X, Download, FileJson, FileCode, FileType } from "lucide-react";
+import X from "lucide-react/dist/esm/icons/x.js";
+import Download from "lucide-react/dist/esm/icons/download.js";
+import FileJson from "lucide-react/dist/esm/icons/file-json.js";
+import FileCode from "lucide-react/dist/esm/icons/file-code.js";
+import FileType from "lucide-react/dist/esm/icons/file-type.js";
 import { useTimelineStore } from "@/store/useTimelineStore.ts";
 import { useTimelineExport } from "@/hooks/useTimelineExport.ts";
 

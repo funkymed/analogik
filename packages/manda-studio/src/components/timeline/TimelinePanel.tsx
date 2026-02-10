@@ -8,14 +8,12 @@ import {
   type DragEndEvent,
   type DragStartEvent,
 } from "@dnd-kit/core";
-import {
-  ChevronUp,
-  ChevronDown,
-  Wand2,
-  Trash2,
-  Upload,
-  Download,
-} from "lucide-react";
+import ChevronUp from "lucide-react/dist/esm/icons/chevron-up.js";
+import ChevronDown from "lucide-react/dist/esm/icons/chevron-down.js";
+import Wand2 from "lucide-react/dist/esm/icons/wand-2.js";
+import Trash2 from "lucide-react/dist/esm/icons/trash-2.js";
+import Upload from "lucide-react/dist/esm/icons/upload.js";
+import Download from "lucide-react/dist/esm/icons/download.js";
 import { useTimelineStore } from "@/store/useTimelineStore.ts";
 import { usePresets } from "@/hooks/usePresets.ts";
 import { exportTimeline, importTimeline } from "@/timeline/index.ts";
