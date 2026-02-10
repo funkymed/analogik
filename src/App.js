@@ -308,6 +308,7 @@ function App(props) {
 
     if (mainView.current) {
       const animTime = 300;
+      setIsLoading(true);
       mainView.current.style.opacity = 1;
       tweenAnimRef.current = new TWEEN.Tween(mainView.current.style)
         .to({ opacity: 0 }, animTime)
@@ -333,7 +334,6 @@ function App(props) {
           }
 
           getPlayer();
-          setIsLoading(true);
           setIsPlay(false);
           isSceneReadyRef.current = false;
 
@@ -365,7 +365,6 @@ function App(props) {
   const loadTrack = useCallback(() => {
     const animTime = 300;
     player.current.load(`./mods/${currentTrack.url}`).then((buffer) => {
-      setIsLoading(false);
       updateControlBtn();
 
       if (isNextTrack) {
@@ -379,6 +378,7 @@ function App(props) {
       player.current.pause();
       player.current.seek(0);
       setIsPlay(true);
+      setIsLoading(false);
 
       if (tweenAnimRef.current) {
         TWEEN.remove(tweenAnimRef.current);
