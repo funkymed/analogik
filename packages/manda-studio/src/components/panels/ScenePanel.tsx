@@ -12,7 +12,7 @@ function displayShaderName(name: string): string {
   return name.replace(/Shader$/, "");
 }
 
-type BgMode = "color" | "image";
+type BgMode = "transparent" | "color" | "image";
 
 export function ScenePanel() {
   const config = useStudioStore((s) => s.config);
@@ -25,7 +25,11 @@ export function ScenePanel() {
   const scene = config.scene;
 
   // Detect mode from config
-  const bgMode: BgMode = scene.background ? "image" : "color";
+  const bgMode: BgMode = scene.background
+    ? "image"
+    : scene.bgColor
+      ? "color"
+      : "transparent";
 
   const filteredShaders = useMemo(() => {
     if (!searchQuery) return availableShaders;
@@ -87,15 +91,21 @@ export function ScenePanel() {
 
   const handleBgModeSwitch = useCallback(
     (mode: BgMode) => {
-      if (mode === "color" && bgMode === "image") {
-        pushHistory();
+      if (mode === bgMode) return;
+      pushHistory();
+      if (mode === "transparent") {
+        updateConfig("scene.bgColor", "");
         updateConfig("scene.background", "");
-      } else if (mode === "image" && bgMode === "color") {
-        // Open library on Images tab to choose an image
+      } else if (mode === "color") {
+        updateConfig("scene.background", "");
+        if (!scene.bgColor) {
+          updateConfig("scene.bgColor", "#000000");
+        }
+      } else if (mode === "image") {
         setLibraryOpen(true);
       }
     },
-    [bgMode, pushHistory, updateConfig, setLibraryOpen],
+    [bgMode, scene.bgColor, pushHistory, updateConfig, setLibraryOpen],
   );
 
   const handleRemoveBackground = useCallback(() => {
@@ -206,28 +216,20 @@ export function ScenePanel() {
       <SectionHeader title="Background" defaultOpen>
         {/* Mode toggle */}
         <div className="flex gap-1">
-          <button
-            type="button"
-            onClick={() => handleBgModeSwitch("color")}
-            className={`flex-1 rounded py-1.5 text-xs font-medium transition-colors ${
-              bgMode === "color"
-                ? "bg-indigo-500/20 text-indigo-400 ring-1 ring-indigo-500"
-                : "bg-zinc-800 text-zinc-500 hover:text-zinc-300"
-            }`}
-          >
-            Color
-          </button>
-          <button
-            type="button"
-            onClick={() => handleBgModeSwitch("image")}
-            className={`flex-1 rounded py-1.5 text-xs font-medium transition-colors ${
-              bgMode === "image"
-                ? "bg-indigo-500/20 text-indigo-400 ring-1 ring-indigo-500"
-                : "bg-zinc-800 text-zinc-500 hover:text-zinc-300"
-            }`}
-          >
-            Image
-          </button>
+          {(["transparent", "color", "image"] as const).map((mode) => (
+            <button
+              key={mode}
+              type="button"
+              onClick={() => handleBgModeSwitch(mode)}
+              className={`flex-1 rounded py-1.5 text-xs font-medium capitalize transition-colors ${
+                bgMode === mode
+                  ? "bg-indigo-500/20 text-indigo-400 ring-1 ring-indigo-500"
+                  : "bg-zinc-800 text-zinc-500 hover:text-zinc-300"
+              }`}
+            >
+              {mode}
+            </button>
+          ))}
         </div>
 
         {bgMode === "color" && (
@@ -288,26 +290,30 @@ export function ScenePanel() {
           </>
         )}
 
-        <LabeledSlider
-          label="Brightness"
-          value={scene.brightness}
-          min={0}
-          max={200}
-          step={1}
-          suffix="%"
-          onChange={(v) => handleSceneUpdate("brightness", v)}
-          onPointerDown={handleSliderPointerDown}
-        />
-        <LabeledSlider
-          label="Blur"
-          value={scene.blur}
-          min={0}
-          max={200}
-          step={1}
-          suffix="px"
-          onChange={(v) => handleSceneUpdate("blur", v)}
-          onPointerDown={handleSliderPointerDown}
-        />
+        {bgMode !== "transparent" && (
+          <>
+            <LabeledSlider
+              label="Brightness"
+              value={scene.brightness}
+              min={0}
+              max={200}
+              step={1}
+              suffix="%"
+              onChange={(v) => handleSceneUpdate("brightness", v)}
+              onPointerDown={handleSliderPointerDown}
+            />
+            <LabeledSlider
+              label="Blur"
+              value={scene.blur}
+              min={0}
+              max={200}
+              step={1}
+              suffix="px"
+              onChange={(v) => handleSceneUpdate("blur", v)}
+              onPointerDown={handleSliderPointerDown}
+            />
+          </>
+        )}
       </SectionHeader>
     </div>
   );
