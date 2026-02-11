@@ -114,7 +114,7 @@ function OscilloscopeSection() {
           value={oscilloscop.x}
           min={-650}
           max={650}
-          step={1}
+          step={0.01}
           onChange={(v) => updateConfig(`${path}.x`, v)}
           onPointerDown={pushHistory}
         />
@@ -124,7 +124,7 @@ function OscilloscopeSection() {
           value={oscilloscop.y}
           min={-650}
           max={650}
-          step={1}
+          step={0.01}
           onChange={(v) => updateConfig(`${path}.y`, v)}
           onPointerDown={pushHistory}
         />
@@ -134,7 +134,7 @@ function OscilloscopeSection() {
           value={oscilloscop.z}
           min={-650}
           max={-1}
-          step={1}
+          step={0.01}
           onChange={(v) => updateConfig(`${path}.z`, v)}
           onPointerDown={pushHistory}
         />
@@ -320,7 +320,7 @@ function SpectrumSection() {
           value={spectrum.x}
           min={-650}
           max={650}
-          step={1}
+          step={0.01}
           onChange={(v) => updateConfig(`${path}.x`, v)}
           onPointerDown={pushHistory}
         />
@@ -330,7 +330,7 @@ function SpectrumSection() {
           value={spectrum.y}
           min={-650}
           max={650}
-          step={1}
+          step={0.01}
           onChange={(v) => updateConfig(`${path}.y`, v)}
           onPointerDown={pushHistory}
         />
@@ -340,7 +340,7 @@ function SpectrumSection() {
           value={spectrum.z}
           min={-500}
           max={-1}
-          step={1}
+          step={0.01}
           onChange={(v) => updateConfig(`${path}.z`, v)}
           onPointerDown={pushHistory}
         />

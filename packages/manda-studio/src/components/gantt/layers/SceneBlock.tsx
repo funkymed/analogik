@@ -187,6 +187,7 @@ export function SceneBlock({
           ? "border-white/40 shadow-lg"
           : "border-white/10 hover:border-white/25",
         isDragging ? "cursor-grabbing opacity-80" : "cursor-grab",
+        scene.hidden ? "opacity-30" : "",
       ].join(" ")}
       style={{
         left,

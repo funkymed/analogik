@@ -25,3 +25,45 @@ Visit https://react.dev/link/error-boundaries to learn more about error boundari
 [ 4379293ms] [WARNING] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio @ http://localhost:5174/src/components/PreviewCanvas.tsx?t=1770806567351:43
 [ 4498815ms] [WARNING] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio @ http://localhost:5174/src/hooks/useAudioContext.ts:16
 [ 4499203ms] [WARNING] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio @ http://localhost:5174/src/components/PreviewCanvas.tsx?t=1770806567351:43
+[ 5159507ms] [WARNING] Another connection wants to upgrade database 'MandaStudioDB'. Closing db now to resume the upgrade. @ http://localhost:5174/node_modules/.vite/deps/dexie.js?v=d81fa452:5421
+[ 6104710ms] Error: Failed to load video
+    at video.onerror (http://localhost:5174/src/db/libraryService.ts:73:14)
+[ 6109620ms] Error: Failed to load video
+    at video.onerror (http://localhost:5174/src/db/libraryService.ts:73:14)
+[ 6494742ms] ReferenceError: useStudioStore is not defined
+    at TimelineViewport (http://localhost:5174/src/components/gantt/TimelineViewport.tsx?t=1770808682871:70:18)
+    at Object.react_stack_bottom_frame (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=4f1a161a:18509:20)
+    at renderWithHooks (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=4f1a161a:5654:24)
+    at updateFunctionComponent (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=4f1a161a:7475:21)
+    at beginWork (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=4f1a161a:8525:20)
+    at runWithFiberInDEV (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=4f1a161a:997:72)
+    at performUnitOfWork (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=4f1a161a:12561:98)
+    at workLoopSync (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=4f1a161a:12424:43)
+    at renderRootSync (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=4f1a161a:12408:13)
+    at performWorkOnRoot (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=4f1a161a:11827:37)
+[ 6494742ms] [WARNING] %s
+
+%s
+ An error occurred in the <TimelineViewport> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=4f1a161a:6965
+[ 6498185ms] ReferenceError: config is not defined
+    at TimelineViewport (http://localhost:5174/src/components/gantt/TimelineViewport.tsx?t=1770808686297:147:45)
+    at Object.react_stack_bottom_frame (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=4f1a161a:18509:20)
+    at renderWithHooks (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=4f1a161a:5654:24)
+    at updateFunctionComponent (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=4f1a161a:7475:21)
+    at beginWork (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=4f1a161a:8525:20)
+    at runWithFiberInDEV (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=4f1a161a:997:72)
+    at performUnitOfWork (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=4f1a161a:12561:98)
+    at workLoopSync (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=4f1a161a:12424:43)
+    at renderRootSync (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=4f1a161a:12408:13)
+    at performWorkOnRoot (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=4f1a161a:11827:37)
+[ 6498185ms] [WARNING] %s
+
+%s
+ An error occurred in the <TimelineViewport> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=4f1a161a:6965
+[ 6551653ms] [WARNING] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio @ http://localhost:5174/src/components/PreviewCanvas.tsx?t=1770807555280:43
+[ 6834817ms] [WARNING] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio @ http://localhost:5174/src/components/PreviewCanvas.tsx?t=1770808989845:43
+[ 6877251ms] [WARNING] Another connection wants to upgrade database 'MandaStudioDB'. Closing db now to resume the upgrade. @ http://localhost:5174/node_modules/.vite/deps/dexie.js?v=4f1a161a:5421
+[ 6908320ms] [ERROR] Can't perform a React state update on a component that hasn't mounted yet. This indicates that you have a side-effect in your render function that asynchronously tries to update the component. Move this work to useEffect instead. @ http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=4f1a161a:13362
+[ 7055811ms] [WARNING] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio @ http://localhost:5174/src/components/PreviewCanvas.tsx?t=1770808989845:43

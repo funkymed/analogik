@@ -94,6 +94,10 @@ function getVideoMeta(blob: Blob): Promise<{ thumbnailUrl: string; duration: num
 // Images
 // ---------------------------------------------------------------------------
 
+export async function getImage(id: number): Promise<LibraryImage | undefined> {
+  return await db.libraryImages.get(id);
+}
+
 export async function getAllImages(): Promise<LibraryImage[]> {
   return await db.libraryImages.orderBy("createdAt").reverse().toArray();
 }
@@ -127,6 +131,10 @@ export async function searchImages(query: string): Promise<LibraryImage[]> {
 // ---------------------------------------------------------------------------
 // Audio
 // ---------------------------------------------------------------------------
+
+export async function getAudioItem(id: number): Promise<LibraryAudio | undefined> {
+  return await db.libraryAudio.get(id);
+}
 
 export async function getAllAudio(): Promise<LibraryAudio[]> {
   return await db.libraryAudio.orderBy("createdAt").reverse().toArray();

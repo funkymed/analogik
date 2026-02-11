@@ -165,7 +165,7 @@ export const useGanttStore = create<GanttState>((set, get) => ({
   pixelsPerSecond: 50,
   scrollLeft: 0,
   snapEnabled: true,
-  snapInterval: 1,
+  snapInterval: 0.01,
   followPlayhead: true,
   trackHeight: 1,
   timelineHeight: 200,
@@ -547,6 +547,7 @@ export const useGanttStore = create<GanttState>((set, get) => ({
     const { timeline } = get();
     let best: TimelineScene | undefined;
     for (const s of timeline.scenes) {
+      if (s.hidden) continue;
       if (time >= s.startTime && time < s.startTime + s.duration) {
         if (
           !best ||

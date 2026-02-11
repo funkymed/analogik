@@ -284,6 +284,7 @@ export class MandaRenderer {
     if (this.scene && this.staticItems && this.composer) {
       await this.scene.updateSceneBackground(this.config);
       this.scene.clearScene();
+      this.scene.updateTextsAndImages(this.config);
       this.staticItems.update(this.config);
       this.composer.updateComposer(this.config);
     }
@@ -310,6 +311,7 @@ export class MandaRenderer {
 
     if (this.scene) {
       this.scene.updateShaderConfig(this.config);
+      this.scene.updateTextsAndImages(this.config);
     }
     if (this.staticItems) {
       this.staticItems.update(this.config);

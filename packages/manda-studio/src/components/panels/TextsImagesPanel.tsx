@@ -1,8 +1,10 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import Plus from "lucide-react/dist/esm/icons/plus.js";
 import Trash2 from "lucide-react/dist/esm/icons/trash-2.js";
+import ImageIcon from "lucide-react/dist/esm/icons/image.js";
 import type { TextType, ImageType } from "@mandafunk/config/types";
 import { useStudioStore } from "@/store/useStudioStore";
+import { getImage } from "@/db/libraryService";
 import { LabeledSlider } from "@/components/ui/LabeledSlider";
 import { LabeledToggle } from "@/components/ui/LabeledToggle";
 import { ColorInput } from "@/components/ui/ColorInput";
@@ -102,7 +104,7 @@ function PositionSliders({
         value={x}
         min={-650}
         max={650}
-        step={1}
+        step={0.01}
         onChange={(v) => onUpdate(`${basePath}.x`, v)}
         onPointerDown={onPointerDown}
       />
@@ -111,7 +113,7 @@ function PositionSliders({
         value={y}
         min={-650}
         max={650}
-        step={1}
+        step={0.01}
         onChange={(v) => onUpdate(`${basePath}.y`, v)}
         onPointerDown={onPointerDown}
       />
@@ -120,7 +122,7 @@ function PositionSliders({
         value={z}
         min={zMin}
         max={zMax}
-        step={1}
+        step={0.01}
         onChange={(v) => onUpdate(`${basePath}.z`, v)}
         onPointerDown={onPointerDown}
       />
@@ -299,12 +301,15 @@ function TextItemEditor({ itemKey, item }: TextItemEditorProps) {
 interface ImageItemEditorProps {
   itemKey: string;
   item: ImageType;
+  zMin?: number;
+  zMax?: number;
 }
 
-function ImageItemEditor({ itemKey, item }: ImageItemEditorProps) {
+function ImageItemEditor({ itemKey, item, zMin = -650, zMax = -1 }: ImageItemEditorProps) {
   const updateConfig = useStudioStore((s) => s.updateConfig);
   const pushHistory = useStudioStore((s) => s.pushHistory);
   const basePath = `images.${itemKey}`;
+  const [dropOver, setDropOver] = useState(false);
 
   const handlePathChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -312,6 +317,36 @@ function ImageItemEditor({ itemKey, item }: ImageItemEditorProps) {
     },
     [updateConfig, basePath],
   );
+
+  const handleImageDrop = useCallback(
+    async (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setDropOver(false);
+      const raw = e.dataTransfer.getData("application/x-manda-library");
+      if (!raw) return;
+      let data: { type: string; id: number };
+      try { data = JSON.parse(raw); } catch { return; }
+      if (data.type !== "images") return;
+      const img = await getImage(data.id);
+      if (!img) return;
+      const blobUrl = URL.createObjectURL(img.blob);
+      pushHistory();
+      updateConfig(`${basePath}.path`, blobUrl);
+    },
+    [updateConfig, pushHistory, basePath],
+  );
+
+  const handleImageDragOver = useCallback((e: React.DragEvent) => {
+    if (e.dataTransfer.types.includes("application/x-manda-library")) {
+      e.preventDefault();
+      setDropOver(true);
+    }
+  }, []);
+
+  const handleImageDragLeave = useCallback(() => {
+    setDropOver(false);
+  }, []);
 
   return (
     <div className="space-y-3">
@@ -321,7 +356,28 @@ function ImageItemEditor({ itemKey, item }: ImageItemEditorProps) {
         onChange={(v) => updateConfig(`${basePath}.show`, v)}
       />
 
-      <div className="flex flex-col gap-1.5">
+      {/* Image drop zone */}
+      <div
+        className={`flex flex-col gap-1.5 rounded-md border border-dashed p-2 transition-colors ${
+          dropOver ? "border-indigo-500 bg-indigo-500/10" : "border-zinc-700"
+        }`}
+        onDrop={(e) => void handleImageDrop(e)}
+        onDragOver={handleImageDragOver}
+        onDragLeave={handleImageDragLeave}
+      >
+        {item.path ? (
+          <div className="flex items-center gap-2">
+            <div className="h-10 w-16 overflow-hidden rounded border border-zinc-700 bg-zinc-800">
+              <img src={item.path} alt="Preview" className="h-full w-full object-cover" />
+            </div>
+            <p className="flex-1 truncate text-[10px] text-zinc-400">{item.path.split("/").pop()}</p>
+          </div>
+        ) : (
+          <div className="flex items-center justify-center gap-2 py-2 text-zinc-500">
+            <ImageIcon size={14} />
+            <span className="text-[10px]">Drop image from Library</span>
+          </div>
+        )}
         <label className="text-xs text-zinc-400">Image Path</label>
         <input
           type="text"
@@ -360,8 +416,8 @@ function ImageItemEditor({ itemKey, item }: ImageItemEditorProps) {
         x={item.x}
         y={item.y}
         z={item.z}
-        zMin={-5}
-        zMax={-1}
+        zMin={zMin}
+        zMax={zMax}
         onUpdate={updateConfig}
         onPointerDown={pushHistory}
       />
@@ -483,7 +539,7 @@ export function TextsImagesPanel({ panelType }: TextsImagesPanelProps) {
           {isTexts ? (
             <TextItemEditor itemKey={key} item={item as TextType} />
           ) : (
-            <ImageItemEditor itemKey={key} item={item as ImageType} />
+            <ImageItemEditor itemKey={key} item={item as ImageType} zMin={-200} zMax={200} />
           )}
         </SectionHeader>
       ))}

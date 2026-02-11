@@ -1,8 +1,10 @@
 import { useState, useCallback, useMemo } from "react";
 import Search from "lucide-react/dist/esm/icons/search.js";
 import X from "lucide-react/dist/esm/icons/x.js";
+import ImageIcon from "lucide-react/dist/esm/icons/image.js";
 import { useStudioStore } from "@/store/useStudioStore";
 import { availableShaders } from "@mandafunk/shaders";
+import { getImage } from "@/db/libraryService";
 import { LabeledSlider } from "@/components/ui/LabeledSlider";
 import { LabeledToggle } from "@/components/ui/LabeledToggle";
 import { ColorInput } from "@/components/ui/ColorInput";
@@ -116,6 +118,38 @@ export function ScenePanel() {
   const handleChooseImage = useCallback(() => {
     setLibraryOpen(true);
   }, [setLibraryOpen]);
+
+  const [bgDropOver, setBgDropOver] = useState(false);
+
+  const handleBgImageDrop = useCallback(
+    async (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setBgDropOver(false);
+      const raw = e.dataTransfer.getData("application/x-manda-library");
+      if (!raw) return;
+      let data: { type: string; id: number };
+      try { data = JSON.parse(raw); } catch { return; }
+      if (data.type !== "images") return;
+      const img = await getImage(data.id);
+      if (!img) return;
+      const blobUrl = URL.createObjectURL(img.blob);
+      pushHistory();
+      updateConfig("scene.background", blobUrl);
+    },
+    [pushHistory, updateConfig],
+  );
+
+  const handleBgDragOver = useCallback((e: React.DragEvent) => {
+    if (e.dataTransfer.types.includes("application/x-manda-library")) {
+      e.preventDefault();
+      setBgDropOver(true);
+    }
+  }, []);
+
+  const handleBgDragLeave = useCallback(() => {
+    setBgDropOver(false);
+  }, []);
 
   return (
     <div className="space-y-0">
@@ -243,9 +277,15 @@ export function ScenePanel() {
         )}
 
         {bgMode === "image" && (
-          <>
-            {/* Image preview */}
-            {scene.background && (
+          <div
+            className={`rounded-md border border-dashed p-2 transition-colors ${
+              bgDropOver ? "border-indigo-500 bg-indigo-500/10" : "border-zinc-700"
+            }`}
+            onDrop={(e) => void handleBgImageDrop(e)}
+            onDragOver={handleBgDragOver}
+            onDragLeave={handleBgDragLeave}
+          >
+            {scene.background ? (
               <div className="flex items-center gap-2">
                 <div className="h-12 w-20 overflow-hidden rounded border border-zinc-700 bg-zinc-800">
                   <img
@@ -277,20 +317,20 @@ export function ScenePanel() {
                   </div>
                 </div>
               </div>
-            )}
-            {!scene.background && (
+            ) : (
               <button
                 type="button"
                 onClick={handleChooseImage}
-                className="w-full rounded border border-dashed border-zinc-700 py-3 text-xs text-zinc-500 transition-colors hover:border-zinc-500 hover:text-zinc-300"
+                className="flex w-full items-center justify-center gap-2 py-3 text-xs text-zinc-500 transition-colors hover:text-zinc-300"
               >
-                Choose from Library
+                <ImageIcon size={14} />
+                Drop image or choose from Library
               </button>
             )}
-          </>
+          </div>
         )}
 
-        {bgMode !== "transparent" && (
+        {bgMode === "image" && (
           <>
             <LabeledSlider
               label="Brightness"

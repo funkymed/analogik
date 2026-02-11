@@ -1,6 +1,8 @@
-import { useCallback, useEffect, useRef, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { useGanttStore } from "@/store/useGanttStore.ts";
 import { useTrackHeights } from "@/hooks/useTrackHeights.ts";
+import { getPreset } from "@/db/presetService.ts";
+import { getAudioItem } from "@/db/libraryService.ts";
 import { TimeGrid } from "./shared/TimeGrid.tsx";
 import { Playhead } from "./shared/Playhead.tsx";
 
@@ -85,6 +87,107 @@ export function TimelineViewport({ children, onVerticalScroll }: TimelineViewpor
   }, [setScrollLeft, onVerticalScroll]);
 
   // Click on empty area to seek
+  // --- Drop handling for library items ---
+  const [dropOver, setDropOver] = useState(false);
+  const { sceneTrackHeights, audioTrackHeights } = useTrackHeights();
+  const sceneTrackCount = useGanttStore((s) => s.sceneTrackCount);
+  const addScene = useGanttStore((s) => s.addScene);
+  const addAudioClip = useGanttStore((s) => s.addAudioClip);
+  const getDropTarget = useCallback(
+    (e: React.DragEvent) => {
+      const el = scrollRef.current;
+      if (!el) return null;
+      const rect = el.getBoundingClientRect();
+      const x = e.clientX - rect.left + el.scrollLeft;
+      const y = e.clientY - rect.top + el.scrollTop;
+      const time = Math.max(0, x / pixelsPerSecond);
+
+      // Determine if drop is on scene tracks or audio tracks
+      let cumY = 0;
+      for (let i = 0; i < sceneTrackHeights.length; i++) {
+        cumY += sceneTrackHeights[i];
+        if (y < cumY) {
+          return { zone: "scene" as const, trackIndex: i, time };
+        }
+      }
+      // +1 px for separator
+      cumY += 1;
+      for (let i = 0; i < audioTrackHeights.length; i++) {
+        cumY += audioTrackHeights[i];
+        if (y < cumY) {
+          return { zone: "audio" as const, trackIndex: i, time };
+        }
+      }
+      return { zone: "audio" as const, trackIndex: audioTrackHeights.length - 1, time };
+    },
+    [pixelsPerSecond, sceneTrackHeights, audioTrackHeights],
+  );
+
+  const handleDragOver = useCallback(
+    (e: React.DragEvent) => {
+      if (e.dataTransfer.types.includes("application/x-manda-library")) {
+        e.preventDefault();
+        setDropOver(true);
+      }
+    },
+    [],
+  );
+
+  const handleDragLeave = useCallback(() => {
+    setDropOver(false);
+  }, []);
+
+  const handleDrop = useCallback(
+    async (e: React.DragEvent) => {
+      e.preventDefault();
+      setDropOver(false);
+
+      const raw = e.dataTransfer.getData("application/x-manda-library");
+      if (!raw) return;
+
+      let data: { type: string; id: number };
+      try {
+        data = JSON.parse(raw);
+      } catch {
+        return;
+      }
+
+      const target = getDropTarget(e);
+      if (!target) return;
+
+      if (data.type === "scenes" && target.zone === "scene") {
+        // Load preset config and create a scene at the drop position
+        const preset = await getPreset(data.id);
+        if (!preset) return;
+        const sceneConfig = preset.config;
+        const id = addScene(sceneConfig, preset.name, target.trackIndex);
+        // Update the scene start time to the drop position
+        const { updateScene } = useGanttStore.getState();
+        updateScene(id, { startTime: useGanttStore.getState().snapTime(target.time) });
+      } else if (data.type === "audio" && target.zone === "audio") {
+        // Load audio blob and create an audio clip
+        const audioItem = await getAudioItem(data.id);
+        if (!audioItem) return;
+        const blobUrl = URL.createObjectURL(audioItem.blob);
+        addAudioClip({
+          name: audioItem.name,
+          url: blobUrl,
+          startTime: useGanttStore.getState().snapTime(target.time),
+          duration: audioItem.duration,
+          trimStart: 0,
+          volume: 1,
+          muted: false,
+          trackIndex: target.trackIndex,
+        });
+      } else if (data.type === "scenes" && target.zone === "audio") {
+        // Can't drop scenes on audio tracks - ignore
+      } else if (data.type === "audio" && target.zone === "scene") {
+        // Can't drop audio on scene tracks - ignore
+      }
+    },
+    [getDropTarget, addScene, addAudioClip],
+  );
+
   const handleClick = useCallback(
     (e: React.MouseEvent) => {
       const target = e.target;
@@ -104,9 +207,12 @@ export function TimelineViewport({ children, onVerticalScroll }: TimelineViewpor
   return (
     <div
       ref={scrollRef}
-      className="relative flex-1 overflow-x-auto overflow-y-auto"
+      className={`relative flex-1 overflow-x-auto overflow-y-auto ${dropOver ? "ring-2 ring-inset ring-indigo-500/50" : ""}`}
       onScroll={handleScroll}
       onClick={handleClick}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={(e) => void handleDrop(e)}
     >
       <div data-timeline-bg className="relative" style={{ width: totalWidth, minHeight: viewportHeight }}>
         <TimeGrid

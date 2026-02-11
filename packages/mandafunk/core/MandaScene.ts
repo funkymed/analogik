@@ -7,6 +7,8 @@ import { ConfigType } from "../config/types";
 import { configDefault } from "../config/defaults";
 import { deepClone } from "../tools/deepClone";
 import { loadShader } from "../shaders/shaderLoader";
+import { updateTexts } from "../fx/text";
+import { updateImages } from "../fx/image";
 import { StaticItems } from "./StaticItems";
 
 /**
@@ -211,5 +213,14 @@ export class MandaScene {
         this.scene.remove(this.scene.children[mesh]);
       }
     }
+  }
+
+  /**
+   * Rebuilds text and image overlays from the current configuration.
+   * Call this when texts or images are added/removed/changed.
+   */
+  updateTextsAndImages(config: ConfigType) {
+    updateTexts(this.scene, config);
+    updateImages(this.scene, config);
   }
 }

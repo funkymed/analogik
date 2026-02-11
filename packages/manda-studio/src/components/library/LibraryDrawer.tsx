@@ -15,11 +15,20 @@ import Trash2 from "lucide-react/dist/esm/icons/trash-2.js";
 import Play from "lucide-react/dist/esm/icons/play.js";
 import Loader2 from "lucide-react/dist/esm/icons/loader-2.js";
 import { usePresets } from "@/hooks/usePresets";
+import { useGanttStore } from "@/store/useGanttStore";
+import {
+  getAllProjects,
+  createProject,
+  deleteProject as deleteProjectService,
+  exportProjects,
+  importProjects,
+} from "@/db/projectService";
+import type { Project } from "@/db/projectTypes";
 import { formatRelativeTime } from "@/utils/formatRelativeTime";
 import { MediaLibraryGrid } from "@/components/library/MediaLibraryGrid";
 import type { ScenePreset } from "@/db/types";
 
-type LibraryTab = "scenes" | "images" | "audio" | "videos";
+type LibraryTab = "projects" | "scenes" | "images" | "audio" | "videos";
 
 interface LibraryDrawerProps {
   open: boolean;
@@ -68,8 +77,22 @@ function PresetCard({ preset, onLoad, onDuplicate, onDelete }: PresetCardProps) 
     }
   }, [onDuplicate, preset.id]);
 
+  const handleDragStart = useCallback(
+    (e: React.DragEvent) => {
+      e.dataTransfer.setData(
+        "application/x-manda-library",
+        JSON.stringify({ type: "scenes", id: preset.id }),
+      );
+    },
+    [preset.id],
+  );
+
   return (
-    <div className="group relative overflow-hidden rounded-lg border border-zinc-800 bg-zinc-800/50 transition-colors hover:border-zinc-600">
+    <div
+      draggable
+      onDragStart={handleDragStart}
+      className="group relative cursor-grab overflow-hidden rounded-lg border border-zinc-800 bg-zinc-800/50 transition-colors hover:border-zinc-600 active:cursor-grabbing"
+    >
       {/* Thumbnail */}
       <div className="relative aspect-video w-full overflow-hidden bg-gradient-to-br from-zinc-700 to-zinc-900">
         {preset.thumbnail ? (
@@ -168,6 +191,7 @@ function PresetCard({ preset, onLoad, onDuplicate, onDelete }: PresetCardProps) 
 /* ------------------------------------------------------------------ */
 
 const TABS: { key: LibraryTab; label: string }[] = [
+  { key: "projects", label: "Projects" },
   { key: "scenes", label: "Scenes" },
   { key: "images", label: "Images" },
   { key: "audio", label: "Audio" },
@@ -192,11 +216,43 @@ export function LibraryDrawer({ open, onClose, initialTab }: LibraryDrawerProps)
     importFromFile,
   } = usePresets();
 
-  const [activeTab, setActiveTab] = useState<LibraryTab>(initialTab ?? "scenes");
+  const [activeTab, setActiveTab] = useState<LibraryTab>(initialTab ?? "projects");
   const [savingName, setSavingName] = useState(false);
   const [nameInput, setNameInput] = useState("");
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [mediaSearchQuery, setMediaSearchQuery] = useState("");
+
+  // --- Projects state ---
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [projectsLoading, setProjectsLoading] = useState(false);
+  const [savingProjectName, setSavingProjectName] = useState(false);
+  const [projectNameInput, setProjectNameInput] = useState("");
+  const projectNameInputRef = useRef<HTMLInputElement>(null);
+  const projectFileInputRef = useRef<HTMLInputElement>(null);
+
+  const refreshProjects = useCallback(async () => {
+    setProjectsLoading(true);
+    try {
+      const all = await getAllProjects();
+      setProjects(all);
+    } finally {
+      setProjectsLoading(false);
+    }
+  }, []);
+
+  // Load projects when tab is active
+  useEffect(() => {
+    if (activeTab === "projects" && open) {
+      void refreshProjects();
+    }
+  }, [activeTab, open, refreshProjects]);
+
+  // Focus project name input
+  useEffect(() => {
+    if (savingProjectName && projectNameInputRef.current) {
+      projectNameInputRef.current.focus();
+    }
+  }, [savingProjectName]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const nameInputRef = useRef<HTMLInputElement>(null);
@@ -302,6 +358,103 @@ export function LibraryDrawer({ open, onClose, initialTab }: LibraryDrawerProps)
       showToast("Preset deleted");
     },
     [deletePreset, showToast],
+  );
+
+  // --- Project handlers ---
+  const handleSaveProject = useCallback(() => {
+    setSavingProjectName(true);
+    setProjectNameInput("");
+  }, []);
+
+  const handleSaveProjectConfirm = useCallback(async () => {
+    const trimmed = projectNameInput.trim();
+    if (!trimmed) return;
+    const state = useGanttStore.getState();
+    const now = new Date().toISOString();
+    await createProject({
+      name: trimmed,
+      timeline: structuredClone(state.timeline),
+      sceneTrackCount: state.sceneTrackCount,
+      audioTrackCount: state.audioTrackCount,
+      thumbnail: "",
+      createdAt: now,
+      updatedAt: now,
+    });
+    setSavingProjectName(false);
+    setProjectNameInput("");
+    showToast(`Project "${trimmed}" saved`);
+    void refreshProjects();
+  }, [projectNameInput, showToast, refreshProjects]);
+
+  const handleSaveProjectCancel = useCallback(() => {
+    setSavingProjectName(false);
+    setProjectNameInput("");
+  }, []);
+
+  const handleSaveProjectKeyDown = useCallback(
+    (e: KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter") {
+        void handleSaveProjectConfirm();
+      } else if (e.key === "Escape") {
+        handleSaveProjectCancel();
+      }
+    },
+    [handleSaveProjectConfirm, handleSaveProjectCancel],
+  );
+
+  const handleLoadProject = useCallback(
+    (project: Project) => {
+      const state = useGanttStore.getState();
+      // Replace the entire timeline state
+      useGanttStore.setState({
+        timeline: structuredClone(project.timeline),
+        sceneTrackCount: project.sceneTrackCount,
+        audioTrackCount: project.audioTrackCount,
+        selection: { sceneId: null, sequenceId: null, keyframeIds: [] },
+        currentTime: 0,
+      });
+      showToast(`Project "${project.name}" loaded`);
+    },
+    [showToast],
+  );
+
+  const handleDeleteProject = useCallback(
+    async (id: number) => {
+      await deleteProjectService(id);
+      showToast("Project deleted");
+      void refreshProjects();
+    },
+    [showToast, refreshProjects],
+  );
+
+  const handleExportProjects = useCallback(async () => {
+    const json = await exportProjects();
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `manda-projects-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast("Exported all projects");
+  }, [showToast]);
+
+  const handleImportProjects = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      try {
+        const count = await importProjects(file);
+        showToast(`Imported ${count} project${count === 1 ? "" : "s"}`);
+        void refreshProjects();
+      } catch {
+        showToast("Import failed: invalid file");
+      }
+      if (projectFileInputRef.current) {
+        projectFileInputRef.current.value = "";
+      }
+    },
+    [showToast, refreshProjects],
   );
 
   const handleSearchChange = useCallback(
@@ -453,8 +606,120 @@ export function LibraryDrawer({ open, onClose, initialTab }: LibraryDrawerProps)
         </>
       )}
 
+      {/* Projects tab content */}
+      {activeTab === "projects" && (
+        <>
+          {/* Action bar */}
+          <div className="flex shrink-0 items-center gap-2 border-b border-zinc-800 px-4 py-2">
+            {savingProjectName ? (
+              <input
+                ref={projectNameInputRef}
+                type="text"
+                placeholder="Project name..."
+                value={projectNameInput}
+                onChange={(e) => setProjectNameInput(e.target.value)}
+                onKeyDown={handleSaveProjectKeyDown}
+                onBlur={handleSaveProjectCancel}
+                className="flex-1 rounded-md bg-zinc-800 px-2.5 py-1.5 text-xs text-zinc-200 placeholder-zinc-500 outline-none ring-1 ring-blue-500"
+              />
+            ) : (
+              <button
+                type="button"
+                onClick={handleSaveProject}
+                className="flex items-center gap-1.5 rounded-md bg-blue-600 px-2.5 py-1.5 text-xs font-medium text-white transition-colors hover:bg-blue-500"
+              >
+                <Save size={12} />
+                Save Project
+              </button>
+            )}
+
+            <div className="flex-1" />
+
+            <button
+              type="button"
+              onClick={() => projectFileInputRef.current?.click()}
+              className="rounded-md p-1.5 text-zinc-400 transition-colors hover:bg-zinc-800 hover:text-zinc-200"
+              title="Import projects"
+            >
+              <Upload size={14} />
+            </button>
+            <button
+              type="button"
+              onClick={() => void handleExportProjects()}
+              className="rounded-md p-1.5 text-zinc-400 transition-colors hover:bg-zinc-800 hover:text-zinc-200"
+              title="Export all projects"
+            >
+              <Download size={14} />
+            </button>
+
+            <input
+              ref={projectFileInputRef}
+              type="file"
+              accept=".json"
+              className="hidden"
+              onChange={(e) => void handleImportProjects(e)}
+            />
+          </div>
+
+          {/* Projects grid */}
+          <div className="flex-1 overflow-y-auto p-3">
+            {projectsLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 size={20} className="animate-spin text-zinc-500" />
+              </div>
+            ) : projects.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <p className="text-xs text-zinc-500">
+                  No projects yet. Save your first project!
+                </p>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-2">
+                {projects.map((project) => (
+                  <div
+                    key={project.id}
+                    className="group flex items-center justify-between rounded-lg border border-zinc-800 bg-zinc-800/50 p-3 transition-colors hover:border-zinc-600"
+                  >
+                    <div className="flex-1 overflow-hidden">
+                      <p className="truncate text-xs font-medium text-zinc-200">
+                        {project.name}
+                      </p>
+                      <p className="text-[10px] text-zinc-500">
+                        {project.timeline.scenes.length} scene{project.timeline.scenes.length !== 1 ? "s" : ""}
+                        {" / "}
+                        {project.timeline.audioClips.length} audio
+                        {" — "}
+                        {formatRelativeTime(project.updatedAt)}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-1.5 opacity-0 transition-opacity group-hover:opacity-100">
+                      <button
+                        type="button"
+                        onClick={() => handleLoadProject(project)}
+                        className="rounded-md bg-blue-600 p-1.5 text-white transition-colors hover:bg-blue-500"
+                        title="Load project"
+                      >
+                        <Play size={12} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => project.id !== undefined && void handleDeleteProject(project.id)}
+                        className="rounded-md bg-red-700 p-1.5 text-white transition-colors hover:bg-red-600"
+                        title="Delete project"
+                      >
+                        <Trash2 size={12} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </>
+      )}
+
       {/* Media tabs content */}
-      {activeTab !== "scenes" && (
+      {activeTab !== "scenes" && activeTab !== "projects" && (
         <MediaLibraryGrid type={activeTab} searchQuery={mediaSearchQuery} />
       )}
 

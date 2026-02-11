@@ -144,7 +144,7 @@ function EmitterEditor({ emitter, index }: EmitterEditorProps) {
         value={emitter.emissionOrigin.x}
         min={-200}
         max={200}
-        step={1}
+        step={0.01}
         onChange={(v) => handleUpdate("emissionOrigin.x", v)}
         onPointerDown={pushHistory}
       />
@@ -153,7 +153,7 @@ function EmitterEditor({ emitter, index }: EmitterEditorProps) {
         value={emitter.emissionOrigin.y}
         min={-200}
         max={200}
-        step={1}
+        step={0.01}
         onChange={(v) => handleUpdate("emissionOrigin.y", v)}
         onPointerDown={pushHistory}
       />
@@ -162,7 +162,7 @@ function EmitterEditor({ emitter, index }: EmitterEditorProps) {
         value={emitter.emissionOrigin.z}
         min={-100}
         max={10}
-        step={1}
+        step={0.01}
         onChange={(v) => handleUpdate("emissionOrigin.z", v)}
         onPointerDown={pushHistory}
       />
