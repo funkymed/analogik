@@ -80,6 +80,8 @@ export interface TimelineScene {
   color: string;
   /** Whether the scene's sequences are collapsed in the UI. */
   collapsed: boolean;
+  /** Whether this scene is hidden (not rendered). */
+  hidden: boolean;
   /** Track index for multi-track layout (0 = first track). */
   trackIndex: number;
   /** Full configuration for this scene. */

@@ -83,14 +83,16 @@ interface GanttState {
   // --- Track management ---
   sceneTrackCount: number;
   audioTrackCount: number;
+  mutedAudioTracks: Set<number>;
   addSceneTrack: () => void;
   removeSceneTrack: (index: number) => void;
   addAudioTrack: () => void;
   removeAudioTrack: (index: number) => void;
+  toggleAudioTrackMuted: (index: number) => void;
 
   // --- Scene CRUD ---
   addScene: (config: ConfigType, name?: string, trackIndex?: number) => string;
-  updateScene: (sceneId: string, patch: Partial<Pick<TimelineScene, "name" | "startTime" | "duration" | "color" | "collapsed" | "trackIndex" | "baseConfig">>) => void;
+  updateScene: (sceneId: string, patch: Partial<Pick<TimelineScene, "name" | "startTime" | "duration" | "color" | "collapsed" | "hidden" | "trackIndex" | "baseConfig">>) => void;
   removeScene: (sceneId: string) => void;
   reorderScene: (sceneId: string, newStartTime: number) => void;
 
@@ -186,6 +188,7 @@ export const useGanttStore = create<GanttState>((set, get) => ({
   // --- Track management ---
   sceneTrackCount: 1,
   audioTrackCount: 1,
+  mutedAudioTracks: new Set<number>(),
 
   addSceneTrack: () => set((s) => ({ sceneTrackCount: s.sceneTrackCount + 1 })),
   removeSceneTrack: (index) => {
@@ -201,6 +204,13 @@ export const useGanttStore = create<GanttState>((set, get) => ({
         ),
       },
     });
+  },
+
+  toggleAudioTrackMuted: (index) => {
+    const next = new Set(get().mutedAudioTracks);
+    if (next.has(index)) next.delete(index);
+    else next.add(index);
+    set({ mutedAudioTracks: next });
   },
 
   addAudioTrack: () => set((s) => ({ audioTrackCount: s.audioTrackCount + 1 })),
@@ -240,6 +250,7 @@ export const useGanttStore = create<GanttState>((set, get) => ({
       duration: 30,
       color: pickSceneColor(timeline.scenes.length),
       collapsed: true,
+      hidden: false,
       trackIndex: ti,
       baseConfig: structuredClone(config),
       sequences: [],
