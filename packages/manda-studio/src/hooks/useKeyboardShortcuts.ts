@@ -5,11 +5,13 @@ import { createPreset } from "@/db/presetService.ts";
 import { toast } from "@/utils/toast";
 
 const panelByIndex: Record<string, PanelName> = {
-  "1": "scene",
-  "2": "vumeters",
-  "3": "composer",
-  "4": "texts",
-  "5": "images",
+  "1": "shader",
+  "2": "background",
+  "3": "vumeters",
+  "4": "composer",
+  "5": "texts",
+  "6": "images",
+  "7": "sparks",
 };
 
 /**
@@ -20,7 +22,7 @@ const panelByIndex: Record<string, PanelName> = {
  * - Ctrl/Cmd+S        : Save current config as preset
  * - Ctrl/Cmd+E        : Open export dialog
  * - Ctrl/Cmd+L        : Toggle library drawer
- * - Ctrl/Cmd+1-5      : Switch panel tabs
+ * - Ctrl/Cmd+1-7      : Switch panel tabs
  * - Space             : Toggle play/pause (only when focus is not on an input)
  * - ?                 : Show keyboard shortcuts help
  */
@@ -77,7 +79,7 @@ export function useKeyboardShortcuts(): void {
         return;
       }
 
-      // Panel switch: Ctrl/Cmd + 1-5
+      // Panel switch: Ctrl/Cmd + 1-7
       if (meta && !e.shiftKey && e.key in panelByIndex) {
         e.preventDefault();
         state.setActivePanel(panelByIndex[e.key]);

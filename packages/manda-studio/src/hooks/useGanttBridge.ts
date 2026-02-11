@@ -18,6 +18,10 @@ export function useGanttBridge() {
   // Track the last config reference we pushed to studio so we can skip
   // our own pushes in the reverse-sync subscription.
   const lastPushedRef = useRef<unknown>(null);
+  // Track which scene the current studio config belongs to.
+  // The reverse-sync uses this to write edits to the correct scene,
+  // even if the gantt selection has changed by the time the subscription fires.
+  const configSceneIdRef = useRef<string | null>(null);
   // When the reverse-sync (effect 2) modifies the timeline, skip the
   // next evaluation (effect 1) to avoid a redundant structuredClone cycle.
   const skipNextEvalRef = useRef(false);
@@ -67,6 +71,7 @@ export function useGanttBridge() {
 
       const clone = structuredClone(config);
       lastPushedRef.current = clone;
+      configSceneIdRef.current = sceneId;
       useStudioStore.getState().setConfig(clone);
     });
   }, []);
@@ -84,11 +89,15 @@ export function useGanttBridge() {
       if (state.config === lastPushedRef.current) return;
 
       const gantt = useGanttStore.getState();
-      const { selection, currentTime, timeline, isPlaying, recordEnabled } = gantt;
+      const { currentTime, timeline, isPlaying, recordEnabled } = gantt;
       if (isPlaying) return;
-      if (!selection.sceneId) return;
 
-      const scene = timeline.scenes.find((s) => s.id === selection.sceneId);
+      // Use the scene ID that was active when the config was loaded,
+      // not the current selection (which may have changed).
+      const targetSceneId = configSceneIdRef.current;
+      if (!targetSceneId) return;
+
+      const scene = timeline.scenes.find((s) => s.id === targetSceneId);
       if (!scene) return;
 
       // Signal the first effect to skip the next re-evaluation triggered
@@ -145,7 +154,7 @@ export function useGanttBridge() {
           }
         }
       } else {
-        gantt.updateScene(selection.sceneId, { baseConfig: structuredClone(state.config) });
+        gantt.updateScene(targetSceneId, { baseConfig: structuredClone(state.config) });
       }
     });
   }, []);

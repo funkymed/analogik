@@ -169,10 +169,14 @@ export class MandaScene {
   updateShaderConfig(config: ConfigType) {
     this.config = config;
 
-    // Update background color (visible behind shader when opacity < 1)
-    if (config.scene.bgColor) {
+    // Reprocess background image if already loaded (apply blur/brightness changes)
+    // Image takes priority over bgColor
+    if (config.scene.background && this.background && this.background.complete) {
+      this.onLoad();
+    } else if (config.scene.bgColor) {
+      // Background color (visible behind shader when opacity < 1)
       this.scene.background = new Color(config.scene.bgColor);
-    } else if (!config.scene.background && !this.shader) {
+    } else if (!this.shader) {
       this.scene.background = null;
     }
 

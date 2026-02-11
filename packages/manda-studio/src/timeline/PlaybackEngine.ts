@@ -146,6 +146,17 @@ export class PlaybackEngine {
     this.renderer.render(this.currentTime);
   }
 
+  /**
+   * Render a single frame using a specific config (the selected scene's config).
+   * Used when paused and editing a scene that the playhead isn't on.
+   */
+  renderSelectedConfig(config: ConfigType): void {
+    if (!this.renderer || this.playing) return;
+
+    this.pushConfigToRenderer(config);
+    this.renderer.render(this.currentTime);
+  }
+
   // -----------------------------------------------------------------------
   // RAF loop (single loop — runs only during playback)
   // -----------------------------------------------------------------------

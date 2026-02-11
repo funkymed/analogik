@@ -2,7 +2,7 @@ import { create } from "zustand";
 import type { ConfigType } from "@mandafunk/config/types";
 import { getInitialSampleConfig } from "@/db/samplePresets";
 
-export type PanelName = "scene" | "vumeters" | "composer" | "texts" | "images" | "sparks";
+export type PanelName = "shader" | "background" | "vumeters" | "composer" | "texts" | "images" | "sparks";
 
 interface StudioState {
   // Config
@@ -106,7 +106,7 @@ export const useStudioStore = create<StudioState>((set, get) => ({
   setCaptureThumbnail: (fn) => set({ captureThumbnail: fn }),
 
   // UI
-  activePanel: "scene",
+  activePanel: "shader",
   setActivePanel: (panel) => set({ activePanel: panel }),
   libraryOpen: false,
   setLibraryOpen: (open) => set({ libraryOpen: open }),

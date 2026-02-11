@@ -27,8 +27,10 @@ import type { Project } from "@/db/projectTypes";
 import { formatRelativeTime } from "@/utils/formatRelativeTime";
 import { MediaLibraryGrid } from "@/components/library/MediaLibraryGrid";
 import type { ScenePreset } from "@/db/types";
+import { availableShaders } from "@mandafunk/shaders";
+import { useStudioStore } from "@/store/useStudioStore";
 
-type LibraryTab = "projects" | "scenes" | "images" | "audio" | "videos";
+type LibraryTab = "projects" | "scenes" | "shaders" | "images" | "audio" | "videos";
 
 interface LibraryDrawerProps {
   open: boolean;
@@ -193,10 +195,15 @@ function PresetCard({ preset, onLoad, onDuplicate, onDelete }: PresetCardProps) 
 const TABS: { key: LibraryTab; label: string }[] = [
   { key: "projects", label: "Projects" },
   { key: "scenes", label: "Scenes" },
+  { key: "shaders", label: "Shaders" },
   { key: "images", label: "Images" },
   { key: "audio", label: "Audio" },
   { key: "videos", label: "Videos" },
 ];
+
+function displayShaderName(name: string): string {
+  return name.replace(/Shader$/, "");
+}
 
 /* ------------------------------------------------------------------ */
 /*  Library Drawer                                                    */
@@ -221,6 +228,11 @@ export function LibraryDrawer({ open, onClose, initialTab }: LibraryDrawerProps)
   const [nameInput, setNameInput] = useState("");
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [mediaSearchQuery, setMediaSearchQuery] = useState("");
+  const [shaderSearchQuery, setShaderSearchQuery] = useState("");
+
+  const config = useStudioStore((s) => s.config);
+  const updateConfig = useStudioStore((s) => s.updateConfig);
+  const pushHistory = useStudioStore((s) => s.pushHistory);
 
   // --- Projects state ---
   const [projects, setProjects] = useState<Project[]>([]);
@@ -461,6 +473,8 @@ export function LibraryDrawer({ open, onClose, initialTab }: LibraryDrawerProps)
     (value: string) => {
       if (activeTab === "scenes") {
         setSearchQuery(value);
+      } else if (activeTab === "shaders") {
+        setShaderSearchQuery(value);
       } else {
         setMediaSearchQuery(value);
       }
@@ -468,7 +482,36 @@ export function LibraryDrawer({ open, onClose, initialTab }: LibraryDrawerProps)
     [activeTab, setSearchQuery],
   );
 
-  const currentSearch = activeTab === "scenes" ? searchQuery : mediaSearchQuery;
+  const filteredShaders = shaderSearchQuery
+    ? availableShaders.filter((name) =>
+        name.toLowerCase().includes(shaderSearchQuery.toLowerCase()),
+      )
+    : availableShaders;
+
+  const handleSelectShader = useCallback(
+    (shaderName: string) => {
+      pushHistory();
+      updateConfig("scene.shader", shaderName);
+    },
+    [pushHistory, updateConfig],
+  );
+
+  const handleShaderDragStart = useCallback(
+    (e: React.DragEvent, name: string) => {
+      e.dataTransfer.setData(
+        "application/x-manda-library",
+        JSON.stringify({ type: "shaders", name }),
+      );
+    },
+    [],
+  );
+
+  const currentSearch =
+    activeTab === "scenes"
+      ? searchQuery
+      : activeTab === "shaders"
+        ? shaderSearchQuery
+        : mediaSearchQuery;
 
   return (
     <div
@@ -718,8 +761,38 @@ export function LibraryDrawer({ open, onClose, initialTab }: LibraryDrawerProps)
         </>
       )}
 
+      {/* Shaders tab content */}
+      {activeTab === "shaders" && (
+        <div className="flex-1 overflow-y-auto p-3">
+          <div className="grid grid-cols-2 gap-2">
+            {filteredShaders.map((name) => (
+              <button
+                key={name}
+                type="button"
+                draggable
+                onDragStart={(e) => handleShaderDragStart(e, name)}
+                onClick={() => handleSelectShader(name)}
+                className={`truncate rounded-lg border px-3 py-2 text-left text-xs transition-colors ${
+                  config.scene.shader === name
+                    ? "border-indigo-500 bg-indigo-500/10 text-indigo-300"
+                    : "border-zinc-800 bg-zinc-800/50 text-zinc-400 hover:border-zinc-600 hover:text-zinc-300"
+                } cursor-grab active:cursor-grabbing`}
+                title={displayShaderName(name)}
+              >
+                {displayShaderName(name)}
+              </button>
+            ))}
+          </div>
+          {filteredShaders.length === 0 && (
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <p className="text-xs text-zinc-500">No shaders match your search.</p>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Media tabs content */}
-      {activeTab !== "scenes" && activeTab !== "projects" && (
+      {activeTab !== "scenes" && activeTab !== "projects" && activeTab !== "shaders" && (
         <MediaLibraryGrid type={activeTab} searchQuery={mediaSearchQuery} />
       )}
 

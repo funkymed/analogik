@@ -3,6 +3,7 @@ import type { MandaRenderer } from "@mandafunk/core/MandaRenderer";
 import { PlaybackEngine } from "@/timeline/PlaybackEngine.ts";
 import { MultiAudioEngine } from "@/audio/MultiAudioEngine.ts";
 import { useGanttStore } from "@/store/useGanttStore.ts";
+import { useStudioStore } from "@/store/useStudioStore.ts";
 
 export interface UsePlaybackEngineReturn {
   /** Call to connect the renderer once it's initialized. */
@@ -96,14 +97,20 @@ export function usePlaybackEngine(
       }
 
       // Timeline changed while paused (keyframe edit, config change via bridge)
-      // → re-evaluate and render one frame at current position
+      // → re-evaluate and render one frame
       if (
         !state.isPlaying &&
         !engine.isPlaying() &&
         state.timeline !== prevState.timeline &&
         state.currentTime === prevState.currentTime
       ) {
-        engine.renderFrame();
+        // When a scene is selected, render that scene's config (from studio store)
+        // instead of evaluating at the playhead (which might be on a different scene).
+        if (state.selection.sceneId) {
+          engine.renderSelectedConfig(useStudioStore.getState().config);
+        } else {
+          engine.renderFrame();
+        }
       }
 
       // Loop toggle

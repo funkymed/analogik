@@ -10,6 +10,8 @@
 
 import {
   AdditiveBlending,
+  NormalBlending,
+  SubtractiveBlending,
   Mesh,
   NearestFilter,
   PlaneGeometry,
@@ -154,7 +156,7 @@ export abstract class ShaderAbstract implements BackgroundShader {
       vertexShader: this.vshader,
       fragmentShader: this.fshader,
       transparent: true,
-      blending: AdditiveBlending,
+      blending: this.resolveBlending(config.scene.shader_blending),
     });
 
     this.mesh = new Mesh(geometry, this.shaderMaterial);
@@ -191,6 +193,19 @@ export abstract class ShaderAbstract implements BackgroundShader {
     this.uniforms.iOpacity.value = config.scene.shader_opacity ?? 1.0;
     this.mesh.position.z =
       (isMobile ? -0 : -500) * (config.scene.shader_zoom || 1);
+    if (this.shaderMaterial) {
+      this.shaderMaterial.blending = this.resolveBlending(config.scene.shader_blending);
+      this.shaderMaterial.needsUpdate = true;
+    }
+  }
+
+  /** Maps config blending string to Three.js blending constant. */
+  private resolveBlending(mode?: string): number {
+    switch (mode) {
+      case "normal": return NormalBlending;
+      case "subtractive": return SubtractiveBlending;
+      default: return AdditiveBlending;
+    }
   }
 
   /**

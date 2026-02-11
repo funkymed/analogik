@@ -10,7 +10,8 @@ import { PreviewCanvas } from "@/components/PreviewCanvas.tsx";
 import { PlayerControls } from "@/components/PlayerControls.tsx";
 import { PanelTabs } from "@/components/PanelTabs.tsx";
 import { StatusBar } from "@/components/StatusBar.tsx";
-import { ScenePanel } from "@/components/panels/ScenePanel.tsx";
+import { ShaderPanel } from "@/components/panels/ShaderPanel.tsx";
+import { BackgroundPanel } from "@/components/panels/BackgroundPanel.tsx";
 import { VumetersPanel } from "@/components/panels/VumetersPanel.tsx";
 import { ComposerPanel } from "@/components/panels/ComposerPanel.tsx";
 import { TextsImagesPanel } from "@/components/panels/TextsImagesPanel.tsx";
@@ -100,7 +101,8 @@ function App() {
           />
 
           <div className="flex-1 overflow-y-auto p-3">
-            {activePanel === "scene" && <ScenePanel />}
+            {activePanel === "shader" && <ShaderPanel />}
+            {activePanel === "background" && <BackgroundPanel />}
             {activePanel === "vumeters" && <VumetersPanel />}
             {activePanel === "composer" && <ComposerPanel />}
             {activePanel === "texts" && <TextsImagesPanel panelType="texts" />}

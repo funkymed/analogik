@@ -1,9 +1,10 @@
 import Activity from "lucide-react/dist/esm/icons/activity.js";
 import Flame from "lucide-react/dist/esm/icons/flame.js";
-import Image from "lucide-react/dist/esm/icons/image.js";
-import Layers from "lucide-react/dist/esm/icons/layers.js";
+import ImageIcon from "lucide-react/dist/esm/icons/image.js";
 import Sparkles from "lucide-react/dist/esm/icons/sparkles.js";
 import Type from "lucide-react/dist/esm/icons/type.js";
+import Zap from "lucide-react/dist/esm/icons/zap.js";
+import ImagePlus from "lucide-react/dist/esm/icons/image-plus.js";
 import type { PanelName } from "@/store/useStudioStore.ts";
 
 interface PanelTabsProps {
@@ -11,12 +12,13 @@ interface PanelTabsProps {
   onPanelChange: (panel: string) => void;
 }
 
-const TABS: { key: PanelName; label: string; icon: typeof Layers }[] = [
-  { key: "scene", label: "Scene", icon: Layers },
+const TABS: { key: PanelName; label: string; icon: typeof Zap }[] = [
+  { key: "shader", label: "Shader", icon: Zap },
+  { key: "background", label: "Background", icon: ImagePlus },
   { key: "vumeters", label: "Vumeters", icon: Activity },
   { key: "composer", label: "Composer", icon: Sparkles },
   { key: "texts", label: "Texts", icon: Type },
-  { key: "images", label: "Images", icon: Image },
+  { key: "images", label: "Images", icon: ImageIcon },
   { key: "sparks", label: "Sparks", icon: Flame },
 ];
 

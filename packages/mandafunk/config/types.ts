@@ -230,6 +230,8 @@ export interface SceneConfig {
   shader_speed?: number;
   /** Shader opacity (range: 0 to 1). */
   shader_opacity?: number;
+  /** Shader blend mode: "additive", "normal", or "subtractive". */
+  shader_blending?: "additive" | "normal" | "subtractive";
   /** Shader zoom level. */
   shader_zoom?: number;
   /** Whether the shader uses sin/cos modulation on the X axis. */
