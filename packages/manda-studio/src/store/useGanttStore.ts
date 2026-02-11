@@ -7,8 +7,57 @@ import type {
   Keyframe,
   SceneTransition,
   AudioClip,
+  AssetEntry,
   GanttSelection,
+  SidebarItemType,
+  SidebarItem,
 } from "@/timeline/ganttTypes.ts";
+import { configDefault } from "@mandafunk/config";
+import type { TextType, ImageType } from "@mandafunk/config/types";
+import { DEFAULT_TEXT, DEFAULT_IMAGE } from "@/components/panels/TextsImagesPanel.tsx";
+import { stripRuntimeData } from "@/services/assetRegistry.ts";
+
+// ---------------------------------------------------------------------------
+// LocalStorage persistence
+// ---------------------------------------------------------------------------
+
+const LS_KEY = "manda-studio:project";
+
+interface PersistedProject {
+  timeline: Timeline;
+  sceneTrackCount: number;
+  audioTrackCount: number;
+}
+
+function loadPersistedProject(): PersistedProject | null {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return null;
+    const data = JSON.parse(raw) as PersistedProject;
+    // Ensure assets map exists (old saves might lack it)
+    if (!data.timeline.assets) data.timeline.assets = {};
+    return data;
+  } catch {
+    return null;
+  }
+}
+
+function savePersistedProject(state: {
+  timeline: Timeline;
+  sceneTrackCount: number;
+  audioTrackCount: number;
+}): void {
+  try {
+    const data: PersistedProject = {
+      timeline: stripRuntimeData(state.timeline),
+      sceneTrackCount: state.sceneTrackCount,
+      audioTrackCount: state.audioTrackCount,
+    };
+    localStorage.setItem(LS_KEY, JSON.stringify(data));
+  } catch {
+    // Silently fail if storage is full
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -33,6 +82,95 @@ const SCENE_COLORS = [
 
 function pickSceneColor(index: number): string {
   return SCENE_COLORS[index % SCENE_COLORS.length];
+}
+
+/** Disable all optional visual sections so a new scene starts clean (background only). */
+function stripConfigToBackgroundOnly(cfg: ConfigType): ConfigType {
+  const c = structuredClone(cfg);
+  // Shader off (keep name for export, just hide it)
+  c.scene.shader_show = false;
+  // Timer / progressbar hidden
+  c.timer.show = false;
+  c.progressbar.show = false;
+  // Vumeters hidden
+  c.vumeters.oscilloscop.show = false;
+  c.vumeters.spectrum.show = false;
+  // Composer effects off
+  c.composer.bloom.show = false;
+  c.composer.rgb.show = false;
+  c.composer.film.show = false;
+  c.composer.static.show = false;
+  c.composer.hue.show = false;
+  // Sparks disabled
+  c.sparks.enabled = false;
+  // Clear multi-instance items
+  (c as Record<string, unknown>).texts = {};
+  (c as Record<string, unknown>).images = {};
+  return c;
+}
+
+/** Enable the config section for a sidebar item type using configDefault values. */
+function enableConfigSection(cfg: ConfigType, type: SidebarItemType): ConfigType {
+  const c = structuredClone(cfg);
+  const d = configDefault;
+  switch (type) {
+    case "shader":
+      c.scene.shader = d.scene.shader;
+      c.scene.shader_show = true;
+      break;
+    case "timecode":
+      c.timer = structuredClone(d.timer);
+      break;
+    case "progressbar":
+      c.progressbar = structuredClone(d.progressbar);
+      break;
+    case "vumeters":
+      c.vumeters = structuredClone(d.vumeters);
+      break;
+    case "composer":
+      c.composer = structuredClone(d.composer);
+      break;
+    case "sparks":
+      c.sparks = structuredClone(d.sparks);
+      c.sparks.enabled = true;
+      break;
+    default:
+      break;
+  }
+  return c;
+}
+
+/** Disable the config section for a sidebar item type. */
+function disableConfigSection(cfg: ConfigType, type: SidebarItemType): ConfigType {
+  const c = structuredClone(cfg);
+  switch (type) {
+    case "shader":
+      c.scene.shader_show = false;
+      break;
+    case "timecode":
+      c.timer.show = false;
+      break;
+    case "progressbar":
+      c.progressbar.show = false;
+      break;
+    case "vumeters":
+      c.vumeters.oscilloscop.show = false;
+      c.vumeters.spectrum.show = false;
+      break;
+    case "composer":
+      c.composer.bloom.show = false;
+      c.composer.rgb.show = false;
+      c.composer.film.show = false;
+      c.composer.static.show = false;
+      c.composer.hue.show = false;
+      break;
+    case "sparks":
+      c.sparks.enabled = false;
+      break;
+    default:
+      break;
+  }
+  return c;
 }
 
 // ---------------------------------------------------------------------------
@@ -112,6 +250,14 @@ interface GanttState {
   updateTransition: (transitionId: string, patch: Partial<Omit<SceneTransition, "id">>) => void;
   removeTransition: (transitionId: string) => void;
 
+  // --- Sidebar item CRUD ---
+  addSidebarItem: (sceneId: string, type: SidebarItemType) => string;
+  removeSidebarItem: (sceneId: string, itemId: string) => void;
+
+  // --- Asset registry ---
+  registerAsset: (entry: AssetEntry) => void;
+  removeAsset: (assetId: string) => void;
+
   // --- Audio clip CRUD ---
   addAudioClip: (clip: Omit<AudioClip, "id">) => string;
   updateAudioClip: (clipId: string, patch: Partial<Omit<AudioClip, "id">>) => void;
@@ -128,9 +274,12 @@ interface GanttState {
 // Store
 // ---------------------------------------------------------------------------
 
+const _persisted = loadPersistedProject();
+
 export const useGanttStore = create<GanttState>((set, get) => ({
   // --- Timeline document ---
-  timeline: {
+  timeline: _persisted?.timeline ?? {
+    assets: {},
     scenes: [],
     transitions: [],
     audioClips: [],
@@ -186,8 +335,8 @@ export const useGanttStore = create<GanttState>((set, get) => ({
   }),
 
   // --- Track management ---
-  sceneTrackCount: 1,
-  audioTrackCount: 1,
+  sceneTrackCount: _persisted?.sceneTrackCount ?? 1,
+  audioTrackCount: _persisted?.audioTrackCount ?? 1,
   mutedAudioTracks: new Set<number>(),
 
   addSceneTrack: () => set((s) => ({ sceneTrackCount: s.sceneTrackCount + 1 })),
@@ -252,8 +401,9 @@ export const useGanttStore = create<GanttState>((set, get) => ({
       collapsed: true,
       hidden: false,
       trackIndex: ti,
-      baseConfig: structuredClone(config),
+      baseConfig: stripConfigToBackgroundOnly(config),
       sequences: [],
+      sidebarItems: [{ id: "bg-0", type: "background" }],
     };
 
     set({
@@ -483,6 +633,115 @@ export const useGanttStore = create<GanttState>((set, get) => ({
     });
   },
 
+  // --- Sidebar item CRUD ---
+
+  addSidebarItem: (sceneId, type) => {
+    const { timeline } = get();
+    const scene = timeline.scenes.find((s) => s.id === sceneId);
+    if (!scene) return "";
+
+    const SINGLE_TYPES: SidebarItemType[] = [
+      "shader", "background", "vumeters", "composer", "sparks", "progressbar", "timecode",
+    ];
+
+    // For single-instance types, no-op if already present
+    if (SINGLE_TYPES.includes(type) && scene.sidebarItems.some((i) => i.type === type)) {
+      return scene.sidebarItems.find((i) => i.type === type)!.id;
+    }
+
+    const itemId = generateId("si");
+    const newItem: SidebarItem = { id: itemId, type };
+
+    // Enable the relevant config section
+    let updatedConfig = enableConfigSection(scene.baseConfig, type);
+    if (type === "text") {
+      const configKey = `text_${Date.now()}`;
+      newItem.configKey = configKey;
+      updatedConfig = structuredClone(updatedConfig);
+      const texts = (updatedConfig.texts ?? {}) as Record<string, TextType>;
+      texts[configKey] = structuredClone(DEFAULT_TEXT);
+      (updatedConfig as Record<string, unknown>).texts = texts;
+    } else if (type === "image") {
+      const configKey = `image_${Date.now()}`;
+      newItem.configKey = configKey;
+      updatedConfig = structuredClone(updatedConfig);
+      const images = (updatedConfig.images ?? {}) as Record<string, ImageType>;
+      images[configKey] = structuredClone(DEFAULT_IMAGE);
+      (updatedConfig as Record<string, unknown>).images = images;
+    }
+
+    set({
+      timeline: {
+        ...timeline,
+        scenes: timeline.scenes.map((s) =>
+          s.id === sceneId
+            ? { ...s, sidebarItems: [...s.sidebarItems, newItem], baseConfig: updatedConfig }
+            : s,
+        ),
+      },
+    });
+    return itemId;
+  },
+
+  removeSidebarItem: (sceneId, itemId) => {
+    const { timeline } = get();
+    const scene = timeline.scenes.find((s) => s.id === sceneId);
+    if (!scene) return;
+
+    const item = scene.sidebarItems.find((i) => i.id === itemId);
+    if (!item) return;
+
+    let updatedConfig = structuredClone(scene.baseConfig);
+
+    if (item.type === "text" && item.configKey) {
+      const texts = { ...(updatedConfig.texts as Record<string, TextType> ?? {}) };
+      delete texts[item.configKey];
+      (updatedConfig as Record<string, unknown>).texts = texts;
+    } else if (item.type === "image" && item.configKey) {
+      const images = { ...(updatedConfig.images as Record<string, ImageType> ?? {}) };
+      delete images[item.configKey];
+      (updatedConfig as Record<string, unknown>).images = images;
+    } else {
+      // Single-instance type: disable the section
+      updatedConfig = disableConfigSection(updatedConfig, item.type);
+    }
+
+    set({
+      timeline: {
+        ...timeline,
+        scenes: timeline.scenes.map((s) =>
+          s.id === sceneId
+            ? {
+                ...s,
+                sidebarItems: s.sidebarItems.filter((i) => i.id !== itemId),
+                baseConfig: updatedConfig,
+              }
+            : s,
+        ),
+      },
+    });
+  },
+
+  // --- Asset registry ---
+
+  registerAsset: (entry) => {
+    const { timeline } = get();
+    set({
+      timeline: {
+        ...timeline,
+        assets: { ...timeline.assets, [entry.id]: entry },
+      },
+    });
+  },
+
+  removeAsset: (assetId) => {
+    const { timeline } = get();
+    const { [assetId]: _removed, ...rest } = timeline.assets;
+    set({
+      timeline: { ...timeline, assets: rest },
+    });
+  },
+
   // --- Audio clip CRUD ---
 
   addAudioClip: (clip) => {
@@ -567,3 +826,23 @@ export const useGanttStore = create<GanttState>((set, get) => ({
     return Math.round(time / snapInterval) * snapInterval;
   },
 }));
+
+// ---------------------------------------------------------------------------
+// Auto-save to localStorage (debounced)
+// ---------------------------------------------------------------------------
+
+let _saveTimer: ReturnType<typeof setTimeout> | null = null;
+
+useGanttStore.subscribe((state, prev) => {
+  // Only save when the persisted data actually changes
+  if (
+    state.timeline === prev.timeline &&
+    state.sceneTrackCount === prev.sceneTrackCount &&
+    state.audioTrackCount === prev.audioTrackCount
+  ) return;
+
+  if (_saveTimer) clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(() => {
+    savePersistedProject(state);
+  }, 500);
+});

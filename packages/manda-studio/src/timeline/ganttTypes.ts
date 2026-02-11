@@ -1,6 +1,35 @@
 import type { ConfigType } from "@mandafunk/config/types";
 
 // ---------------------------------------------------------------------------
+// Asset Registry
+// ---------------------------------------------------------------------------
+
+export type AssetType = "image" | "audio" | "video" | "font";
+
+export interface AssetEntry {
+  /** Stable unique identifier (generated once, persisted across sessions). */
+  id: string;
+  /** Kind of asset. */
+  type: AssetType;
+  /** Original file name. */
+  name: string;
+  /** MIME type (e.g. "image/png", "audio/mpeg"). */
+  mimeType: string;
+  /** Relative path inside an export ZIP (e.g. "assets/img-abc123.png"). */
+  filePath?: string;
+  /** IndexedDB library ID (internal to the studio). */
+  libraryId?: number;
+  /** Blob URL created at runtime – never persisted. */
+  runtimeUrl?: string;
+  /** Optional metadata. */
+  meta?: {
+    width?: number;
+    height?: number;
+    duration?: number;
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Easing
 // ---------------------------------------------------------------------------
 
@@ -66,6 +95,28 @@ export interface Sequence {
 }
 
 // ---------------------------------------------------------------------------
+// Sidebar items (per-scene accordion system)
+// ---------------------------------------------------------------------------
+
+export type SidebarItemType =
+  | "shader"
+  | "background"
+  | "vumeters"
+  | "composer"
+  | "sparks"
+  | "progressbar"
+  | "timecode"
+  | "text"
+  | "image";
+
+export interface SidebarItem {
+  id: string;
+  type: SidebarItemType;
+  /** For multi-instance types (text/image): key into config.texts / config.images Record */
+  configKey?: string;
+}
+
+// ---------------------------------------------------------------------------
 // Scene
 // ---------------------------------------------------------------------------
 
@@ -88,6 +139,8 @@ export interface TimelineScene {
   baseConfig: ConfigType;
   /** Internal sequences (shader, vumeters, etc.). */
   sequences: Sequence[];
+  /** Sidebar accordion items for this scene. */
+  sidebarItems: SidebarItem[];
 }
 
 // ---------------------------------------------------------------------------
@@ -127,8 +180,10 @@ export interface AudioClip {
   muted: boolean;
   /** Track index for multi-track layout (0 = first track). */
   trackIndex: number;
-  /** Library audio ID for persistence across sessions. */
+  /** @deprecated Use assetId instead. Library audio ID for persistence across sessions. */
   libraryId?: number;
+  /** Reference to an asset in the timeline's asset registry. */
+  assetId?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -136,6 +191,8 @@ export interface AudioClip {
 // ---------------------------------------------------------------------------
 
 export interface Timeline {
+  /** Centralised asset registry – every image/audio/video referenced by scenes or clips. */
+  assets: Record<string, AssetEntry>;
   scenes: TimelineScene[];
   transitions: SceneTransition[];
   audioClips: AudioClip[];

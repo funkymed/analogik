@@ -1,5 +1,6 @@
 import { db } from "./database";
 import type { Project, ProjectExport } from "./projectTypes";
+import { stripRuntimeData } from "@/services/assetRegistry";
 
 export async function getAllProjects(): Promise<Project[]> {
   return await db.projects.orderBy("updatedAt").reverse().toArray();
@@ -37,10 +38,15 @@ export async function exportProjects(ids?: number[]): Promise<string> {
   } else {
     projects = await getAllProjects();
   }
+  // Strip runtime blob URLs from all timelines before exporting
+  const cleaned = projects.map((p) => ({
+    ...p,
+    timeline: stripRuntimeData(p.timeline),
+  }));
   const data: ProjectExport = {
     version: "1.0",
     exportedAt: new Date().toISOString(),
-    projects,
+    projects: cleaned,
   };
   return JSON.stringify(data, null, 2);
 }

@@ -2,7 +2,8 @@ import { useState, useCallback } from "react";
 import X from "lucide-react/dist/esm/icons/x.js";
 import ImageIcon from "lucide-react/dist/esm/icons/image.js";
 import { useStudioStore } from "@/store/useStudioStore";
-import { getImage } from "@/db/libraryService";
+import { useGanttStore } from "@/store/useGanttStore";
+import { createAssetEntry } from "@/services/assetRegistry";
 import { LabeledSlider } from "@/components/ui/LabeledSlider";
 import { ColorInput } from "@/components/ui/ColorInput";
 
@@ -62,9 +63,11 @@ export function BackgroundPanel() {
         updateConfig("scene.bgColor", "");
         updateConfig("scene.background", "");
         updateConfig("scene.bgLibraryId", undefined);
+        updateConfig("scene.bgAssetId", undefined);
       } else if (mode === "color") {
         updateConfig("scene.background", "");
         updateConfig("scene.bgLibraryId", undefined);
+        updateConfig("scene.bgAssetId", undefined);
         if (!scene.bgColor) {
           updateConfig("scene.bgColor", "#000000");
         }
@@ -77,6 +80,7 @@ export function BackgroundPanel() {
     pushHistory();
     updateConfig("scene.background", "");
     updateConfig("scene.bgLibraryId", undefined);
+    updateConfig("scene.bgAssetId", undefined);
     setBgModeOverride("image");
   }, [pushHistory, updateConfig]);
 
@@ -94,11 +98,12 @@ export function BackgroundPanel() {
       let data: { type: string; id: number };
       try { data = JSON.parse(raw); } catch { return; }
       if (data.type !== "images") return;
-      const img = await getImage(data.id);
-      if (!img) return;
-      const blobUrl = URL.createObjectURL(img.blob);
+      const entry = await createAssetEntry(data.id, "image");
+      if (!entry || !entry.runtimeUrl) return;
+      useGanttStore.getState().registerAsset(entry);
       pushHistory();
-      updateConfig("scene.background", blobUrl);
+      updateConfig("scene.background", entry.runtimeUrl);
+      updateConfig("scene.bgAssetId", entry.id);
       updateConfig("scene.bgLibraryId", data.id);
     },
     [pushHistory, updateConfig],

@@ -67,8 +67,10 @@ export interface ImageType {
   objType?: string;
   /** Optional animation configuration. */
   animation?: AnimationType;
-  /** Library image ID for persistence across sessions. */
+  /** @deprecated Use assetId instead. Library image ID for persistence across sessions. */
   libraryId?: number;
+  /** Reference to an asset in the timeline's asset registry. */
+  assetId?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -226,8 +228,10 @@ export interface SceneConfig {
   bgColor: string;
   /** Background image URL. Empty string for no background image. */
   background: string;
-  /** Library image ID for background persistence across sessions. */
+  /** @deprecated Use bgAssetId instead. Library image ID for background persistence across sessions. */
   bgLibraryId?: number;
+  /** Reference to an asset in the timeline's asset registry for the background image. */
+  bgAssetId?: string;
   /** Background image sizing mode: "cover" keeps aspect ratio, "fit" stretches to fill. */
   bgFit?: "cover" | "fit" | "contain";
   /** Background image blur amount in pixels (range: 0 to 200). */
@@ -236,6 +240,8 @@ export interface SceneConfig {
   brightness: number;
   /** GLSL shader name or empty string for no shader. */
   shader?: string;
+  /** Whether the shader is visible (defaults to true when shader is set). */
+  shader_show?: boolean;
   /** Shader animation speed multiplier. */
   shader_speed?: number;
   /** Shader opacity (range: 0 to 1). */
@@ -515,6 +521,8 @@ export interface SparkEmitter {
   perturbation: { enabled: boolean; amplitude: number; frequency: number };
   /** Sprite texture path. */
   sprite: string;
+  /** Reference to an asset in the timeline's asset registry for the sprite. */
+  assetId?: string;
   /** Blending mode for particles. */
   blending: "additive" | "normal";
   /** Whether this emitter is muted (hidden). */

@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useRef } from "react";
+import { lazy, Suspense, useEffect, useRef } from "react";
 import { useStudioStore } from "@/store/useStudioStore.ts";
 import { useGanttStore } from "@/store/useGanttStore.ts";
 import { seedSamplePresets } from "@/db/samplePresets";
@@ -8,16 +8,8 @@ import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts.ts";
 import { useThumbnailCapture } from "@/hooks/useThumbnailCapture.ts";
 import { PreviewCanvas } from "@/components/PreviewCanvas.tsx";
 import { PlayerControls } from "@/components/PlayerControls.tsx";
-import { PanelTabs } from "@/components/PanelTabs.tsx";
+import { AccordionSidebar } from "@/components/AccordionSidebar.tsx";
 import { StatusBar } from "@/components/StatusBar.tsx";
-import { ShaderPanel } from "@/components/panels/ShaderPanel.tsx";
-import { BackgroundPanel } from "@/components/panels/BackgroundPanel.tsx";
-import { VumetersPanel } from "@/components/panels/VumetersPanel.tsx";
-import { ComposerPanel } from "@/components/panels/ComposerPanel.tsx";
-import { TextsImagesPanel } from "@/components/panels/TextsImagesPanel.tsx";
-import { SparksPanel } from "@/components/panels/SparksPanel.tsx";
-import { ProgressBarPanel } from "@/components/panels/ProgressBarPanel.tsx";
-import { TimecodePanel } from "@/components/panels/TimecodePanel.tsx";
 import { GanttTimeline } from "@/components/gantt/GanttTimeline.tsx";
 import { useGanttBridge } from "@/hooks/useGanttBridge.ts";
 import { usePlaybackEngine } from "@/hooks/usePlaybackEngine.ts";
@@ -33,8 +25,6 @@ const KeyboardShortcutsHelp = lazy(() =>
 );
 
 function App() {
-  const activePanel = useStudioStore((s) => s.activePanel);
-  const setActivePanel = useStudioStore((s) => s.setActivePanel);
   const config = useStudioStore((s) => s.config);
   const setCaptureThumbnail = useStudioStore((s) => s.setCaptureThumbnail);
 
@@ -68,13 +58,6 @@ function App() {
     return () => setCaptureThumbnail(null);
   }, [captureThumbnail, setCaptureThumbnail]);
 
-  const handlePanelChange = useCallback(
-    (panel: string) => {
-      setActivePanel(panel as typeof activePanel);
-    },
-    [setActivePanel],
-  );
-
   return (
     <div className="flex h-screen w-screen flex-col overflow-hidden bg-zinc-950 text-zinc-100">
       {/* Header */}
@@ -97,22 +80,7 @@ function App() {
       <div className="flex min-h-0 flex-1">
         {/* Left sidebar */}
         <aside className="flex w-72 shrink-0 flex-col border-r border-zinc-800">
-          <PanelTabs
-            activePanel={activePanel}
-            onPanelChange={handlePanelChange}
-          />
-
-          <div className="flex-1 overflow-y-auto p-3">
-            {activePanel === "shader" && <ShaderPanel />}
-            {activePanel === "background" && <BackgroundPanel />}
-            {activePanel === "vumeters" && <VumetersPanel />}
-            {activePanel === "composer" && <ComposerPanel />}
-            {activePanel === "texts" && <TextsImagesPanel panelType="texts" />}
-            {activePanel === "images" && <TextsImagesPanel panelType="images" />}
-            {activePanel === "sparks" && <SparksPanel />}
-            {activePanel === "progressbar" && <ProgressBarPanel />}
-            {activePanel === "timecode" && <TimecodePanel />}
-          </div>
+          <AccordionSidebar />
         </aside>
 
         {/* Right area: preview + player */}

@@ -26,7 +26,7 @@ import {
 } from "@/db/projectService";
 import type { Project } from "@/db/projectTypes";
 import { formatRelativeTime } from "@/utils/formatRelativeTime";
-import { getImage, getAudioItem } from "@/db/libraryService";
+import { migrateToAssetRegistry, resolveAllAssets, stripRuntimeData } from "@/services/assetRegistry";
 import { MediaLibraryGrid } from "@/components/library/MediaLibraryGrid";
 import type { ScenePreset } from "@/db/types";
 import { availableShaders } from "@mandafunk/shaders";
@@ -378,7 +378,7 @@ export function LibraryDrawer({ open, onClose, initialTab, loadAudioClipBuffer }
   // --- Project handlers ---
   const handleNewProject = useCallback(() => {
     useGanttStore.setState({
-      timeline: { scenes: [], transitions: [], audioClips: [] },
+      timeline: { assets: {}, scenes: [], transitions: [], audioClips: [] },
       sceneTrackCount: 1,
       audioTrackCount: 1,
       selection: { sceneId: null, sequenceId: null, keyframeIds: [] },
@@ -398,9 +398,11 @@ export function LibraryDrawer({ open, onClose, initialTab, loadAudioClipBuffer }
     if (!trimmed) return;
     const state = useGanttStore.getState();
     const now = new Date().toISOString();
+    // Strip runtime blob URLs before persisting
+    const cleanTimeline = stripRuntimeData(state.timeline);
     await createProject({
       name: trimmed,
-      timeline: structuredClone(state.timeline),
+      timeline: cleanTimeline,
       sceneTrackCount: state.sceneTrackCount,
       audioTrackCount: state.audioTrackCount,
       thumbnail: "",
@@ -433,44 +435,21 @@ export function LibraryDrawer({ open, onClose, initialTab, loadAudioClipBuffer }
     async (project: Project) => {
       const cloned = structuredClone(project.timeline);
 
-      // --- Restore blob URLs from library for all scenes ---
+      // --- Migrate old projects missing sidebarItems ---
       for (const scene of cloned.scenes) {
-        const cfg = scene.baseConfig;
-        if (!cfg) continue;
-
-        // Background image
-        if (cfg.scene?.bgLibraryId) {
-          const img = await getImage(cfg.scene.bgLibraryId);
-          if (img) {
-            cfg.scene.background = URL.createObjectURL(img.blob);
-          }
-        }
-
-        // Image overlays
-        if (cfg.images) {
-          const entries = Array.isArray(cfg.images)
-            ? cfg.images.map((v: any, i: number) => [String(i), v])
-            : Object.entries(cfg.images);
-          for (const [, imgCfg] of entries) {
-            if (imgCfg?.libraryId) {
-              const img = await getImage(imgCfg.libraryId);
-              if (img) {
-                imgCfg.path = URL.createObjectURL(img.blob);
-              }
-            }
-          }
+        if (!scene.sidebarItems) {
+          scene.sidebarItems = [{ id: "bg-0", type: "background" }];
         }
       }
 
-      // --- Restore audio clip blob URLs from library ---
-      for (const clip of cloned.audioClips) {
-        if (clip.libraryId) {
-          const audio = await getAudioItem(clip.libraryId);
-          if (audio) {
-            clip.url = URL.createObjectURL(audio.blob);
-          }
-        }
+      // --- Migrate old projects missing asset registry ---
+      if (!cloned.assets) {
+        cloned.assets = {};
       }
+      await migrateToAssetRegistry(cloned);
+
+      // --- Resolve all asset blob URLs from library ---
+      await resolveAllAssets(cloned);
 
       const firstScene = cloned.scenes[0] ?? null;
       // Replace the entire timeline state and auto-select first scene
@@ -560,6 +539,7 @@ export function LibraryDrawer({ open, onClose, initialTab, loadAudioClipBuffer }
     (shaderName: string) => {
       pushHistory();
       updateConfig("scene.shader", shaderName);
+      updateConfig("scene.shader_show", true);
     },
     [pushHistory, updateConfig],
   );

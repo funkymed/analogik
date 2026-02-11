@@ -4,7 +4,8 @@ import Trash2 from "lucide-react/dist/esm/icons/trash-2.js";
 import ImageIcon from "lucide-react/dist/esm/icons/image.js";
 import type { TextType, ImageType } from "@mandafunk/config/types";
 import { useStudioStore } from "@/store/useStudioStore";
-import { getImage } from "@/db/libraryService";
+import { useGanttStore } from "@/store/useGanttStore";
+import { createAssetEntry } from "@/services/assetRegistry";
 import { LabeledSlider } from "@/components/ui/LabeledSlider";
 import { LabeledToggle } from "@/components/ui/LabeledToggle";
 import { ColorInput } from "@/components/ui/ColorInput";
@@ -23,7 +24,7 @@ interface TextsImagesPanelProps {
 // Defaults
 // ---------------------------------------------------------------------------
 
-const DEFAULT_TEXT: TextType = {
+export const DEFAULT_TEXT: TextType = {
   show: true,
   text: "New Text",
   order: 1,
@@ -39,7 +40,7 @@ const DEFAULT_TEXT: TextType = {
   rotationZ: 0,
 };
 
-const DEFAULT_IMAGE: ImageType = {
+export const DEFAULT_IMAGE: ImageType = {
   show: true,
   path: "",
   order: 1,
@@ -52,6 +53,15 @@ const DEFAULT_IMAGE: ImageType = {
   rotationY: 0,
   rotationZ: 0,
 };
+
+const AVAILABLE_FONTS = [
+  "Kdam Thmor Pro",
+  "Lobster",
+  "Pacifico",
+  "Permanent Marker",
+  "Alfa Slab One",
+  "East Sea Dokdo",
+];
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -190,7 +200,7 @@ interface TextItemEditorProps {
   item: TextType;
 }
 
-function TextItemEditor({ itemKey, item }: TextItemEditorProps) {
+export function TextItemEditor({ itemKey, item }: TextItemEditorProps) {
   const updateConfig = useStudioStore((s) => s.updateConfig);
   const pushHistory = useStudioStore((s) => s.pushHistory);
   const basePath = `texts.${itemKey}`;
@@ -203,7 +213,7 @@ function TextItemEditor({ itemKey, item }: TextItemEditorProps) {
   );
 
   const handleFontChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
       updateConfig(`${basePath}.font`, e.target.value);
     },
     [updateConfig, basePath],
@@ -230,13 +240,17 @@ function TextItemEditor({ itemKey, item }: TextItemEditorProps) {
 
       <div className="flex flex-col gap-1.5">
         <label className="text-xs text-zinc-400">Font</label>
-        <input
-          type="text"
+        <select
           value={item.font}
           onChange={handleFontChange}
           className="h-7 w-full rounded border border-zinc-700 bg-zinc-800 px-2 text-xs text-zinc-300 focus:border-indigo-500 focus:outline-none"
-          placeholder="Font family..."
-        />
+        >
+          {AVAILABLE_FONTS.map((f) => (
+            <option key={f} value={f} style={{ fontFamily: f }}>
+              {f}
+            </option>
+          ))}
+        </select>
       </div>
 
       <LabeledSlider
@@ -311,7 +325,7 @@ interface ImageItemEditorProps {
   zMax?: number;
 }
 
-function ImageItemEditor({ itemKey, item, zMin = -650, zMax = -1 }: ImageItemEditorProps) {
+export function ImageItemEditor({ itemKey, item, zMin = -650, zMax = -1 }: ImageItemEditorProps) {
   const updateConfig = useStudioStore((s) => s.updateConfig);
   const pushHistory = useStudioStore((s) => s.pushHistory);
   const basePath = `images.${itemKey}`;
@@ -334,11 +348,12 @@ function ImageItemEditor({ itemKey, item, zMin = -650, zMax = -1 }: ImageItemEdi
       let data: { type: string; id: number };
       try { data = JSON.parse(raw); } catch { return; }
       if (data.type !== "images") return;
-      const img = await getImage(data.id);
-      if (!img) return;
-      const blobUrl = URL.createObjectURL(img.blob);
+      const entry = await createAssetEntry(data.id, "image");
+      if (!entry || !entry.runtimeUrl) return;
+      useGanttStore.getState().registerAsset(entry);
       pushHistory();
-      updateConfig(`${basePath}.path`, blobUrl);
+      updateConfig(`${basePath}.path`, entry.runtimeUrl);
+      updateConfig(`${basePath}.assetId`, entry.id);
       updateConfig(`${basePath}.libraryId`, data.id);
     },
     [updateConfig, pushHistory, basePath],

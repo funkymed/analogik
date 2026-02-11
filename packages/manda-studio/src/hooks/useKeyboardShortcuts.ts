@@ -1,20 +1,7 @@
 import { useEffect } from "react";
 import { useStudioStore } from "@/store/useStudioStore.ts";
-import type { PanelName } from "@/store/useStudioStore.ts";
 import { createPreset } from "@/db/presetService.ts";
 import { toast } from "@/utils/toast";
-
-const panelByIndex: Record<string, PanelName> = {
-  "1": "shader",
-  "2": "background",
-  "3": "vumeters",
-  "4": "composer",
-  "5": "texts",
-  "6": "images",
-  "7": "sparks",
-  "8": "progressbar",
-  "9": "timecode",
-};
 
 /**
  * Global keyboard shortcuts for MandaStudio.
@@ -24,7 +11,6 @@ const panelByIndex: Record<string, PanelName> = {
  * - Ctrl/Cmd+S        : Save current config as preset
  * - Ctrl/Cmd+E        : Open export dialog
  * - Ctrl/Cmd+L        : Toggle library drawer
- * - Ctrl/Cmd+1-9      : Switch panel tabs
  * - Space             : Toggle play/pause (only when focus is not on an input)
  * - ?                 : Show keyboard shortcuts help
  */
@@ -78,13 +64,6 @@ export function useKeyboardShortcuts(): void {
       if (meta && !e.shiftKey && e.key === "l") {
         e.preventDefault();
         state.setLibraryOpen(!state.libraryOpen);
-        return;
-      }
-
-      // Panel switch: Ctrl/Cmd + 1-9
-      if (meta && !e.shiftKey && e.key in panelByIndex) {
-        e.preventDefault();
-        state.setActivePanel(panelByIndex[e.key]);
         return;
       }
 

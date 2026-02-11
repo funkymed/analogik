@@ -187,7 +187,7 @@ export class MandaScene {
     if (this.shader) {
       this.shader.clear();
     }
-    if (!this.config.scene.shader || this.config.scene.shader === "") {
+    if (!this.config.scene.shader || this.config.scene.shader === "" || this.config.scene.shader_show === false) {
       return false;
     }
 
@@ -209,12 +209,19 @@ export class MandaScene {
    * sin/cos) take effect on the next frame.
    */
   updateShaderConfig(config: ConfigType) {
+    const prevBackground = this.config.scene.background;
     this.config = config;
 
-    // Reprocess background image if already loaded (apply blur/brightness changes)
-    // Image takes priority over bgColor
-    if (config.scene.background && this.background && this.background.complete) {
-      this.onLoad();
+    if (config.scene.background) {
+      if (config.scene.background !== prevBackground) {
+        // Background URL changed — load the new image
+        this.background = new Image();
+        this.background.onload = () => this.onLoad();
+        this.background.src = config.scene.background;
+      } else if (this.background && this.background.complete && this.background.naturalWidth > 0) {
+        // Same URL, already loaded — reprocess (blur/brightness may have changed)
+        this.onLoad();
+      }
     } else if (config.scene.bgColor) {
       // Background color (visible behind shader when opacity < 1)
       this.scene.background = new Color(config.scene.bgColor);

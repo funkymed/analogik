@@ -5,6 +5,7 @@ import { MultiAudioEngine } from "@/audio/MultiAudioEngine.ts";
 import { useGanttStore } from "@/store/useGanttStore.ts";
 import { useStudioStore } from "@/store/useStudioStore.ts";
 import { createAudio } from "@/db/libraryService.ts";
+import { createAssetEntry } from "@/services/assetRegistry.ts";
 
 export interface UsePlaybackEngineReturn {
   /** Call to connect the renderer once it's initialized. */
@@ -169,6 +170,18 @@ export function usePlaybackEngine(
       const buffer = await file.arrayBuffer();
       const audioBuffer = await multiAudio.loadClipFromBuffer(blobUrl, buffer);
 
+      // Register asset in the timeline registry
+      let assetId: string | undefined;
+      if (resolvedLibraryId !== undefined) {
+        const entry = await createAssetEntry(resolvedLibraryId, "audio");
+        if (entry) {
+          // Override runtimeUrl to use the same blobUrl we already loaded
+          entry.runtimeUrl = blobUrl;
+          useGanttStore.getState().registerAsset(entry);
+          assetId = entry.id;
+        }
+      }
+
       const gantt = useGanttStore.getState();
       gantt.addAudioClip({
         name: file.name,
@@ -180,6 +193,7 @@ export function usePlaybackEngine(
         muted: false,
         trackIndex: trackIndex ?? 0,
         ...(resolvedLibraryId !== undefined ? { libraryId: resolvedLibraryId } : {}),
+        ...(assetId ? { assetId } : {}),
       });
     } catch (err) {
       console.error("Failed to load audio file:", err);

@@ -74,7 +74,8 @@
       "Bash(lsof:*)",
       "Bash(xargs kill:*)",
       "mcp__chrome-devtools__hover",
-      "mcp__plugin_playwright_playwright__browser_press_key"
+      "mcp__plugin_playwright_playwright__browser_press_key",
+      "Bash(find:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

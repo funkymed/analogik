@@ -18,13 +18,22 @@ export function ShaderPanel() {
   const setLibraryOpen = useStudioStore((s) => s.setLibraryOpen);
 
   const scene = config.scene;
-  const hasShader = !!scene.shader;
+  const hasShader = !!scene.shader && scene.shader_show !== false;
 
   const [dropOver, setDropOver] = useState(false);
+
+  const handleToggleShader = useCallback(
+    (enabled: boolean) => {
+      pushHistory();
+      updateConfig("scene.shader_show", enabled);
+    },
+    [pushHistory, updateConfig],
+  );
 
   const handleClearShader = useCallback(() => {
     pushHistory();
     updateConfig("scene.shader", "");
+    updateConfig("scene.shader_show", false);
   }, [pushHistory, updateConfig]);
 
   const handleSliderPointerDown = useCallback(() => {
@@ -58,6 +67,7 @@ export function ShaderPanel() {
       if (data.type !== "shaders") return;
       pushHistory();
       updateConfig("scene.shader", data.name);
+      updateConfig("scene.shader_show", true);
     },
     [pushHistory, updateConfig],
   );
@@ -78,9 +88,7 @@ export function ShaderPanel() {
       <SectionHeader
         title="Shader"
         enabled={hasShader}
-        onToggle={(v) => {
-          if (!v) handleClearShader();
-        }}
+        onToggle={handleToggleShader}
       >
         {/* Current shader / drop zone */}
         <div
