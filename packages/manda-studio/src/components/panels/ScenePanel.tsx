@@ -200,11 +200,6 @@ export function ScenePanel() {
             onChange={(v) => handleSceneUpdate("shader_sin_cos_space", v)}
             onPointerDown={handleSliderPointerDown}
           />
-          <LabeledToggle
-            label="Sparks"
-            checked={scene.sparks ?? false}
-            onChange={(v) => handleToggleChange("sparks", v)}
-          />
         </div>
       </SectionHeader>
 
