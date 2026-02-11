@@ -173,10 +173,8 @@ export function usePlaybackEngine(
       // Register asset in the timeline registry
       let assetId: string | undefined;
       if (resolvedLibraryId !== undefined) {
-        const entry = await createAssetEntry(resolvedLibraryId, "audio");
+        const entry = await createAssetEntry(resolvedLibraryId, "audio", blobUrl);
         if (entry) {
-          // Override runtimeUrl to use the same blobUrl we already loaded
-          entry.runtimeUrl = blobUrl;
           useGanttStore.getState().registerAsset(entry);
           assetId = entry.id;
         }

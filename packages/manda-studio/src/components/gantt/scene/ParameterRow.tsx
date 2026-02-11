@@ -1,5 +1,4 @@
 import { useCallback, useRef, useState } from "react";
-import X from "lucide-react/dist/esm/icons/x.js";
 import type { Keyframe } from "@/timeline/ganttTypes.ts";
 import { useGanttStore } from "@/store/useGanttStore.ts";
 import { KeyframeDot } from "../keyframes/KeyframeDot.tsx";
@@ -13,25 +12,20 @@ export interface ParameterEntry {
 
 interface ParameterRowProps {
   sceneId: string;
-  path: string;
   entries: ParameterEntry[];
   pixelsPerSecond: number;
   sceneStartTime: number;
-  color: string;
 }
 
 /**
  * A single parameter row inside an expanded scene.
- * Shows the parameter path label on the left and one keyframe diamond
- * per keyframe on this path.
+ * Keyframe dots only — labels are rendered in TrackLabelsPanel.
  */
 export function ParameterRow({
   sceneId,
-  path,
   entries,
   pixelsPerSecond,
   sceneStartTime,
-  color,
 }: ParameterRowProps) {
   const selectedKeyframeIds = useGanttStore((s) => s.selection.keyframeIds);
   const selectKeyframes = useGanttStore((s) => s.selectKeyframes);
@@ -43,9 +37,6 @@ export function ParameterRow({
 
   // Track the original keyframe time when drag starts, keyed by keyframeId
   const dragOriginsRef = useRef<Map<string, number>>(new Map());
-
-  // Short label: remove first segment (sequence type prefix)
-  const shortPath = path.includes(".") ? path.substring(path.indexOf(".") + 1) : path;
 
   const handleSelectKeyframe = useCallback(
     (kfId: string, additive: boolean) => {
@@ -109,12 +100,6 @@ export function ParameterRow({
     [],
   );
 
-  const handleRemovePath = useCallback(() => {
-    for (const entry of entries) {
-      removeKeyframe(sceneId, entry.sequenceId, entry.keyframe.id);
-    }
-  }, [sceneId, entries, removeKeyframe]);
-
   const handleUpdateKeyframe = useCallback(
     (patch: Partial<Omit<Keyframe, "id">>) => {
       if (!editingEntry) return;
@@ -131,28 +116,7 @@ export function ParameterRow({
 
   return (
     <div className="relative flex h-6 w-full border-b border-zinc-800/30">
-      {/* Label area */}
-      <div
-        className="flex h-full w-[120px] shrink-0 items-center gap-1 border-r border-zinc-800/50 px-1"
-        data-no-drag
-      >
-        {/* Color indicator */}
-        <span className={`h-2 w-2 shrink-0 rounded-sm ${color}`} />
-        {/* Path label */}
-        <span className="flex-1 truncate text-[9px] text-zinc-400" title={path}>
-          {shortPath}
-        </span>
-        {/* Remove all keyframes for this path */}
-        <button
-          type="button"
-          onClick={handleRemovePath}
-          className="shrink-0 text-zinc-600 hover:text-zinc-400"
-        >
-          <X size={8} />
-        </button>
-      </div>
-
-      {/* Keyframe area */}
+      {/* Keyframe area (labels are in TrackLabelsPanel) */}
       <div className="relative flex-1">
         {entries.map((entry) => {
           const leftPx = (entry.startOffset + entry.keyframe.time) * pixelsPerSecond;

@@ -3,6 +3,7 @@ import { useGanttStore } from "@/store/useGanttStore.ts";
 import type { TimelineScene } from "@/timeline/ganttTypes.ts";
 
 const SCENE_ROW_BASE = 40;
+const SCENE_LABEL_ROW_HEIGHT = 20;
 const PARAMETER_ROW_HEIGHT = 24;
 const AUDIO_ROW_BASE = 36;
 
@@ -26,7 +27,9 @@ export function useTrackHeights() {
   return useMemo(() => {
     const sceneTrackHeights: number[] = [];
     for (let i = 0; i < sceneTrackCount; i++) {
-      let extra = 0;
+      // Count scenes on this track — each gets a compact label row
+      const trackSceneCount = scenes.filter((s) => s.trackIndex === i).length;
+      let extra = trackSceneCount * SCENE_LABEL_ROW_HEIGHT;
       for (const scene of scenes) {
         if (scene.trackIndex === i && !scene.collapsed) {
           const pathCount = countUniquePaths(scene);

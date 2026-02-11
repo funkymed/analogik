@@ -13,23 +13,9 @@ interface SceneExpanderProps {
   widthPx?: number;
 }
 
-const PARAM_COLORS = [
-  "bg-indigo-400",
-  "bg-cyan-400",
-  "bg-pink-400",
-  "bg-amber-400",
-  "bg-violet-400",
-  "bg-emerald-400",
-  "bg-rose-400",
-  "bg-sky-400",
-  "bg-orange-400",
-  "bg-teal-400",
-];
-
 /**
- * Collapsible container that shows per-parameter rows below a scene block.
- * Each unique keyframe path across all sequences becomes its own row
- * with individual keyframe diamonds.
+ * Collapsible container that shows per-parameter keyframe rows below a scene block.
+ * Each unique keyframe path across all sequences becomes its own row.
  */
 export function SceneExpander({
   scene,
@@ -58,13 +44,9 @@ export function SceneExpander({
     }
 
     // Sort paths alphabetically for stable order
-    const sorted = [...byPath.entries()].sort((a, b) => a[0].localeCompare(b[0]));
-
-    return sorted.map(([path, entries], index) => ({
-      path,
-      entries,
-      color: PARAM_COLORS[index % PARAM_COLORS.length],
-    }));
+    return [...byPath.entries()]
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .map(([path, entries]) => ({ path, entries }));
   }, [scene.sequences]);
 
   if (parameterGroups.length === 0) return null;
@@ -78,15 +60,13 @@ export function SceneExpander({
         width: widthPx ?? "100%",
       }}
     >
-      {parameterGroups.map(({ path, entries, color }) => (
+      {parameterGroups.map(({ path, entries }) => (
         <ParameterRow
           key={path}
           sceneId={scene.id}
-          path={path}
           entries={entries}
           pixelsPerSecond={pixelsPerSecond}
           sceneStartTime={scene.startTime}
-          color={color}
         />
       ))}
     </div>

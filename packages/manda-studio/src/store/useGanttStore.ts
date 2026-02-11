@@ -69,7 +69,7 @@ export function generateId(prefix = "id"): string {
   return `${prefix}_${Date.now().toString(36)}_${_idCounter.toString(36)}`;
 }
 
-const SCENE_COLORS = [
+export const SCENE_COLORS = [
   "#6366f1", // indigo
   "#8b5cf6", // violet
   "#ec4899", // pink
@@ -832,6 +832,7 @@ export const useGanttStore = create<GanttState>((set, get) => ({
 // ---------------------------------------------------------------------------
 
 let _saveTimer: ReturnType<typeof setTimeout> | null = null;
+let _saveScheduled = false;
 
 useGanttStore.subscribe((state, prev) => {
   // Only save when the persisted data actually changes
@@ -841,8 +842,13 @@ useGanttStore.subscribe((state, prev) => {
     state.audioTrackCount === prev.audioTrackCount
   ) return;
 
+  // Mark as needing save but debounce aggressively (2s) to avoid
+  // structuredClone storms during rapid edits (slider drags, etc.)
+  _saveScheduled = true;
   if (_saveTimer) clearTimeout(_saveTimer);
   _saveTimer = setTimeout(() => {
-    savePersistedProject(state);
-  }, 500);
+    if (!_saveScheduled) return;
+    _saveScheduled = false;
+    savePersistedProject(useGanttStore.getState());
+  }, 2000);
 });

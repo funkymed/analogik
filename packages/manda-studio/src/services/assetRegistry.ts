@@ -14,11 +14,13 @@ import { getImage, getAudioItem } from "@/db/libraryService.ts";
 export async function createAssetEntry(
   libraryId: number,
   type: AssetType,
+  /** Pass an existing blob URL to avoid creating a duplicate. */
+  existingRuntimeUrl?: string,
 ): Promise<AssetEntry | null> {
   if (type === "image") {
     const img = await getImage(libraryId);
     if (!img) return null;
-    const runtimeUrl = URL.createObjectURL(img.blob);
+    const runtimeUrl = existingRuntimeUrl ?? URL.createObjectURL(img.blob);
     return {
       id: generateId("asset"),
       type,
@@ -32,7 +34,7 @@ export async function createAssetEntry(
   if (type === "audio") {
     const audio = await getAudioItem(libraryId);
     if (!audio) return null;
-    const runtimeUrl = URL.createObjectURL(audio.blob);
+    const runtimeUrl = existingRuntimeUrl ?? URL.createObjectURL(audio.blob);
     return {
       id: generateId("asset"),
       type,
@@ -74,10 +76,17 @@ export async function resolveAllAssets(timeline: Timeline): Promise<void> {
 
     if (entry.type === "image") {
       const img = await getImage(entry.libraryId);
-      if (img) entry.runtimeUrl = URL.createObjectURL(img.blob);
+      if (img) {
+        // Revoke any stale blob URL before creating a new one
+        if (entry.runtimeUrl) URL.revokeObjectURL(entry.runtimeUrl);
+        entry.runtimeUrl = URL.createObjectURL(img.blob);
+      }
     } else if (entry.type === "audio") {
       const audio = await getAudioItem(entry.libraryId);
-      if (audio) entry.runtimeUrl = URL.createObjectURL(audio.blob);
+      if (audio) {
+        if (entry.runtimeUrl) URL.revokeObjectURL(entry.runtimeUrl);
+        entry.runtimeUrl = URL.createObjectURL(audio.blob);
+      }
     }
   }
 

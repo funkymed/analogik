@@ -10,6 +10,19 @@ interface SceneLayerProps {
 }
 
 const ROW_BASE_HEIGHT = 40;
+const SCENE_LABEL_ROW_HEIGHT = 20;
+const PARAMETER_ROW_HEIGHT = 24;
+
+/** Count unique keyframe paths across all sequences in a scene. */
+function countUniquePaths(scene: { sequences: { keyframes: { path: string }[] }[] }): number {
+  const paths = new Set<string>();
+  for (const seq of scene.sequences) {
+    for (const kf of seq.keyframes) {
+      paths.add(kf.path);
+    }
+  }
+  return paths.size;
+}
 
 export function SceneLayer({ pixelsPerSecond }: SceneLayerProps) {
   const scenes = useGanttStore((s) => s.timeline.scenes);
@@ -110,19 +123,27 @@ export function SceneLayer({ pixelsPerSecond }: SceneLayerProps) {
               />
             ))}
 
-            {/* Inline expanded sequences below the scene block area */}
-            {trackScenes.map((scene) =>
-              !scene.collapsed ? (
-                <SceneExpander
-                  key={`exp-${scene.id}`}
-                  scene={scene}
-                  pixelsPerSecond={pixelsPerSecond}
-                  topOffset={baseRowHeight}
-                  leftOffset={scene.startTime * pixelsPerSecond}
-                  widthPx={scene.duration * pixelsPerSecond}
-                />
-              ) : null,
-            )}
+            {/* Inline expanded sequences below the scene block + label rows area */}
+            {(() => {
+              const sceneLabelTotal = Math.round(trackScenes.length * SCENE_LABEL_ROW_HEIGHT * trackHeight);
+              let cumulativeParamHeight = 0;
+              return trackScenes.map((scene) => {
+                if (scene.collapsed) return null;
+                const myOffset = baseRowHeight + sceneLabelTotal + cumulativeParamHeight;
+                const pathCount = countUniquePaths(scene);
+                cumulativeParamHeight += pathCount * PARAMETER_ROW_HEIGHT;
+                return (
+                  <SceneExpander
+                    key={`exp-${scene.id}`}
+                    scene={scene}
+                    pixelsPerSecond={pixelsPerSecond}
+                    topOffset={myOffset}
+                    leftOffset={scene.startTime * pixelsPerSecond}
+                    widthPx={scene.duration * pixelsPerSecond}
+                  />
+                );
+              });
+            })()}
           </div>
         );
       })}

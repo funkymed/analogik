@@ -15,16 +15,10 @@ import { getSequenceTypeFromPath } from "@/utils/getSequenceTypeFromPath.ts";
  *   - Record ON: creates keyframes at current playhead position
  */
 export function useGanttBridge() {
-  // Track the last config reference we pushed to studio so we can skip
-  // our own pushes in the reverse-sync subscription.
-  const lastPushedRef = useRef<unknown>(null);
+  // Global syncing flag — prevents re-entrant update loops between the two stores.
+  const isSyncingRef = useRef(false);
   // Track which scene the current studio config belongs to.
-  // The reverse-sync uses this to write edits to the correct scene,
-  // even if the gantt selection has changed by the time the subscription fires.
   const configSceneIdRef = useRef<string | null>(null);
-  // When the reverse-sync (effect 2) modifies the timeline, skip the
-  // next evaluation (effect 1) to avoid a redundant structuredClone cycle.
-  const skipNextEvalRef = useRef(false);
 
   // --- Evaluate at current time → push to studio store ---
   useEffect(() => {
@@ -33,6 +27,8 @@ export function useGanttBridge() {
     let prevTimeline = useGanttStore.getState().timeline;
 
     return useGanttStore.subscribe((state) => {
+      // Block re-entrant calls: if the reverse-sync is writing to gantt, skip.
+      if (isSyncingRef.current) return;
       if (state.isPlaying) return;
 
       const sceneId = state.selection.sceneId;
@@ -49,30 +45,24 @@ export function useGanttBridge() {
       prevTime = time;
       prevTimeline = timeline;
 
-      // If the timeline changed because the reverse-sync just wrote
-      // keyframes, skip re-evaluation (studio already has the right values).
-      if (skipNextEvalRef.current && timelineChanged && !sceneChanged && !timeChanged) {
-        skipNextEvalRef.current = false;
-        return;
-      }
-      skipNextEvalRef.current = false;
-
       if (!sceneId) return;
 
       const scene = timeline.scenes.find((s) => s.id === sceneId);
       if (!scene) return;
 
-      // Evaluate the **selected** scene directly (not whichever scene
-      // happens to be active at the playhead). This ensures edits and
-      // keyframes are reflected even when the playhead sits outside the
-      // highest-priority active scene.
       const config = evaluateSceneAtTime(scene, time);
       if (!config) return;
 
       const clone = structuredClone(config);
-      lastPushedRef.current = clone;
       configSceneIdRef.current = sceneId;
-      useStudioStore.getState().setConfig(clone);
+
+      // Push to studio inside the syncing guard
+      isSyncingRef.current = true;
+      try {
+        useStudioStore.getState().setConfig(clone);
+      } finally {
+        isSyncingRef.current = false;
+      }
     });
   }, []);
 
@@ -85,76 +75,76 @@ export function useGanttBridge() {
       const oldConfig = prevConfig;
       prevConfig = state.config;
 
-      // Skip configs that we pushed ourselves from the evaluate effect
-      if (state.config === lastPushedRef.current) return;
+      // Block re-entrant calls: if the evaluate effect is pushing to studio, skip.
+      if (isSyncingRef.current) return;
 
       const gantt = useGanttStore.getState();
       const { currentTime, timeline, isPlaying, recordEnabled } = gantt;
       if (isPlaying) return;
 
-      // Use the scene ID that was active when the config was loaded,
-      // not the current selection (which may have changed).
       const targetSceneId = configSceneIdRef.current;
       if (!targetSceneId) return;
 
       const scene = timeline.scenes.find((s) => s.id === targetSceneId);
       if (!scene) return;
 
-      // Signal the first effect to skip the next re-evaluation triggered
-      // by our own store modifications below.
-      skipNextEvalRef.current = true;
-
-      if (recordEnabled) {
-        const changes = diffConfig(
-          oldConfig as unknown as Record<string, unknown>,
-          state.config as unknown as Record<string, unknown>,
-        );
-
-        if (changes.length === 0) return;
-
-        const relativeTime = currentTime - scene.startTime;
-
-        for (const { path, value } of changes) {
-          const seqType = getSequenceTypeFromPath(path);
-
-          let seq = scene.sequences.find((s) => s.type === seqType);
-          if (!seq) {
-            const seqId = gantt.addSequence(scene.id, {
-              type: seqType,
-              label: seqType,
-              startOffset: 0,
-              duration: scene.duration,
-              order: scene.sequences.length,
-              baseConfig: {},
-              keyframes: [],
-            });
-            const updatedScene = useGanttStore.getState().timeline.scenes.find((s) => s.id === scene.id);
-            seq = updatedScene?.sequences.find((s) => s.id === seqId);
-            if (!seq) continue;
-            gantt.updateScene(scene.id, { collapsed: false });
-          }
-
-          const existing = seq.keyframes.find(
-            (kf) => kf.path === path && Math.abs(kf.time - relativeTime) < 0.01,
+      // Write back inside the syncing guard
+      isSyncingRef.current = true;
+      try {
+        if (recordEnabled) {
+          const changes = diffConfig(
+            oldConfig as unknown as Record<string, unknown>,
+            state.config as unknown as Record<string, unknown>,
           );
 
-          const kfValue = typeof value === "number" || typeof value === "string" || typeof value === "boolean"
-            ? value
-            : String(value);
+          if (changes.length === 0) return;
 
-          if (existing) {
-            gantt.updateKeyframe(scene.id, seq.id, existing.id, { value: kfValue });
-          } else {
-            gantt.addKeyframe(scene.id, seq.id, {
-              time: relativeTime,
-              path,
-              value: kfValue,
-              easing: { type: "linear" },
-            });
+          const relativeTime = currentTime - scene.startTime;
+
+          for (const { path, value } of changes) {
+            const seqType = getSequenceTypeFromPath(path);
+
+            let seq = scene.sequences.find((s) => s.type === seqType);
+            if (!seq) {
+              const seqId = gantt.addSequence(scene.id, {
+                type: seqType,
+                label: seqType,
+                startOffset: 0,
+                duration: scene.duration,
+                order: scene.sequences.length,
+                baseConfig: {},
+                keyframes: [],
+              });
+              const updatedScene = useGanttStore.getState().timeline.scenes.find((s) => s.id === scene.id);
+              seq = updatedScene?.sequences.find((s) => s.id === seqId);
+              if (!seq) continue;
+              gantt.updateScene(scene.id, { collapsed: false });
+            }
+
+            const existing = seq.keyframes.find(
+              (kf) => kf.path === path && Math.abs(kf.time - relativeTime) < 0.01,
+            );
+
+            const kfValue = typeof value === "number" || typeof value === "string" || typeof value === "boolean"
+              ? value
+              : String(value);
+
+            if (existing) {
+              gantt.updateKeyframe(scene.id, seq.id, existing.id, { value: kfValue });
+            } else {
+              gantt.addKeyframe(scene.id, seq.id, {
+                time: relativeTime,
+                path,
+                value: kfValue,
+                easing: { type: "linear" },
+              });
+            }
           }
+        } else {
+          gantt.updateScene(targetSceneId, { baseConfig: structuredClone(state.config) });
         }
-      } else {
-        gantt.updateScene(targetSceneId, { baseConfig: structuredClone(state.config) });
+      } finally {
+        isSyncingRef.current = false;
       }
     });
   }, []);
