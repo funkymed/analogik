@@ -16,6 +16,8 @@ import { VumetersPanel } from "@/components/panels/VumetersPanel.tsx";
 import { ComposerPanel } from "@/components/panels/ComposerPanel.tsx";
 import { TextsImagesPanel } from "@/components/panels/TextsImagesPanel.tsx";
 import { SparksPanel } from "@/components/panels/SparksPanel.tsx";
+import { ProgressBarPanel } from "@/components/panels/ProgressBarPanel.tsx";
+import { TimecodePanel } from "@/components/panels/TimecodePanel.tsx";
 import { GanttTimeline } from "@/components/gantt/GanttTimeline.tsx";
 import { useGanttBridge } from "@/hooks/useGanttBridge.ts";
 import { usePlaybackEngine } from "@/hooks/usePlaybackEngine.ts";
@@ -49,7 +51,7 @@ function App() {
   useKeyboardShortcuts();
   useGanttBridge();
 
-  const { setRenderer: setPlaybackRenderer, addAudioFile, getAudioBuffer } =
+  const { setRenderer: setPlaybackRenderer, addAudioFile, getAudioBuffer, loadAudioClipBuffer } =
     usePlaybackEngine(audioContext, analyserNode);
 
   // Seed sample presets on first launch
@@ -108,6 +110,8 @@ function App() {
             {activePanel === "texts" && <TextsImagesPanel panelType="texts" />}
             {activePanel === "images" && <TextsImagesPanel panelType="images" />}
             {activePanel === "sparks" && <SparksPanel />}
+            {activePanel === "progressbar" && <ProgressBarPanel />}
+            {activePanel === "timecode" && <TimecodePanel />}
           </div>
         </aside>
 
@@ -134,7 +138,7 @@ function App() {
         fps={fps}
       />
       <Suspense fallback={null}>
-        <LibraryDrawer open={libraryOpen} onClose={() => setLibraryOpen(false)} />
+        <LibraryDrawer open={libraryOpen} onClose={() => setLibraryOpen(false)} loadAudioClipBuffer={loadAudioClipBuffer} />
         <KeyboardShortcutsHelp />
       </Suspense>
       <ToastContainer />

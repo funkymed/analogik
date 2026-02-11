@@ -29,8 +29,8 @@ export class PlaybackEngine {
   private rafId: number | null = null;
   private lastFrameTime: number | null = null;
 
-  /** Current shader name to detect shader changes. */
-  private currentShader: string | undefined;
+  /** Current shader name to detect shader changes. undefined = initial, null = force reload. */
+  private currentShader: string | undefined | null;
   /** Flag to avoid overlapping async loadConfig calls. */
   private loadingConfig = false;
   /** Last config reference pushed to renderer — skip updateConfig if unchanged. */
@@ -150,10 +150,10 @@ export class PlaybackEngine {
    * Render a single frame using a specific config (the selected scene's config).
    * Used when paused and editing a scene that the playhead isn't on.
    */
-  renderSelectedConfig(config: ConfigType): void {
+  async renderSelectedConfig(config: ConfigType): Promise<void> {
     if (!this.renderer || this.playing) return;
 
-    this.pushConfigToRenderer(config);
+    await this.pushConfigToRenderer(config);
     this.renderer.render(this.currentTime);
   }
 
@@ -241,14 +241,15 @@ export class PlaybackEngine {
     const newSceneId = result.activeScene?.id ?? null;
     if (newSceneId !== this.lastSceneId) {
       this.lastSceneId = newSceneId;
-      this.currentShader = undefined; // force shader reload on scene change
+      this.currentShader = null; // force shader reload on scene change
       this.lastPushedConfig = null;   // force config push on scene change
       this.onSceneChange?.(newSceneId);
     }
 
-    // Push config to renderer (does NOT render — render() is called separately)
+    // Push config to renderer (does NOT render — render() is called separately).
+    // Fire-and-forget during playback — the RAF loop renders every frame.
     if (result.config && this.renderer) {
-      this.pushConfigToRenderer(result.config);
+      void this.pushConfigToRenderer(result.config);
     }
 
     // Sync audio clips (only during playback — not when paused/seeking)
@@ -257,7 +258,7 @@ export class PlaybackEngine {
     }
   }
 
-  private pushConfigToRenderer(config: ConfigType): void {
+  private async pushConfigToRenderer(config: ConfigType): Promise<void> {
     if (!this.renderer) return;
 
     // Skip if the config reference is the same as last frame (no change).
@@ -266,11 +267,17 @@ export class PlaybackEngine {
 
     const newShader = config.scene?.shader;
 
-    // First time seeing a shader — just sync the name without reloading.
-    // PreviewCanvas already loaded the shader during init.
+    // First time seeing a shader — always load via loadConfig so the correct
+    // shader is activated (PreviewCanvas may have loaded a different one).
     if (this.currentShader === undefined) {
       this.currentShader = newShader;
-      this.renderer.updateConfig(config);
+      if (newShader) {
+        this.loadingConfig = true;
+        await this.renderer.loadConfig(config);
+        this.loadingConfig = false;
+      } else {
+        this.renderer.updateConfig(config);
+      }
       return;
     }
 
@@ -279,9 +286,8 @@ export class PlaybackEngine {
     if (shaderChanged && !this.loadingConfig) {
       this.currentShader = newShader;
       this.loadingConfig = true;
-      void this.renderer.loadConfig(config).then(() => {
-        this.loadingConfig = false;
-      });
+      await this.renderer.loadConfig(config);
+      this.loadingConfig = false;
     } else if (!shaderChanged) {
       this.renderer.updateConfig(config);
     }

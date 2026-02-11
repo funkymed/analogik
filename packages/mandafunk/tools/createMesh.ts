@@ -1,10 +1,13 @@
 import {
+  AdditiveBlending,
   CanvasTexture,
   LinearFilter,
   LinearMipmapNearestFilter,
   Mesh,
   MeshBasicMaterial,
+  NormalBlending,
   PlaneGeometry,
+  SubtractiveBlending,
   Texture,
   Vector3,
 } from "three";
@@ -19,6 +22,7 @@ interface CreateMeshOptions {
   zoom?: number;
   order?: number;
   opacity?: number;
+  blending?: "additive" | "normal" | "subtractive";
   needsUpdate?: boolean;
   objType?: string;
   rotationX?: number;
@@ -49,11 +53,16 @@ export const createMesh = function (
   map.minFilter = LinearMipmapNearestFilter;
   map.needsUpdate = options.needsUpdate || true;
 
+  let blendingMode = NormalBlending;
+  if (options.blending === "additive") blendingMode = AdditiveBlending;
+  else if (options.blending === "subtractive") blendingMode = SubtractiveBlending;
+
   const material = new MeshBasicMaterial({
     depthTest: false,
     transparent: true,
     map: map,
     opacity: options.opacity || 1,
+    blending: blendingMode,
   });
 
   const zoom: number = options.zoom ?? 1;

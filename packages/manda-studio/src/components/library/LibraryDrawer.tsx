@@ -14,6 +14,7 @@ import Copy from "lucide-react/dist/esm/icons/copy.js";
 import Trash2 from "lucide-react/dist/esm/icons/trash-2.js";
 import Play from "lucide-react/dist/esm/icons/play.js";
 import Loader2 from "lucide-react/dist/esm/icons/loader-2.js";
+import FilePlus from "lucide-react/dist/esm/icons/file-plus.js";
 import { usePresets } from "@/hooks/usePresets";
 import { useGanttStore } from "@/store/useGanttStore";
 import {
@@ -25,6 +26,7 @@ import {
 } from "@/db/projectService";
 import type { Project } from "@/db/projectTypes";
 import { formatRelativeTime } from "@/utils/formatRelativeTime";
+import { getImage, getAudioItem } from "@/db/libraryService";
 import { MediaLibraryGrid } from "@/components/library/MediaLibraryGrid";
 import type { ScenePreset } from "@/db/types";
 import { availableShaders } from "@mandafunk/shaders";
@@ -36,6 +38,7 @@ interface LibraryDrawerProps {
   open: boolean;
   onClose: () => void;
   initialTab?: LibraryTab;
+  loadAudioClipBuffer?: (url: string) => Promise<void>;
 }
 
 /* ------------------------------------------------------------------ */
@@ -209,7 +212,7 @@ function displayShaderName(name: string): string {
 /*  Library Drawer                                                    */
 /* ------------------------------------------------------------------ */
 
-export function LibraryDrawer({ open, onClose, initialTab }: LibraryDrawerProps) {
+export function LibraryDrawer({ open, onClose, initialTab, loadAudioClipBuffer }: LibraryDrawerProps) {
   const {
     presets,
     loading,
@@ -373,6 +376,18 @@ export function LibraryDrawer({ open, onClose, initialTab }: LibraryDrawerProps)
   );
 
   // --- Project handlers ---
+  const handleNewProject = useCallback(() => {
+    useGanttStore.setState({
+      timeline: { scenes: [], transitions: [], audioClips: [] },
+      sceneTrackCount: 1,
+      audioTrackCount: 1,
+      selection: { sceneId: null, sequenceId: null, keyframeIds: [] },
+      currentTime: 0,
+      isPlaying: false,
+    });
+    showToast("New project created");
+  }, [showToast]);
+
   const handleSaveProject = useCallback(() => {
     setSavingProjectName(true);
     setProjectNameInput("");
@@ -415,19 +430,72 @@ export function LibraryDrawer({ open, onClose, initialTab }: LibraryDrawerProps)
   );
 
   const handleLoadProject = useCallback(
-    (project: Project) => {
-      const state = useGanttStore.getState();
-      // Replace the entire timeline state
+    async (project: Project) => {
+      const cloned = structuredClone(project.timeline);
+
+      // --- Restore blob URLs from library for all scenes ---
+      for (const scene of cloned.scenes) {
+        const cfg = scene.baseConfig;
+        if (!cfg) continue;
+
+        // Background image
+        if (cfg.scene?.bgLibraryId) {
+          const img = await getImage(cfg.scene.bgLibraryId);
+          if (img) {
+            cfg.scene.background = URL.createObjectURL(img.blob);
+          }
+        }
+
+        // Image overlays
+        if (cfg.images) {
+          const entries = Array.isArray(cfg.images)
+            ? cfg.images.map((v: any, i: number) => [String(i), v])
+            : Object.entries(cfg.images);
+          for (const [, imgCfg] of entries) {
+            if (imgCfg?.libraryId) {
+              const img = await getImage(imgCfg.libraryId);
+              if (img) {
+                imgCfg.path = URL.createObjectURL(img.blob);
+              }
+            }
+          }
+        }
+      }
+
+      // --- Restore audio clip blob URLs from library ---
+      for (const clip of cloned.audioClips) {
+        if (clip.libraryId) {
+          const audio = await getAudioItem(clip.libraryId);
+          if (audio) {
+            clip.url = URL.createObjectURL(audio.blob);
+          }
+        }
+      }
+
+      const firstScene = cloned.scenes[0] ?? null;
+      // Replace the entire timeline state and auto-select first scene
       useGanttStore.setState({
-        timeline: structuredClone(project.timeline),
+        timeline: cloned,
         sceneTrackCount: project.sceneTrackCount,
         audioTrackCount: project.audioTrackCount,
-        selection: { sceneId: null, sequenceId: null, keyframeIds: [] },
+        selection: {
+          sceneId: firstScene?.id ?? null,
+          sequenceId: null,
+          keyframeIds: [],
+        },
         currentTime: 0,
       });
+
+      // --- Pre-load audio buffers into the engine ---
+      for (const clip of cloned.audioClips) {
+        if (clip.url) {
+          void loadAudioClipBuffer?.(clip.url);
+        }
+      }
+
       showToast(`Project "${project.name}" loaded`);
     },
-    [showToast],
+    [showToast, loadAudioClipBuffer],
   );
 
   const handleDeleteProject = useCallback(
@@ -666,14 +734,24 @@ export function LibraryDrawer({ open, onClose, initialTab }: LibraryDrawerProps)
                 className="flex-1 rounded-md bg-zinc-800 px-2.5 py-1.5 text-xs text-zinc-200 placeholder-zinc-500 outline-none ring-1 ring-blue-500"
               />
             ) : (
-              <button
-                type="button"
-                onClick={handleSaveProject}
-                className="flex items-center gap-1.5 rounded-md bg-blue-600 px-2.5 py-1.5 text-xs font-medium text-white transition-colors hover:bg-blue-500"
-              >
-                <Save size={12} />
-                Save Project
-              </button>
+              <>
+                <button
+                  type="button"
+                  onClick={handleNewProject}
+                  className="flex items-center gap-1.5 rounded-md bg-zinc-700 px-2.5 py-1.5 text-xs font-medium text-zinc-200 transition-colors hover:bg-zinc-600"
+                >
+                  <FilePlus size={12} />
+                  New
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSaveProject}
+                  className="flex items-center gap-1.5 rounded-md bg-blue-600 px-2.5 py-1.5 text-xs font-medium text-white transition-colors hover:bg-blue-500"
+                >
+                  <Save size={12} />
+                  Save
+                </button>
+              </>
             )}
 
             <div className="flex-1" />
@@ -738,7 +816,7 @@ export function LibraryDrawer({ open, onClose, initialTab }: LibraryDrawerProps)
                     <div className="flex items-center gap-1.5 opacity-0 transition-opacity group-hover:opacity-100">
                       <button
                         type="button"
-                        onClick={() => handleLoadProject(project)}
+                        onClick={() => void handleLoadProject(project)}
                         className="rounded-md bg-blue-600 p-1.5 text-white transition-colors hover:bg-blue-500"
                         title="Load project"
                       >

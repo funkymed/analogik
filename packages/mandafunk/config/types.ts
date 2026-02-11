@@ -47,6 +47,8 @@ export interface ImageType {
   order: number;
   /** Opacity of the image, from 0 (invisible) to 1 (fully opaque). */
   opacity: number;
+  /** Blending mode for the image mesh. */
+  blending?: "additive" | "normal" | "subtractive";
   /** X position in the scene (range: -650 to 650). */
   x: number;
   /** Y position in the scene (range: -650 to 650). */
@@ -65,6 +67,8 @@ export interface ImageType {
   objType?: string;
   /** Optional animation configuration. */
   animation?: AnimationType;
+  /** Library image ID for persistence across sessions. */
+  libraryId?: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -90,6 +94,8 @@ export interface TextType {
   size: number;
   /** Opacity of the text, from 0 (invisible) to 1 (fully opaque). */
   opacity: number;
+  /** Blending mode for the text mesh. */
+  blending?: "additive" | "normal" | "subtractive";
   /** X position in the scene (range: -650 to 650). */
   x: number;
   /** Y position in the scene (range: -650 to 650). */
@@ -220,6 +226,10 @@ export interface SceneConfig {
   bgColor: string;
   /** Background image URL. Empty string for no background image. */
   background: string;
+  /** Library image ID for background persistence across sessions. */
+  bgLibraryId?: number;
+  /** Background image sizing mode: "cover" keeps aspect ratio, "fit" stretches to fill. */
+  bgFit?: "cover" | "fit" | "contain";
   /** Background image blur amount in pixels (range: 0 to 200). */
   blur: number;
   /** Background brightness percentage (range: 0 to 200). */
@@ -278,6 +288,8 @@ export interface TimerConfig {
   font: string;
   /** Text alignment. */
   align: TimerAlign;
+  /** Blending mode for the timer mesh. */
+  blending?: "additive" | "normal" | "subtractive";
   /** X position in the scene (range: -650 to 650). */
   x: number;
   /** Y position in the scene (range: -650 to 650). */
@@ -317,6 +329,8 @@ export interface ProgressBarConfig {
   width: number;
   /** Canvas texture height in pixels (range: 0 to 1024). */
   height: number;
+  /** Blending mode for the progress bar mesh. */
+  blending?: "additive" | "normal" | "subtractive";
   /** X position in the scene (range: -650 to 650). */
   x: number;
   /** Y position in the scene (range: -650 to 650). */
@@ -358,6 +372,8 @@ export interface OscilloscopeConfig {
   width: number;
   /** Canvas texture height in pixels (range: 0 to 1024). */
   height: number;
+  /** Blending mode for the oscilloscope mesh. */
+  blending?: "additive" | "normal" | "subtractive";
   /** X position in the scene (range: -650 to 650). */
   x: number;
   /** Y position in the scene (range: -650 to 650). */
@@ -405,6 +421,8 @@ export interface SpectrumConfig {
   width: number;
   /** Canvas texture height in pixels (range: 0 to 1024). */
   height: number;
+  /** Blending mode for the spectrum mesh. */
+  blending?: "additive" | "normal" | "subtractive";
   /** X position in the scene (range: -650 to 650). */
   x: number;
   /** Y position in the scene (range: -650 to 650). */

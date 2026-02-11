@@ -9,6 +9,7 @@ import { LabeledSlider } from "@/components/ui/LabeledSlider";
 import { LabeledToggle } from "@/components/ui/LabeledToggle";
 import { ColorInput } from "@/components/ui/ColorInput";
 import { SectionHeader } from "@/components/ui/SectionHeader";
+import { BlendingControl } from "@/components/ui/BlendingControl";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -265,6 +266,11 @@ function TextItemEditor({ itemKey, item }: TextItemEditorProps) {
         onPointerDown={pushHistory}
       />
 
+      <BlendingControl
+        path={`${basePath}.blending`}
+        value={item.blending}
+      />
+
       <p className="text-[10px] font-medium uppercase tracking-wider text-zinc-500">
         Position
       </p>
@@ -333,6 +339,7 @@ function ImageItemEditor({ itemKey, item, zMin = -650, zMax = -1 }: ImageItemEdi
       const blobUrl = URL.createObjectURL(img.blob);
       pushHistory();
       updateConfig(`${basePath}.path`, blobUrl);
+      updateConfig(`${basePath}.libraryId`, data.id);
     },
     [updateConfig, pushHistory, basePath],
   );
@@ -406,6 +413,11 @@ function ImageItemEditor({ itemKey, item, zMin = -650, zMax = -1 }: ImageItemEdi
         step={0.1}
         onChange={(v) => updateConfig(`${basePath}.zoom`, v)}
         onPointerDown={pushHistory}
+      />
+
+      <BlendingControl
+        path={`${basePath}.blending`}
+        value={item.blending}
       />
 
       <p className="text-[10px] font-medium uppercase tracking-wider text-zinc-500">

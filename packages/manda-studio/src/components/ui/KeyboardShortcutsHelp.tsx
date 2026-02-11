@@ -15,7 +15,7 @@ const shortcuts: { keys: string; description: string }[] = [
   { keys: `${mod}+S`, description: "Save preset" },
   { keys: `${mod}+E`, description: "Export timeline" },
   { keys: `${mod}+L`, description: "Toggle library" },
-  { keys: `${mod}+1-7`, description: "Switch panels (Shader, Background, Vumeters, Composer, Texts, Images, Sparks)" },
+  { keys: `${mod}+1-9`, description: "Switch panels (Shader, Background, Vumeters, Composer, Texts, Images, Sparks, Progress Bar, Timecode)" },
   { keys: "?", description: "Show keyboard shortcuts" },
 ];
 

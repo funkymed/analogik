@@ -1,4 +1,4 @@
-import { Mesh, MeshBasicMaterial, PlaneGeometry, Scene } from "three";
+import { AdditiveBlending, Mesh, MeshBasicMaterial, NormalBlending, PlaneGeometry, Scene, SubtractiveBlending } from "three";
 import { deepClone } from "../tools/deepClone";
 import { loadImage } from "../tools/loadImage";
 import { ConfigType, ImageType } from "../config/types";
@@ -95,6 +95,13 @@ export const updateImageFast = function (
     );
     meshObj.renderOrder = configImage.order;
     material.opacity = configImage.opacity;
+    if (configImage.blending) {
+      switch (configImage.blending) {
+        case "additive": material.blending = AdditiveBlending; break;
+        case "subtractive": material.blending = SubtractiveBlending; break;
+        default: material.blending = NormalBlending; break;
+      }
+    }
 
     const zoom: number = configImage.zoom ?? 1;
     const width: number = Math.round(

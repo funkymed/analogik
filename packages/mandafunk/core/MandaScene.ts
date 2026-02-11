@@ -74,38 +74,80 @@ export class MandaScene {
    * and sets it as the scene background with correct aspect ratio.
    */
   onLoad() {
-    const texture: canvas2texture = canvasTexture(
-      this.background.width,
-      this.background.height
-    );
-    const context = texture.context;
-    if (context) {
-      const blur = this.config.scene.blur || 0;
-      let brightness: number = this.config.scene.brightness || 100;
-      if (this.isMobile) {
-        brightness /= 2;
+    const bgFit = this.config.scene.bgFit ?? "cover";
+    const blur = this.config.scene.blur || 0;
+    let brightness: number = this.config.scene.brightness || 100;
+    if (this.isMobile) {
+      brightness /= 2;
+    }
+    const filter = `blur(${blur}px) brightness(${brightness}%)`;
+
+    if (bgFit === "contain") {
+      // Contain: show entire image, letterboxed with black bars
+      const targetW = window.innerWidth;
+      const targetH = window.innerHeight;
+      const imgAspect = this.background.width / this.background.height;
+      const targetAspect = targetW / targetH;
+
+      let drawW: number, drawH: number, drawX: number, drawY: number;
+      if (imgAspect > targetAspect) {
+        drawW = targetW;
+        drawH = targetW / imgAspect;
+        drawX = 0;
+        drawY = (targetH - drawH) / 2;
+      } else {
+        drawH = targetH;
+        drawW = targetH * imgAspect;
+        drawX = (targetW - drawW) / 2;
+        drawY = 0;
       }
 
-      context.filter = `blur(${blur}px) brightness(${brightness}%)`;
-      context.drawImage(
-        this.background,
-        0,
-        0,
+      const texture: canvas2texture = canvasTexture(targetW, targetH);
+      const context = texture.context;
+      if (context) {
+        context.fillStyle = "#000000";
+        context.fillRect(0, 0, targetW, targetH);
+        context.filter = filter;
+        context.drawImage(this.background, drawX, drawY, drawW, drawH);
+      }
+      texture.texture.minFilter = LinearFilter;
+      this.scene.background = texture.texture;
+      this.scene.background.offset.set(0, 0);
+      this.scene.background.repeat.set(1, 1);
+    } else {
+      // Cover or Fit: draw at image dimensions, use UV offset/repeat
+      const texture: canvas2texture = canvasTexture(
         this.background.width,
         this.background.height
       );
-    }
-    texture.texture.minFilter = LinearFilter;
-    this.scene.background = texture.texture;
+      const context = texture.context;
+      if (context) {
+        context.filter = filter;
+        context.drawImage(
+          this.background,
+          0,
+          0,
+          this.background.width,
+          this.background.height
+        );
+      }
+      texture.texture.minFilter = LinearFilter;
+      this.scene.background = texture.texture;
 
-    // Fix stretched background by adjusting UV offset/repeat
-    const targetAspect = window.innerWidth / window.innerHeight;
-    const imageAspect = 1920 / 1080;
-    const factor = imageAspect / targetAspect;
-    this.scene.background.offset.x = factor > 1 ? (1 - 1 / factor) / 2 : 0;
-    this.scene.background.repeat.x = factor > 1 ? 1 / factor : 1;
-    this.scene.background.offset.y = factor > 1 ? 0 : (1 - factor) / 2;
-    this.scene.background.repeat.y = factor > 1 ? 1 : factor;
+      if (bgFit === "cover") {
+        const targetAspect = window.innerWidth / window.innerHeight;
+        const imageAspect = this.background.width / this.background.height;
+        const factor = imageAspect / targetAspect;
+        this.scene.background.offset.x = factor > 1 ? (1 - 1 / factor) / 2 : 0;
+        this.scene.background.repeat.x = factor > 1 ? 1 / factor : 1;
+        this.scene.background.offset.y = factor > 1 ? 0 : (1 - factor) / 2;
+        this.scene.background.repeat.y = factor > 1 ? 1 : factor;
+      } else {
+        // Fit: stretch to fill the entire screen
+        this.scene.background.offset.set(0, 0);
+        this.scene.background.repeat.set(1, 1);
+      }
+    }
   }
 
   /**

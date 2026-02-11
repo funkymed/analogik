@@ -4,14 +4,17 @@ import { PlaybackEngine } from "@/timeline/PlaybackEngine.ts";
 import { MultiAudioEngine } from "@/audio/MultiAudioEngine.ts";
 import { useGanttStore } from "@/store/useGanttStore.ts";
 import { useStudioStore } from "@/store/useStudioStore.ts";
+import { createAudio } from "@/db/libraryService.ts";
 
 export interface UsePlaybackEngineReturn {
   /** Call to connect the renderer once it's initialized. */
   setRenderer: (renderer: MandaRenderer | null) => void;
   /** Load an audio file and add it as a clip on the timeline. */
-  addAudioFile: (file: File, trackIndex?: number, startTime?: number) => Promise<void>;
+  addAudioFile: (file: File, trackIndex?: number, startTime?: number, libraryId?: number) => Promise<void>;
   /** Get a decoded AudioBuffer by clip URL (for waveform drawing). */
   getAudioBuffer: (url: string) => AudioBuffer | null;
+  /** Pre-load an audio buffer from a blob URL into the engine. */
+  loadAudioClipBuffer: (url: string) => Promise<void>;
 }
 
 export function usePlaybackEngine(
@@ -96,6 +99,19 @@ export function usePlaybackEngine(
         engine.renderFrame();
       }
 
+      // Scene selection changed while paused → render the newly selected scene
+      if (
+        !state.isPlaying &&
+        !engine.isPlaying() &&
+        state.selection.sceneId !== prevState.selection.sceneId
+      ) {
+        // Small delay to let the bridge push the selected scene's config to studio
+        setTimeout(() => {
+          const studioConfig = useStudioStore.getState().config;
+          void engine.renderSelectedConfig(studioConfig);
+        }, 0);
+      }
+
       // Timeline changed while paused (keyframe edit, config change via bridge)
       // → re-evaluate and render one frame
       if (
@@ -107,7 +123,7 @@ export function usePlaybackEngine(
         // When a scene is selected, render that scene's config (from studio store)
         // instead of evaluating at the playhead (which might be on a different scene).
         if (state.selection.sceneId) {
-          engine.renderSelectedConfig(useStudioStore.getState().config);
+          void engine.renderSelectedConfig(useStudioStore.getState().config);
         } else {
           engine.renderFrame();
         }
@@ -131,9 +147,19 @@ export function usePlaybackEngine(
   }, []);
 
   // --- Add audio file as timeline clip ---
-  const addAudioFile = useCallback(async (file: File, trackIndex?: number, startTime?: number) => {
+  const addAudioFile = useCallback(async (file: File, trackIndex?: number, startTime?: number, libraryId?: number) => {
     const multiAudio = multiAudioRef.current;
     if (!multiAudio) return;
+
+    // Save to library if not already there (raw file drop from desktop)
+    let resolvedLibraryId = libraryId;
+    if (resolvedLibraryId === undefined) {
+      try {
+        resolvedLibraryId = await createAudio(file);
+      } catch (err) {
+        console.warn("Failed to save audio to library:", err);
+      }
+    }
 
     const blobUrl = URL.createObjectURL(file);
     // Track immediately so dispose always revokes, even on partial failure.
@@ -153,6 +179,7 @@ export function usePlaybackEngine(
         volume: 1,
         muted: false,
         trackIndex: trackIndex ?? 0,
+        ...(resolvedLibraryId !== undefined ? { libraryId: resolvedLibraryId } : {}),
       });
     } catch (err) {
       console.error("Failed to load audio file:", err);
@@ -166,5 +193,16 @@ export function usePlaybackEngine(
     return multiAudioRef.current?.getBuffer(url) ?? null;
   }, []);
 
-  return { setRenderer, addAudioFile, getAudioBuffer };
+  // --- Pre-load an audio buffer from a blob URL ---
+  const loadAudioClipBuffer = useCallback(async (url: string): Promise<void> => {
+    const multiAudio = multiAudioRef.current;
+    if (!multiAudio) return;
+    try {
+      await multiAudio.loadClipBuffer(url);
+    } catch (err) {
+      console.warn("Failed to pre-load audio buffer:", url, err);
+    }
+  }, []);
+
+  return { setRenderer, addAudioFile, getAudioBuffer, loadAudioClipBuffer };
 }

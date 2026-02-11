@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { HexColorPicker } from "react-colorful";
 
 interface ColorInputProps {
@@ -11,9 +12,21 @@ export function ColorInput({ label, value, onChange }: ColorInputProps) {
   const [open, setOpen] = useState(false);
   const popoverRef = useRef<HTMLDivElement>(null);
   const swatchRef = useRef<HTMLButtonElement>(null);
+  const [pos, setPos] = useState({ top: 0, left: 0 });
 
   const handleToggle = useCallback(() => {
-    setOpen((prev) => !prev);
+    setOpen((prev) => {
+      if (!prev && swatchRef.current) {
+        const rect = swatchRef.current.getBoundingClientRect();
+        const pickerHeight = 210;
+        const top = rect.top - pickerHeight;
+        setPos({
+          top: top < 4 ? rect.bottom + 4 : top,
+          left: rect.left,
+        });
+      }
+      return !prev;
+    });
   }, []);
 
   const handleHexInput = useCallback(
@@ -64,14 +77,17 @@ export function ColorInput({ label, value, onChange }: ColorInputProps) {
           placeholder="#000000"
           maxLength={7}
         />
-        {open && (
-          <div
-            ref={popoverRef}
-            className="absolute bottom-8 left-0 z-50 rounded-lg border border-zinc-700 bg-zinc-900 p-2 shadow-xl"
-          >
-            <HexColorPicker color={value || "#000000"} onChange={onChange} />
-          </div>
-        )}
+        {open &&
+          createPortal(
+            <div
+              ref={popoverRef}
+              className="fixed z-[9999] rounded-lg border border-zinc-700 bg-zinc-900 p-2 shadow-xl"
+              style={{ top: pos.top, left: pos.left }}
+            >
+              <HexColorPicker color={value || "#000000"} onChange={onChange} />
+            </div>,
+            document.body,
+          )}
       </div>
     </div>
   );

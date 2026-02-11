@@ -12,7 +12,7 @@ import { TrackLabelsPanel } from "./shared/TrackLabelsPanel.tsx";
 const LABEL_PANEL_WIDTH = 80;
 
 interface GanttTimelineProps {
-  onLoadAudioFile?: (file: File, trackIndex?: number, startTime?: number) => Promise<void>;
+  onLoadAudioFile?: (file: File, trackIndex?: number, startTime?: number, libraryId?: number) => Promise<void>;
   getAudioBuffer?: (url: string) => AudioBuffer | null;
 }
 

@@ -61,8 +61,10 @@ export function BackgroundPanel() {
       if (mode === "transparent") {
         updateConfig("scene.bgColor", "");
         updateConfig("scene.background", "");
+        updateConfig("scene.bgLibraryId", undefined);
       } else if (mode === "color") {
         updateConfig("scene.background", "");
+        updateConfig("scene.bgLibraryId", undefined);
         if (!scene.bgColor) {
           updateConfig("scene.bgColor", "#000000");
         }
@@ -74,6 +76,7 @@ export function BackgroundPanel() {
   const handleRemoveBackground = useCallback(() => {
     pushHistory();
     updateConfig("scene.background", "");
+    updateConfig("scene.bgLibraryId", undefined);
     setBgModeOverride("image");
   }, [pushHistory, updateConfig]);
 
@@ -96,6 +99,7 @@ export function BackgroundPanel() {
       const blobUrl = URL.createObjectURL(img.blob);
       pushHistory();
       updateConfig("scene.background", blobUrl);
+      updateConfig("scene.bgLibraryId", data.id);
     },
     [pushHistory, updateConfig],
   );
@@ -192,6 +196,31 @@ export function BackgroundPanel() {
               Drop image or choose from Library
             </button>
           )}
+        </div>
+      )}
+
+      {bgMode === "image" && (
+        <div className="flex items-center justify-between">
+          <span className="text-[11px] text-zinc-400">Sizing</span>
+          <div className="flex gap-0.5">
+            {(["cover", "contain", "fit"] as const).map((mode) => (
+              <button
+                key={mode}
+                type="button"
+                onClick={() => {
+                  pushHistory();
+                  updateConfig("scene.bgFit", mode);
+                }}
+                className={`rounded px-2 py-0.5 text-[10px] capitalize transition-colors ${
+                  (scene.bgFit ?? "cover") === mode
+                    ? "bg-indigo-500/20 text-indigo-400 ring-1 ring-indigo-500"
+                    : "bg-zinc-800 text-zinc-500 hover:text-zinc-300"
+                }`}
+              >
+                {mode}
+              </button>
+            ))}
+          </div>
         </div>
       )}
 

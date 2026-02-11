@@ -2,7 +2,7 @@ import { create } from "zustand";
 import type { ConfigType } from "@mandafunk/config/types";
 import { getInitialSampleConfig } from "@/db/samplePresets";
 
-export type PanelName = "shader" | "background" | "vumeters" | "composer" | "texts" | "images" | "sparks";
+export type PanelName = "shader" | "background" | "vumeters" | "composer" | "texts" | "images" | "sparks" | "progressbar" | "timecode";
 
 interface StudioState {
   // Config

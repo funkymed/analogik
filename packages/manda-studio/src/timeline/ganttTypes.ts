@@ -127,6 +127,8 @@ export interface AudioClip {
   muted: boolean;
   /** Track index for multi-track layout (0 = first track). */
   trackIndex: number;
+  /** Library audio ID for persistence across sessions. */
+  libraryId?: number;
 }
 
 // ---------------------------------------------------------------------------

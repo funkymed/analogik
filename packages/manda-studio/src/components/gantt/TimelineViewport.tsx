@@ -9,7 +9,7 @@ import { Playhead } from "./shared/Playhead.tsx";
 interface TimelineViewportProps {
   children: ReactNode;
   onVerticalScroll?: (scrollTop: number) => void;
-  onLoadAudioFile?: (file: File, trackIndex?: number, startTime?: number) => Promise<void>;
+  onLoadAudioFile?: (file: File, trackIndex?: number, startTime?: number, libraryId?: number) => Promise<void>;
 }
 
 export function TimelineViewport({ children, onVerticalScroll, onLoadAudioFile }: TimelineViewportProps) {
@@ -169,7 +169,7 @@ export function TimelineViewport({ children, onVerticalScroll, onLoadAudioFile }
         if (!audioItem) return;
         const file = new File([audioItem.blob], audioItem.name, { type: audioItem.mimeType });
         const dropTime = useGanttStore.getState().snapTime(target.time);
-        await onLoadAudioFile?.(file, target.trackIndex, dropTime);
+        await onLoadAudioFile?.(file, target.trackIndex, dropTime, data.id);
       } else if (data.type === "scenes" && target.zone === "audio") {
         // Can't drop scenes on audio tracks - ignore
       } else if (data.type === "audio" && target.zone === "scene") {

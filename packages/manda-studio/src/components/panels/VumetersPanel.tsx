@@ -4,6 +4,7 @@ import { SectionHeader } from "@/components/ui/SectionHeader.tsx";
 import { LabeledSlider } from "@/components/ui/LabeledSlider.tsx";
 import { LabeledToggle } from "@/components/ui/LabeledToggle.tsx";
 import { ColorInput } from "@/components/ui/ColorInput.tsx";
+import { BlendingControl } from "@/components/ui/BlendingControl.tsx";
 
 // ---------------------------------------------------------------------------
 // Oscilloscope section
@@ -83,6 +84,11 @@ function OscilloscopeSection() {
         step={0.01}
         onChange={(v) => updateConfig(`${path}.opacity`, v)}
         onPointerDown={pushHistory}
+      />
+
+      <BlendingControl
+        path={`${path}.blending`}
+        value={oscilloscop.blending}
       />
 
       <LabeledSlider
@@ -269,6 +275,11 @@ function SpectrumSection() {
         step={0.01}
         onChange={(v) => updateConfig(`${path}.opacity`, v)}
         onPointerDown={pushHistory}
+      />
+
+      <BlendingControl
+        path={`${path}.blending`}
+        value={spectrum.blending}
       />
 
       <LabeledSlider

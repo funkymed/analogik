@@ -5,6 +5,8 @@ import Sparkles from "lucide-react/dist/esm/icons/sparkles.js";
 import Type from "lucide-react/dist/esm/icons/type.js";
 import Zap from "lucide-react/dist/esm/icons/zap.js";
 import ImagePlus from "lucide-react/dist/esm/icons/image-plus.js";
+import Clock from "lucide-react/dist/esm/icons/clock.js";
+import AlignHorizontalJustifyCenter from "lucide-react/dist/esm/icons/align-horizontal-justify-center.js";
 import type { PanelName } from "@/store/useStudioStore.ts";
 
 interface PanelTabsProps {
@@ -20,6 +22,8 @@ const TABS: { key: PanelName; label: string; icon: typeof Zap }[] = [
   { key: "texts", label: "Texts", icon: Type },
   { key: "images", label: "Images", icon: ImageIcon },
   { key: "sparks", label: "Sparks", icon: Flame },
+  { key: "progressbar", label: "Progress Bar", icon: AlignHorizontalJustifyCenter },
+  { key: "timecode", label: "Timecode", icon: Clock },
 ];
 
 export function PanelTabs({ activePanel, onPanelChange }: PanelTabsProps) {

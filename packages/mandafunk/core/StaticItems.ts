@@ -7,6 +7,7 @@ import {
   Mesh,
   MeshBasicMaterial,
   NormalBlending,
+  SubtractiveBlending,
   PlaneGeometry,
   Scene,
 } from "three";
@@ -207,7 +208,15 @@ export class StaticItems {
    */
   updateMesh(mesh: Mesh, option: any) {
     const material = mesh.material as MeshBasicMaterial;
-    material.blending = option.motionBlur ? AdditiveBlending : NormalBlending;
+    if (option.blending) {
+      switch (option.blending) {
+        case "additive": material.blending = AdditiveBlending; break;
+        case "subtractive": material.blending = SubtractiveBlending; break;
+        default: material.blending = NormalBlending; break;
+      }
+    } else {
+      material.blending = option.motionBlur ? AdditiveBlending : NormalBlending;
+    }
     mesh.material = material;
 
     mesh.position.set(option.x || 0, option.y || 0, option.z || 0);
