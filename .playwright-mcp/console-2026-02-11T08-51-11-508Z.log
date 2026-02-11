@@ -1,0 +1,70 @@
+[    1593ms] [WARNING] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio @ http://localhost:5174/src/components/PreviewCanvas.tsx:45
+[  108939ms] [WARNING] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio @ http://localhost:5174/src/components/PreviewCanvas.tsx:45
+[  237259ms] TypeError: onUpdate is not a function
+    at handlePointerMove (http://localhost:5174/src/components/gantt/layers/SceneBlock.tsx?t=1770800095768:110:9)
+[  237277ms] TypeError: onUpdate is not a function
+    at handlePointerMove (http://localhost:5174/src/components/gantt/layers/SceneBlock.tsx?t=1770800095768:110:9)
+[  237300ms] TypeError: onUpdate is not a function
+    at handlePointerMove (http://localhost:5174/src/components/gantt/layers/SceneBlock.tsx?t=1770800095768:110:9)
+[  237322ms] TypeError: onUpdate is not a function
+    at handlePointerMove (http://localhost:5174/src/components/gantt/layers/SceneBlock.tsx?t=1770800095768:110:9)
+[  237348ms] TypeError: onUpdate is not a function
+    at handlePointerMove (http://localhost:5174/src/components/gantt/layers/SceneBlock.tsx?t=1770800095768:110:9)
+[  237371ms] TypeError: onUpdate is not a function
+    at handlePointerMove (http://localhost:5174/src/components/gantt/layers/SceneBlock.tsx?t=1770800095768:110:9)
+[  237392ms] TypeError: onUpdate is not a function
+    at handlePointerMove (http://localhost:5174/src/components/gantt/layers/SceneBlock.tsx?t=1770800095768:110:9)
+[  237424ms] TypeError: onUpdate is not a function
+    at handlePointerMove (http://localhost:5174/src/components/gantt/layers/SceneBlock.tsx?t=1770800095768:110:9)
+[  237440ms] TypeError: onUpdate is not a function
+    at handlePointerMove (http://localhost:5174/src/components/gantt/layers/SceneBlock.tsx?t=1770800095768:110:9)
+[  237463ms] TypeError: onUpdate is not a function
+    at handlePointerMove (http://localhost:5174/src/components/gantt/layers/SceneBlock.tsx?t=1770800095768:110:9)
+[  237485ms] TypeError: onUpdate is not a function
+    at handlePointerMove (http://localhost:5174/src/components/gantt/layers/SceneBlock.tsx?t=1770800095768:110:9)
+[  237507ms] TypeError: onUpdate is not a function
+    at handlePointerMove (http://localhost:5174/src/components/gantt/layers/SceneBlock.tsx?t=1770800095768:110:9)
+[  237529ms] TypeError: onUpdate is not a function
+    at handlePointerMove (http://localhost:5174/src/components/gantt/layers/SceneBlock.tsx?t=1770800095768:110:9)
+[  237545ms] TypeError: onUpdate is not a function
+    at handlePointerMove (http://localhost:5174/src/components/gantt/layers/SceneBlock.tsx?t=1770800095768:110:9)
+[  237566ms] TypeError: onUpdate is not a function
+    at handlePointerMove (http://localhost:5174/src/components/gantt/layers/SceneBlock.tsx?t=1770800095768:110:9)
+[  237587ms] TypeError: onUpdate is not a function
+    at handlePointerMove (http://localhost:5174/src/components/gantt/layers/SceneBlock.tsx?t=1770800095768:110:9)
+[  237606ms] TypeError: onUpdate is not a function
+    at handlePointerMove (http://localhost:5174/src/components/gantt/layers/SceneBlock.tsx?t=1770800095768:110:9)
+[  237626ms] TypeError: onUpdate is not a function
+    at handlePointerMove (http://localhost:5174/src/components/gantt/layers/SceneBlock.tsx?t=1770800095768:110:9)
+[  237647ms] TypeError: onUpdate is not a function
+    at handlePointerMove (http://localhost:5174/src/components/gantt/layers/SceneBlock.tsx?t=1770800095768:110:9)
+[  237664ms] TypeError: onUpdate is not a function
+    at handlePointerMove (http://localhost:5174/src/components/gantt/layers/SceneBlock.tsx?t=1770800095768:110:9)
+[  237685ms] TypeError: onUpdate is not a function
+    at handlePointerMove (http://localhost:5174/src/components/gantt/layers/SceneBlock.tsx?t=1770800095768:110:9)
+[  237711ms] TypeError: onUpdate is not a function
+    at handlePointerMove (http://localhost:5174/src/components/gantt/layers/SceneBlock.tsx?t=1770800095768:110:9)
+[  237738ms] TypeError: onUpdate is not a function
+    at handlePointerMove (http://localhost:5174/src/components/gantt/layers/SceneBlock.tsx?t=1770800095768:110:9)
+[  237766ms] TypeError: onUpdate is not a function
+    at handlePointerMove (http://localhost:5174/src/components/gantt/layers/SceneBlock.tsx?t=1770800095768:110:9)
+[  237785ms] TypeError: onUpdate is not a function
+    at handlePointerMove (http://localhost:5174/src/components/gantt/layers/SceneBlock.tsx?t=1770800095768:110:9)
+[  237805ms] TypeError: onUpdate is not a function
+    at handlePointerMove (http://localhost:5174/src/components/gantt/layers/SceneBlock.tsx?t=1770800095768:110:9)
+[  237828ms] TypeError: onUpdate is not a function
+    at handlePointerMove (http://localhost:5174/src/components/gantt/layers/SceneBlock.tsx?t=1770800095768:110:9)
+[  237855ms] TypeError: onUpdate is not a function
+    at handlePointerMove (http://localhost:5174/src/components/gantt/layers/SceneBlock.tsx?t=1770800095768:110:9)
+[  237876ms] TypeError: onUpdate is not a function
+    at handlePointerMove (http://localhost:5174/src/components/gantt/layers/SceneBlock.tsx?t=1770800095768:110:9)
+[  237920ms] TypeError: onUpdate is not a function
+    at handlePointerMove (http://localhost:5174/src/components/gantt/layers/SceneBlock.tsx?t=1770800095768:110:9)
+[  237939ms] TypeError: onUpdate is not a function
+    at handlePointerMove (http://localhost:5174/src/components/gantt/layers/SceneBlock.tsx?t=1770800095768:110:9)
+[  237961ms] TypeError: onUpdate is not a function
+    at handlePointerMove (http://localhost:5174/src/components/gantt/layers/SceneBlock.tsx?t=1770800095768:110:9)
+[  237985ms] TypeError: onUpdate is not a function
+    at handlePointerMove (http://localhost:5174/src/components/gantt/layers/SceneBlock.tsx?t=1770800095768:110:9)
+[  238152ms] TypeError: onUpdate is not a function
+    at handlePointerMove (http://localhost:5174/src/components/gantt/layers/SceneBlock.tsx?t=1770800095768:110:9)

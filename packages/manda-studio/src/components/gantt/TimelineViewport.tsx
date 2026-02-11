@@ -54,18 +54,18 @@ export function TimelineViewport({ children, onVerticalScroll }: TimelineViewpor
   const trackHeightRef = useRef(trackHeight);
   trackHeightRef.current = trackHeight;
 
-  // Shift+wheel = horizontal zoom, Ctrl+wheel = vertical zoom
+  // Ctrl+wheel = horizontal zoom, Shift+wheel = vertical zoom
   // Attached once — reads mutable refs to avoid listener churn during zoom.
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
 
     const handleWheel = (e: WheelEvent) => {
-      if (e.shiftKey) {
+      if (e.ctrlKey || e.metaKey) {
         e.preventDefault();
         const factor = e.deltaY > 0 ? 1 / 1.15 : 1.15;
         setPixelsPerSecond(ppsRef.current * factor);
-      } else if (e.ctrlKey || e.metaKey) {
+      } else if (e.shiftKey) {
         e.preventDefault();
         const factor = e.deltaY > 0 ? 1 / 1.15 : 1.15;
         setTrackHeight(trackHeightRef.current * factor);

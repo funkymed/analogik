@@ -19,7 +19,6 @@ export function SceneLayer({ pixelsPerSecond }: SceneLayerProps) {
   const selectScene = useGanttStore((s) => s.selectScene);
   const updateScene = useGanttStore((s) => s.updateScene);
   const removeScene = useGanttStore((s) => s.removeScene);
-  const reorderScene = useGanttStore((s) => s.reorderScene);
 
   const { sceneTrackHeights } = useTrackHeights();
 
@@ -45,16 +44,9 @@ export function SceneLayer({ pixelsPerSecond }: SceneLayerProps) {
     return map;
   }, [scenes, sceneTrackCount]);
 
-  const handleMove = useCallback(
-    (sceneId: string, newStartTime: number) => {
-      reorderScene(sceneId, newStartTime);
-    },
-    [reorderScene],
-  );
-
-  const handleResize = useCallback(
-    (sceneId: string, newDuration: number, _side: "left" | "right") => {
-      updateScene(sceneId, { duration: newDuration });
+  const handleUpdate = useCallback(
+    (sceneId: string, patch: { startTime?: number; duration?: number }) => {
+      updateScene(sceneId, patch);
     },
     [updateScene],
   );
@@ -110,8 +102,7 @@ export function SceneLayer({ pixelsPerSecond }: SceneLayerProps) {
                 trackCount={sceneTrackCount}
                 sceneTrackHeights={sceneTrackHeights}
                 onSelect={() => selectScene(scene.id)}
-                onMove={(t) => handleMove(scene.id, t)}
-                onResize={(d, side) => handleResize(scene.id, d, side)}
+                onUpdate={(patch) => handleUpdate(scene.id, patch)}
                 onToggleCollapse={() => handleToggleCollapse(scene.id)}
                 onRemove={() => removeScene(scene.id)}
                 onTrackChange={(ti) => handleTrackChange(scene.id, ti)}

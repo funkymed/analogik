@@ -3,6 +3,8 @@ import X from "lucide-react/dist/esm/icons/x.js";
 import ChevronLeft from "lucide-react/dist/esm/icons/chevron-left.js";
 import ChevronRight from "lucide-react/dist/esm/icons/chevron-right.js";
 import Diamond from "lucide-react/dist/esm/icons/diamond.js";
+import ZoomIn from "lucide-react/dist/esm/icons/zoom-in.js";
+import ZoomOut from "lucide-react/dist/esm/icons/zoom-out.js";
 import type { TimelineScene, Keyframe, EasingType, EasingConfig } from "@/timeline/ganttTypes.ts";
 import { applyEasing, interpolateValue } from "@/timeline/interpolation.ts";
 import { useGanttStore } from "@/store/useGanttStore.ts";
@@ -17,11 +19,15 @@ const PARAM_COLORS = [
 ];
 
 const GRAPH_PADDING_TOP = 24;
-const GRAPH_PADDING_BOTTOM = 16;
-const GRAPH_PADDING_LEFT = 32;
+const GRAPH_PADDING_BOTTOM = 20;
+const GRAPH_PADDING_LEFT = 40;
 const GRAPH_PADDING_RIGHT = 16;
 const SAMPLES_PER_SEGMENT = 20;
 const DIAMOND_SIZE = 5;
+
+const ZOOM_MIN = 0.5;
+const ZOOM_MAX = 8;
+const ZOOM_STEP = 1.15;
 
 const EASING_OPTIONS: { label: string; type: EasingType }[] = [
   { label: "Linear", type: "linear" },
@@ -56,6 +62,12 @@ interface KeyframeWithContext {
   keyframe: Keyframe;
   sequenceId: string;
   absoluteTime: number;
+}
+
+interface SelectedKeyframe {
+  kfCtx: KeyframeWithContext;
+  paramPath: string;
+  paramColor: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -95,6 +107,21 @@ function interpolateAtTime(
   return sorted[sorted.length - 1].keyframe.value;
 }
 
+function easingPreviewPath(type: EasingType): string {
+  const w = 80, h = 48;
+  const pts: string[] = [];
+  for (let i = 0; i <= 50; i++) {
+    const t = i / 50;
+    const v = applyEasing({ type }, t);
+    pts.push(`${(t * w).toFixed(1)},${(h - v * h).toFixed(1)}`);
+  }
+  return pts.join(" ");
+}
+
+function clamp(val: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, val));
+}
+
 // ---------------------------------------------------------------------------
 // Main Component
 // ---------------------------------------------------------------------------
@@ -114,7 +141,14 @@ export function SceneParametersPanel({ scene, onClose }: SceneParametersPanelPro
   const [nameValue, setNameValue] = useState(scene.name);
   const nameInputRef = useRef<HTMLInputElement>(null);
 
-  // Focus input when entering edit mode
+  const [selectedParamPath, setSelectedParamPath] = useState<string | null>(null);
+  const [selectedKf, setSelectedKf] = useState<SelectedKeyframe | null>(null);
+
+  // Zoom state
+  const [zoomX, setZoomX] = useState(1);
+  const [zoomY, setZoomY] = useState(1);
+  const [panX, setPanX] = useState(0); // in seconds — left edge offset
+
   useEffect(() => {
     if (editingName) nameInputRef.current?.select();
   }, [editingName]);
@@ -129,7 +163,6 @@ export function SceneParametersPanel({ scene, onClose }: SceneParametersPanelPro
     setEditingName(false);
   }, [nameValue, scene.id, scene.name, updateScene]);
 
-  // Close on Escape (only if not editing name)
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === "Escape") {
@@ -145,7 +178,6 @@ export function SceneParametersPanel({ scene, onClose }: SceneParametersPanelPro
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onClose, editingName, scene.name]);
 
-  // Close on click outside
   useEffect(() => {
     function handlePointerDown(e: PointerEvent) {
       if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
@@ -161,7 +193,6 @@ export function SceneParametersPanel({ scene, onClose }: SceneParametersPanelPro
     };
   }, [onClose]);
 
-  // Collect parameters
   const parameters: ParameterInfo[] = useMemo(() => {
     const byPath = new Map<string, KeyframeWithContext[]>();
     for (const seq of scene.sequences) {
@@ -180,12 +211,41 @@ export function SceneParametersPanel({ scene, onClose }: SceneParametersPanelPro
     }));
   }, [scene.sequences]);
 
+  useEffect(() => {
+    if (selectedParamPath === null && parameters.length > 0) {
+      setSelectedParamPath(parameters[0].path);
+    }
+  }, [parameters, selectedParamPath]);
+
+  useEffect(() => {
+    if (!selectedKf) return;
+    const stillExists = parameters.some((p) =>
+      p.keyframes.some((k) => k.keyframe.id === selectedKf.kfCtx.keyframe.id),
+    );
+    if (!stillExists) setSelectedKf(null);
+  }, [parameters, selectedKf]);
+
   const seekToKeyframe = useCallback(
     (absoluteTime: number) => setCurrentTime(scene.startTime + absoluteTime),
     [scene.startTime, setCurrentTime],
   );
 
-  // Header with editable name
+  const handleEasingChange = useCallback(
+    (easing: EasingConfig) => {
+      if (!selectedKf) return;
+      const { kfCtx } = selectedKf;
+      updateKeyframe(scene.id, kfCtx.sequenceId, kfCtx.keyframe.id, { easing });
+    },
+    [scene.id, selectedKf, updateKeyframe],
+  );
+
+  const handleValueEdit = useCallback(
+    (sceneId: string, seqId: string, kfId: string, patch: Partial<Omit<Keyframe, "id">>) => {
+      updateKeyframe(sceneId, seqId, kfId, patch);
+    },
+    [updateKeyframe],
+  );
+
   const headerContent = editingName ? (
     <input
       ref={nameInputRef}
@@ -221,44 +281,117 @@ export function SceneParametersPanel({ scene, onClose }: SceneParametersPanelPro
     );
   }
 
+  // Visible time window
+  const visibleDuration = scene.duration / zoomX;
+  const maxPan = Math.max(0, scene.duration - visibleDuration);
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div ref={panelRef} className="flex w-[700px] h-[400px] flex-col rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl">
+      <div ref={panelRef} className="flex w-[860px] h-[460px] flex-col rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-zinc-700 px-4 py-2">
           {headerContent}
-          <button onClick={onClose} className="rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200">
-            <X size={16} />
-          </button>
+          <div className="flex items-center gap-2">
+            {/* Zoom controls */}
+            <div className="flex items-center gap-1 mr-2">
+              <button
+                onClick={() => setZoomX((z) => clamp(z / ZOOM_STEP, ZOOM_MIN, ZOOM_MAX))}
+                className="rounded p-0.5 text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800"
+                title="Zoom out H"
+              >
+                <ZoomOut size={13} />
+              </button>
+              <span className="text-[9px] text-zinc-500 font-mono w-8 text-center">
+                H{zoomX.toFixed(1)}x
+              </span>
+              <button
+                onClick={() => setZoomX((z) => clamp(z * ZOOM_STEP, ZOOM_MIN, ZOOM_MAX))}
+                className="rounded p-0.5 text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800"
+                title="Zoom in H"
+              >
+                <ZoomIn size={13} />
+              </button>
+              <span className="mx-0.5 text-zinc-700">|</span>
+              <button
+                onClick={() => setZoomY((z) => clamp(z / ZOOM_STEP, ZOOM_MIN, ZOOM_MAX))}
+                className="rounded p-0.5 text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800"
+                title="Zoom out V"
+              >
+                <ZoomOut size={13} />
+              </button>
+              <span className="text-[9px] text-zinc-500 font-mono w-8 text-center">
+                V{zoomY.toFixed(1)}x
+              </span>
+              <button
+                onClick={() => setZoomY((z) => clamp(z * ZOOM_STEP, ZOOM_MIN, ZOOM_MAX))}
+                className="rounded p-0.5 text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800"
+                title="Zoom in V"
+              >
+                <ZoomIn size={13} />
+              </button>
+            </div>
+            <button onClick={onClose} className="rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200">
+              <X size={16} />
+            </button>
+          </div>
         </div>
 
         {/* Body */}
         <div className="flex flex-1 min-h-0">
           {/* Left: parameter list */}
-          <div className="w-[220px] border-r border-zinc-700 overflow-y-auto">
+          <div className="w-[180px] border-r border-zinc-700 overflow-y-auto shrink-0">
             {parameters.map((param) => (
               <ParameterListItem
                 key={param.path}
                 param={param}
                 sceneLocalTime={sceneLocalTime}
+                isSelected={selectedParamPath === param.path}
+                onSelect={() => setSelectedParamPath(param.path)}
                 onSeek={seekToKeyframe}
               />
             ))}
           </div>
 
-          {/* Right: curve graph */}
+          {/* Center: curve graph */}
           <div className="flex-1 min-w-0">
             <CurveGraph
               sceneId={scene.id}
               parameters={parameters}
               sceneDuration={scene.duration}
               sceneLocalTime={sceneLocalTime}
+              selectedParamPath={selectedParamPath}
+              zoomX={zoomX}
+              zoomY={zoomY}
+              panX={panX}
+              onZoomX={(z) => setZoomX(clamp(z, ZOOM_MIN, ZOOM_MAX))}
+              onZoomY={(z) => setZoomY(clamp(z, ZOOM_MIN, ZOOM_MAX))}
+              onPanX={(p) => setPanX(clamp(p, 0, maxPan))}
               onSeek={seekToKeyframe}
+              onSelectKeyframe={(kfCtx, paramPath, paramColor) =>
+                setSelectedKf({ kfCtx, paramPath, paramColor })
+              }
+              selectedKeyframeId={selectedKf?.kfCtx.keyframe.id ?? null}
               updateKeyframe={updateKeyframe}
               removeKeyframe={removeKeyframe}
               addKeyframe={addKeyframe}
             />
           </div>
+
+          {/* Right: easing sidebar */}
+          {selectedKf && (
+            <EasingSidebar
+              sceneId={scene.id}
+              selectedKf={selectedKf}
+              parameters={parameters}
+              onEasingChange={handleEasingChange}
+              onValueEdit={handleValueEdit}
+              onDelete={() => {
+                const { kfCtx } = selectedKf;
+                removeKeyframe(scene.id, kfCtx.sequenceId, kfCtx.keyframe.id);
+                setSelectedKf(null);
+              }}
+            />
+          )}
         </div>
       </div>
     </div>
@@ -272,10 +405,12 @@ export function SceneParametersPanel({ scene, onClose }: SceneParametersPanelPro
 interface ParameterListItemProps {
   param: ParameterInfo;
   sceneLocalTime: number;
+  isSelected: boolean;
+  onSelect: () => void;
   onSeek: (absoluteTime: number) => void;
 }
 
-function ParameterListItem({ param, sceneLocalTime, onSeek }: ParameterListItemProps) {
+function ParameterListItem({ param, sceneLocalTime, isSelected, onSelect, onSeek }: ParameterListItemProps) {
   const currentValue = interpolateAtTime(param.keyframes, sceneLocalTime);
 
   const prevKeyframe = useMemo(() => {
@@ -293,7 +428,15 @@ function ParameterListItem({ param, sceneLocalTime, onSeek }: ParameterListItemP
   }, [param.keyframes, sceneLocalTime]);
 
   return (
-    <div className="flex items-center gap-2 px-3 py-1.5 border-b border-zinc-800 hover:bg-zinc-800/50">
+    <div
+      onClick={onSelect}
+      className={[
+        "flex items-center gap-2 px-3 py-1.5 border-b border-zinc-800 cursor-pointer transition-colors",
+        isSelected
+          ? "bg-zinc-800 border-l-2 border-l-indigo-500"
+          : "hover:bg-zinc-800/50 border-l-2 border-l-transparent",
+      ].join(" ")}
+    >
       <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: param.color }} />
       <div className="flex-1 min-w-0">
         <div className="text-[11px] text-zinc-300 truncate">{param.shortName}</div>
@@ -303,7 +446,7 @@ function ParameterListItem({ param, sceneLocalTime, onSeek }: ParameterListItemP
       </div>
       <div className="flex items-center gap-0.5 shrink-0">
         <button
-          onClick={() => prevKeyframe && onSeek(prevKeyframe.absoluteTime)}
+          onClick={(e) => { e.stopPropagation(); prevKeyframe && onSeek(prevKeyframe.absoluteTime); }}
           disabled={!prevKeyframe}
           className="rounded p-0.5 text-zinc-500 hover:text-zinc-300 disabled:opacity-30 disabled:cursor-default"
           title="Previous keyframe"
@@ -312,7 +455,7 @@ function ParameterListItem({ param, sceneLocalTime, onSeek }: ParameterListItemP
         </button>
         <Diamond size={10} className="text-zinc-500" />
         <button
-          onClick={() => nextKeyframe && onSeek(nextKeyframe.absoluteTime)}
+          onClick={(e) => { e.stopPropagation(); nextKeyframe && onSeek(nextKeyframe.absoluteTime); }}
           disabled={!nextKeyframe}
           className="rounded p-0.5 text-zinc-500 hover:text-zinc-300 disabled:opacity-30 disabled:cursor-default"
           title="Next keyframe"
@@ -325,53 +468,137 @@ function ParameterListItem({ param, sceneLocalTime, onSeek }: ParameterListItemP
 }
 
 // ---------------------------------------------------------------------------
-// Easing Context Menu
+// Easing Sidebar (right panel) with editable t/v inputs
 // ---------------------------------------------------------------------------
 
-interface EasingMenuProps {
-  x: number;
-  y: number;
-  currentEasing: EasingConfig;
-  onSelect: (easing: EasingConfig) => void;
-  onClose: () => void;
+interface EasingSidebarProps {
+  sceneId: string;
+  selectedKf: SelectedKeyframe;
+  parameters: ParameterInfo[];
+  onEasingChange: (easing: EasingConfig) => void;
+  onValueEdit: (sceneId: string, seqId: string, kfId: string, patch: Partial<Omit<Keyframe, "id">>) => void;
+  onDelete: () => void;
 }
 
-function EasingMenu({ x, y, currentEasing, onSelect, onClose }: EasingMenuProps) {
-  const menuRef = useRef<HTMLDivElement>(null);
+function EasingSidebar({ sceneId, selectedKf, parameters, onEasingChange, onValueEdit, onDelete }: EasingSidebarProps) {
+  const { kfCtx, paramPath, paramColor } = selectedKf;
+  const kf = kfCtx.keyframe;
 
-  useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) onClose();
+  const freshKf = useMemo(() => {
+    for (const p of parameters) {
+      if (p.path !== paramPath) continue;
+      for (const k of p.keyframes) {
+        if (k.keyframe.id === kf.id) return k.keyframe;
+      }
     }
-    window.addEventListener("mousedown", handleClick);
-    return () => window.removeEventListener("mousedown", handleClick);
-  }, [onClose]);
+    return kf;
+  }, [parameters, paramPath, kf]);
+
+  // Local input state for time
+  const [timeInput, setTimeInput] = useState(freshKf.time.toFixed(2));
+  useEffect(() => { setTimeInput(freshKf.time.toFixed(2)); }, [freshKf.time]);
+
+  // Local input state for value
+  const [valueInput, setValueInput] = useState(formatValue(freshKf.value));
+  useEffect(() => { setValueInput(formatValue(freshKf.value)); }, [freshKf.value]);
+
+  const commitTime = useCallback(() => {
+    const parsed = parseFloat(timeInput);
+    if (!isNaN(parsed) && parsed >= 0) {
+      onValueEdit(sceneId, kfCtx.sequenceId, kf.id, { time: parsed });
+    } else {
+      setTimeInput(freshKf.time.toFixed(2));
+    }
+  }, [timeInput, sceneId, kfCtx.sequenceId, kf.id, freshKf.time, onValueEdit]);
+
+  const commitValue = useCallback(() => {
+    const parsed = parseFloat(valueInput);
+    if (!isNaN(parsed)) {
+      onValueEdit(sceneId, kfCtx.sequenceId, kf.id, { value: parsed });
+    } else {
+      // Non-numeric value — commit as string
+      onValueEdit(sceneId, kfCtx.sequenceId, kf.id, { value: valueInput });
+    }
+  }, [valueInput, sceneId, kfCtx.sequenceId, kf.id, onValueEdit]);
 
   return (
-    <div
-      ref={menuRef}
-      className="fixed z-[60] rounded border border-zinc-600 bg-zinc-800 py-1 shadow-xl"
-      style={{ left: x, top: y }}
-    >
-      <div className="px-3 py-1 text-[9px] text-zinc-500 uppercase tracking-wider">Easing</div>
-      {EASING_OPTIONS.map((opt) => (
-        <button
-          key={opt.type}
-          onClick={() => { onSelect({ type: opt.type }); onClose(); }}
-          className={[
-            "block w-full text-left px-3 py-1 text-[11px] hover:bg-zinc-700",
-            currentEasing.type === opt.type ? "text-indigo-400" : "text-zinc-300",
-          ].join(" ")}
-        >
-          {opt.label}
-        </button>
-      ))}
+    <div className="w-[160px] border-l border-zinc-700 overflow-y-auto shrink-0 p-3">
+      {/* Keyframe info */}
+      <div className="mb-3">
+        <div className="flex items-center gap-1.5 mb-2">
+          <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: paramColor }} />
+          <span className="text-[10px] text-zinc-400 truncate">{shortenPath(paramPath)}</span>
+        </div>
+
+        {/* Editable time */}
+        <label className="flex items-center gap-1.5 mb-1">
+          <span className="text-[10px] text-zinc-500 font-mono w-4 shrink-0">t:</span>
+          <input
+            value={timeInput}
+            onChange={(e) => setTimeInput(e.target.value)}
+            onBlur={commitTime}
+            onKeyDown={(e) => { if (e.key === "Enter") commitTime(); }}
+            className="flex-1 min-w-0 bg-zinc-800 border border-zinc-700 rounded px-1.5 py-0.5 text-[10px] text-zinc-200 font-mono outline-none focus:border-indigo-500"
+          />
+          <span className="text-[9px] text-zinc-600">s</span>
+        </label>
+
+        {/* Editable value */}
+        <label className="flex items-center gap-1.5">
+          <span className="text-[10px] text-zinc-500 font-mono w-4 shrink-0">v:</span>
+          <input
+            value={valueInput}
+            onChange={(e) => setValueInput(e.target.value)}
+            onBlur={commitValue}
+            onKeyDown={(e) => { if (e.key === "Enter") commitValue(); }}
+            className="flex-1 min-w-0 bg-zinc-800 border border-zinc-700 rounded px-1.5 py-0.5 text-[10px] text-zinc-200 font-mono outline-none focus:border-indigo-500"
+          />
+        </label>
+      </div>
+
+      {/* Easing selection */}
+      <div className="text-[9px] text-zinc-500 uppercase tracking-wider mb-1.5">Easing</div>
+      <div className="flex flex-col gap-0.5">
+        {EASING_OPTIONS.map((opt) => {
+          const isActive = freshKf.easing.type === opt.type;
+          return (
+            <button
+              key={opt.type}
+              onClick={() => onEasingChange({ type: opt.type })}
+              className={[
+                "flex items-center gap-2 rounded px-2 py-1 text-left text-[10px] transition-colors",
+                isActive
+                  ? "bg-indigo-500/20 text-indigo-300 ring-1 ring-indigo-500/40"
+                  : "text-zinc-400 hover:bg-zinc-800 hover:text-zinc-300",
+              ].join(" ")}
+            >
+              <svg width={24} height={14} viewBox="0 0 80 48" className="shrink-0 opacity-70">
+                <polyline
+                  points={easingPreviewPath(opt.type)}
+                  fill="none"
+                  stroke={isActive ? "#818cf8" : "#71717a"}
+                  strokeWidth={3}
+                />
+              </svg>
+              {opt.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Delete keyframe */}
+      <button
+        onClick={onDelete}
+        className="mt-3 w-full rounded px-2 py-1 text-[10px] text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors border border-red-500/20"
+      >
+        Delete keyframe
+      </button>
     </div>
   );
 }
 
 // ---------------------------------------------------------------------------
-// Curve Graph
+// Curve Graph — with zoom/pan and fixed 0%-100% vertical axis
 // ---------------------------------------------------------------------------
 
 interface CurveGraphProps {
@@ -379,7 +606,16 @@ interface CurveGraphProps {
   parameters: ParameterInfo[];
   sceneDuration: number;
   sceneLocalTime: number;
+  selectedParamPath: string | null;
+  zoomX: number;
+  zoomY: number;
+  panX: number;
+  onZoomX: (z: number) => void;
+  onZoomY: (z: number) => void;
+  onPanX: (p: number) => void;
   onSeek: (absoluteTime: number) => void;
+  onSelectKeyframe: (kfCtx: KeyframeWithContext, paramPath: string, paramColor: string) => void;
+  selectedKeyframeId: string | null;
   updateKeyframe: (sceneId: string, sequenceId: string, keyframeId: string, patch: Partial<Omit<Keyframe, "id">>) => void;
   removeKeyframe: (sceneId: string, sequenceId: string, keyframeId: string) => void;
   addKeyframe: (sceneId: string, sequenceId: string, keyframe: Omit<Keyframe, "id">) => string;
@@ -391,7 +627,8 @@ interface DiamondData {
   time: number;
   kfCtx: KeyframeWithContext;
   paramIndex: number;
-  /** min/max for numeric params — used for vertical drag */
+  paramPath: string;
+  paramColor: string;
   min: number;
   max: number;
 }
@@ -401,7 +638,16 @@ function CurveGraph({
   parameters,
   sceneDuration,
   sceneLocalTime,
+  selectedParamPath,
+  zoomX,
+  zoomY,
+  panX,
+  onZoomX,
+  onZoomY,
+  onPanX,
   onSeek,
+  onSelectKeyframe,
+  selectedKeyframeId,
   updateKeyframe,
   removeKeyframe,
   addKeyframe,
@@ -409,7 +655,7 @@ function CurveGraph({
   const svgRef = useRef<SVGSVGElement>(null);
 
   const viewWidth = 600;
-  const viewHeight = 340;
+  const viewHeight = 380;
   const graphLeft = GRAPH_PADDING_LEFT;
   const graphRight = viewWidth - GRAPH_PADDING_RIGHT;
   const graphTop = GRAPH_PADDING_TOP;
@@ -417,36 +663,102 @@ function CurveGraph({
   const graphWidth = graphRight - graphLeft;
   const graphHeight = graphBottom - graphTop;
 
+  // The visible time window
+  const visibleDuration = sceneDuration / zoomX;
+  const timeStart = panX;
+  const timeEnd = panX + visibleDuration;
+
+  // Vertical: fixed 0% (bottom) to 100% (top), stretched by zoomY
+  // zoomY=1 → 0%-100% visible; zoomY=2 → only 25%-75% visible (centered)
+  const vCenter = 0.5;
+  const vHalfRange = 0.5 / zoomY;
+  const vMin = vCenter - vHalfRange; // normalized min visible (can be < 0)
+  const vMax = vCenter + vHalfRange; // normalized max visible (can be > 1)
+
+  // Time to SVG X
   const timeToX = useCallback(
-    (t: number) => graphLeft + (t / sceneDuration) * graphWidth,
-    [sceneDuration, graphLeft, graphWidth],
+    (t: number) => graphLeft + ((t - timeStart) / visibleDuration) * graphWidth,
+    [timeStart, visibleDuration, graphLeft, graphWidth],
   );
 
   const xToTime = useCallback(
-    (x: number) => ((x - graphLeft) / graphWidth) * sceneDuration,
-    [sceneDuration, graphLeft, graphWidth],
+    (x: number) => timeStart + ((x - graphLeft) / graphWidth) * visibleDuration,
+    [timeStart, visibleDuration, graphLeft, graphWidth],
   );
 
+  // Normalized value (0-1) to SVG Y
+  const normToY = useCallback(
+    (norm: number) => graphTop + ((vMax - norm) / (vMax - vMin)) * graphHeight,
+    [graphTop, graphHeight, vMin, vMax],
+  );
+
+  // SVG Y to normalized value (0-1)
   const yToNorm = useCallback(
-    (y: number) => 1 - (y - graphTop) / graphHeight,
-    [graphTop, graphHeight],
+    (y: number) => vMax - ((y - graphTop) / graphHeight) * (vMax - vMin),
+    [graphTop, graphHeight, vMin, vMax],
   );
 
-  // Ticks
+  // Wheel zoom + pan
+  useEffect(() => {
+    const svg = svgRef.current;
+    if (!svg) return;
+
+    function handleWheel(e: WheelEvent) {
+      e.preventDefault();
+      if (e.ctrlKey || e.metaKey) {
+        // Ctrl+wheel = zoom horizontal
+        const factor = e.deltaY > 0 ? 1 / ZOOM_STEP : ZOOM_STEP;
+        onZoomX(zoomX * factor);
+      } else if (e.shiftKey) {
+        // Shift+wheel = zoom vertical
+        const factor = e.deltaY > 0 ? 1 / ZOOM_STEP : ZOOM_STEP;
+        onZoomY(zoomY * factor);
+      } else {
+        // Plain wheel = pan horizontal
+        const panDelta = (e.deltaY / 300) * visibleDuration;
+        onPanX(panX + panDelta);
+      }
+    }
+
+    svg.addEventListener("wheel", handleWheel, { passive: false });
+    return () => svg.removeEventListener("wheel", handleWheel);
+  }, [zoomX, zoomY, panX, visibleDuration, onZoomX, onZoomY, onPanX]);
+
+  // Time ticks
   const ticks = useMemo(() => {
     const result: number[] = [];
     let interval = 1;
-    if (sceneDuration > 60) interval = 10;
-    else if (sceneDuration > 20) interval = 5;
-    else if (sceneDuration > 10) interval = 2;
-    for (let t = 0; t <= sceneDuration; t += interval) result.push(t);
+    const dur = visibleDuration;
+    if (dur > 60) interval = 10;
+    else if (dur > 20) interval = 5;
+    else if (dur > 10) interval = 2;
+    else if (dur > 4) interval = 1;
+    else if (dur > 1) interval = 0.5;
+    else interval = 0.1;
+    const start = Math.floor(timeStart / interval) * interval;
+    for (let t = start; t <= timeEnd + interval; t += interval) {
+      if (t >= timeStart - interval && t <= timeEnd + interval) {
+        result.push(t);
+      }
+    }
     return result;
-  }, [sceneDuration]);
+  }, [timeStart, timeEnd, visibleDuration]);
 
-  // Build curves + flat diamonds list for drag
-  const { curves, allDiamonds } = useMemo(() => {
-    const allDia: DiamondData[] = [];
+  // Percentage labels on the left
+  const percentLabels = useMemo(() => {
+    const labels: { pct: number; y: number }[] = [];
+    const step = zoomY >= 3 ? 5 : zoomY >= 1.5 ? 10 : 25;
+    for (let pct = 0; pct <= 100; pct += step) {
+      const norm = pct / 100;
+      if (norm >= vMin - 0.01 && norm <= vMax + 0.01) {
+        labels.push({ pct, y: normToY(norm) });
+      }
+    }
+    return labels;
+  }, [vMin, vMax, zoomY, normToY]);
 
+  // Build curves
+  const { curves } = useMemo(() => {
     const curveList = parameters.map((param, paramIndex) => {
       const keyframes = param.keyframes;
       const isNumeric = keyframes.every((kf) => typeof kf.keyframe.value === "number");
@@ -458,15 +770,16 @@ function CurveGraph({
         max = Math.max(...values);
         if (min === max) { min -= 0.5; max += 0.5; }
       }
-      const normalize = (v: number) => 1 - (v - min) / (max - min);
+      // Map raw value → 0-1 normalized
+      const toNorm = (v: number) => (v - min) / (max - min);
 
       if (!isNumeric) {
         const diamonds = keyframes.map((kf) => {
           const d: DiamondData = {
-            x: timeToX(kf.absoluteTime), y: graphTop + graphHeight * 0.5,
+            x: timeToX(kf.absoluteTime), y: normToY(0.5),
             time: kf.absoluteTime, kfCtx: kf, paramIndex, min, max,
+            paramPath: param.path, paramColor: param.color,
           };
-          allDia.push(d);
           return d;
         });
         return {
@@ -474,20 +787,20 @@ function CurveGraph({
         };
       }
 
-      // Numeric path
+      // Numeric — sample the eased curve
       const points: { x: number; y: number }[] = [];
 
       if (keyframes.length === 1) {
-        const normY = normalize(keyframes[0].keyframe.value as number);
-        points.push({ x: timeToX(0), y: graphTop + normY * graphHeight });
-        points.push({ x: timeToX(sceneDuration), y: graphTop + normY * graphHeight });
+        const ny = toNorm(keyframes[0].keyframe.value as number);
+        points.push({ x: timeToX(0), y: normToY(ny) });
+        points.push({ x: timeToX(sceneDuration), y: normToY(ny) });
       } else {
         if (keyframes[0].absoluteTime > 0) {
-          const ny = normalize(keyframes[0].keyframe.value as number);
-          points.push({ x: timeToX(0), y: graphTop + ny * graphHeight });
+          const ny = toNorm(keyframes[0].keyframe.value as number);
+          points.push({ x: timeToX(0), y: normToY(ny) });
         }
-        const ny0 = normalize(keyframes[0].keyframe.value as number);
-        points.push({ x: timeToX(keyframes[0].absoluteTime), y: graphTop + ny0 * graphHeight });
+        const ny0 = toNorm(keyframes[0].keyframe.value as number);
+        points.push({ x: timeToX(keyframes[0].absoluteTime), y: normToY(ny0) });
 
         for (let i = 0; i < keyframes.length - 1; i++) {
           const a = keyframes[i], b = keyframes[i + 1];
@@ -496,46 +809,40 @@ function CurveGraph({
             const rawT = s / SAMPLES_PER_SEGMENT;
             const easedT = applyEasing(a.keyframe.easing, rawT);
             const value = interpolateValue(a.keyframe.value, b.keyframe.value, easedT) as number;
-            const ny = normalize(value);
-            points.push({ x: timeToX(a.absoluteTime + rawT * span), y: graphTop + ny * graphHeight });
+            const ny = toNorm(value);
+            points.push({ x: timeToX(a.absoluteTime + rawT * span), y: normToY(ny) });
           }
         }
 
         const lastKf = keyframes[keyframes.length - 1];
         if (lastKf.absoluteTime < sceneDuration) {
-          const ny = normalize(lastKf.keyframe.value as number);
-          points.push({ x: timeToX(sceneDuration), y: graphTop + ny * graphHeight });
+          const ny = toNorm(lastKf.keyframe.value as number);
+          points.push({ x: timeToX(sceneDuration), y: normToY(ny) });
         }
       }
 
       const diamonds = keyframes.map((kf) => {
-        const ny = normalize(kf.keyframe.value as number);
+        const ny = toNorm(kf.keyframe.value as number);
         const d: DiamondData = {
-          x: timeToX(kf.absoluteTime), y: graphTop + ny * graphHeight,
+          x: timeToX(kf.absoluteTime), y: normToY(ny),
           time: kf.absoluteTime, kfCtx: kf, paramIndex, min, max,
+          paramPath: param.path, paramColor: param.color,
         };
-        allDia.push(d);
         return d;
       });
 
       return { param, isNumeric: true as const, points, diamonds };
     });
 
-    return { curves: curveList, allDiamonds: allDia };
-  }, [parameters, sceneDuration, timeToX, graphTop, graphHeight]);
+    return { curves: curveList };
+  }, [parameters, sceneDuration, timeToX, normToY]);
 
   // --- Drag state ---
   const dragRef = useRef<{
     diamond: DiamondData;
     startClientX: number;
     startClientY: number;
-    origTime: number;
-    origValue: number;
-  } | null>(null);
-
-  // --- Easing menu state ---
-  const [easingMenu, setEasingMenu] = useState<{
-    x: number; y: number; kfCtx: KeyframeWithContext;
+    hasMoved: boolean;
   } | null>(null);
 
   const clientToSvg = useCallback((clientX: number, clientY: number) => {
@@ -548,56 +855,56 @@ function CurveGraph({
     };
   }, [viewWidth, viewHeight]);
 
-  // Diamond pointerdown → start drag
   const handleDiamondPointerDown = useCallback(
     (e: React.PointerEvent, diamond: DiamondData) => {
       e.stopPropagation();
-      const origValue = typeof diamond.kfCtx.keyframe.value === "number" ? diamond.kfCtx.keyframe.value : 0;
       dragRef.current = {
-        diamond, startClientX: e.clientX, startClientY: e.clientY,
-        origTime: diamond.kfCtx.absoluteTime, origValue,
+        diamond, startClientX: e.clientX, startClientY: e.clientY, hasMoved: false,
       };
 
       const handleMove = (ev: PointerEvent) => {
         if (!dragRef.current) return;
+        const dx = Math.abs(ev.clientX - dragRef.current.startClientX);
+        const dy = Math.abs(ev.clientY - dragRef.current.startClientY);
+        if (!dragRef.current.hasMoved && dx < 3 && dy < 3) return;
+        dragRef.current.hasMoved = true;
+
         const { svgX, svgY } = clientToSvg(ev.clientX, ev.clientY);
 
-        // Horizontal: update time
         const newTime = Math.max(0, Math.min(sceneDuration, xToTime(svgX)));
         const { kfCtx } = dragRef.current.diamond;
-        // Compute relative time within the sequence
-        const seq = parameters[dragRef.current.diamond.paramIndex]?.keyframes
-          .find(k => k.keyframe.id === kfCtx.keyframe.id);
-        if (!seq) return;
         const relativeTime = newTime - (kfCtx.absoluteTime - kfCtx.keyframe.time);
 
-        // Vertical: update value (only for numeric)
         const isNumeric = typeof kfCtx.keyframe.value === "number";
         const patch: Partial<Omit<Keyframe, "id">> = { time: Math.max(0, relativeTime) };
 
         if (isNumeric) {
           const { min, max } = dragRef.current.diamond;
-          const normValue = yToNorm(svgY);
-          const rawValue = min + normValue * (max - min);
-          patch.value = rawValue;
+          const normVal = clamp(yToNorm(svgY), 0, 1);
+          patch.value = min + normVal * (max - min);
         }
 
         updateKeyframe(sceneId, kfCtx.sequenceId, kfCtx.keyframe.id, patch);
       };
 
       const handleUp = () => {
+        const wasDrag = dragRef.current?.hasMoved ?? false;
+        const d = dragRef.current?.diamond;
         dragRef.current = null;
         window.removeEventListener("pointermove", handleMove);
         window.removeEventListener("pointerup", handleUp);
+
+        if (!wasDrag && d) {
+          onSelectKeyframe(d.kfCtx, d.paramPath, d.paramColor);
+        }
       };
 
       window.addEventListener("pointermove", handleMove);
       window.addEventListener("pointerup", handleUp);
     },
-    [sceneId, sceneDuration, parameters, xToTime, yToNorm, clientToSvg, updateKeyframe],
+    [sceneId, sceneDuration, xToTime, yToNorm, clientToSvg, updateKeyframe, onSelectKeyframe],
   );
 
-  // Diamond double-click → remove keyframe
   const handleDiamondDoubleClick = useCallback(
     (e: React.MouseEvent, diamond: DiamondData) => {
       e.stopPropagation();
@@ -607,73 +914,33 @@ function CurveGraph({
     [sceneId, removeKeyframe],
   );
 
-  // Diamond right-click → easing menu
-  const handleDiamondContextMenu = useCallback(
-    (e: React.MouseEvent, diamond: DiamondData) => {
-      e.preventDefault();
-      e.stopPropagation();
-      setEasingMenu({ x: e.clientX, y: e.clientY, kfCtx: diamond.kfCtx });
-    },
-    [],
-  );
-
-  const handleEasingSelect = useCallback(
-    (easing: EasingConfig) => {
-      if (!easingMenu) return;
-      const { kfCtx } = easingMenu;
-      updateKeyframe(sceneId, kfCtx.sequenceId, kfCtx.keyframe.id, { easing });
-    },
-    [sceneId, easingMenu, updateKeyframe],
-  );
-
-  // SVG double-click on empty space → add keyframe on nearest param
   const handleSvgDoubleClick = useCallback(
     (e: React.MouseEvent<SVGSVGElement>) => {
-      // If we double-clicked a diamond, that handler already ran
       if ((e.target as Element).closest("[data-kf-diamond]")) return;
+      if (!selectedParamPath) return;
+
+      const selectedCurve = curves.find((c) => c.param.path === selectedParamPath);
+      if (!selectedCurve || !selectedCurve.isNumeric) return;
 
       const { svgX, svgY } = clientToSvg(e.clientX, e.clientY);
       const newTime = Math.max(0, Math.min(sceneDuration, xToTime(svgX)));
 
-      // Find the closest curve by Y distance
-      let bestDist = Infinity;
-      let bestParam: ParameterInfo | null = null;
-      let bestValue: number = 0;
+      const kfs = selectedCurve.param.keyframes;
+      const { min, max } = selectedCurve.diamonds[0] ?? { min: 0, max: 1 };
+      const normVal = clamp(yToNorm(svgY), 0, 1);
+      const value = min + normVal * (max - min);
 
-      for (const curve of curves) {
-        if (!curve.isNumeric) continue;
-        // Find the closest point on the curve
-        for (const pt of curve.points) {
-          const dist = Math.abs(pt.x - svgX) + Math.abs(pt.y - svgY) * 0.5;
-          if (dist < bestDist) {
-            bestDist = dist;
-            bestParam = curve.param;
-            // Compute value from Y position
-            const kfs = curve.param.keyframes;
-            const values = kfs.map(k => k.keyframe.value as number);
-            let min = Math.min(...values), max = Math.max(...values);
-            if (min === max) { min -= 0.5; max += 0.5; }
-            bestValue = min + yToNorm(svgY) * (max - min);
-          }
-        }
-      }
-
-      if (!bestParam || !bestParam.keyframes[0]) return;
-
-      const seqId = bestParam.keyframes[0].sequenceId;
-      const relativeTime = newTime;
-
+      const seqId = kfs[0].sequenceId;
       addKeyframe(sceneId, seqId, {
-        time: relativeTime,
-        path: bestParam.path,
-        value: bestValue,
+        time: newTime,
+        path: selectedCurve.param.path,
+        value,
         easing: { type: "linear" },
       });
     },
-    [sceneId, sceneDuration, curves, xToTime, yToNorm, clientToSvg, addKeyframe],
+    [sceneId, sceneDuration, selectedParamPath, curves, xToTime, yToNorm, clientToSvg, addKeyframe],
   );
 
-  // SVG click → seek playhead
   const handleSvgClick = useCallback(
     (e: React.MouseEvent<SVGSVGElement>) => {
       if ((e.target as Element).closest("[data-kf-diamond]")) return;
@@ -687,37 +954,54 @@ function CurveGraph({
   const playheadX = timeToX(Math.max(0, Math.min(sceneLocalTime, sceneDuration)));
 
   return (
-    <>
-      <svg
-        ref={svgRef}
-        viewBox={`0 0 ${viewWidth} ${viewHeight}`}
-        preserveAspectRatio="none"
-        className="w-full h-full cursor-crosshair"
-        onClick={handleSvgClick}
-        onDoubleClick={handleSvgDoubleClick}
-      >
-        {/* Background */}
-        <rect x={graphLeft} y={graphTop} width={graphWidth} height={graphHeight} fill="#18181b" rx={2} />
+    <svg
+      ref={svgRef}
+      viewBox={`0 0 ${viewWidth} ${viewHeight}`}
+      preserveAspectRatio="none"
+      className="w-full h-full cursor-crosshair"
+      onClick={handleSvgClick}
+      onDoubleClick={handleSvgDoubleClick}
+    >
+      {/* Clip the graph area */}
+      <defs>
+        <clipPath id="graph-clip">
+          <rect x={graphLeft} y={graphTop} width={graphWidth} height={graphHeight} />
+        </clipPath>
+      </defs>
 
-        {/* Time ruler ticks */}
-        {ticks.map((t) => {
-          const x = timeToX(t);
-          return (
-            <g key={t}>
-              <line x1={x} y1={graphTop} x2={x} y2={graphBottom} stroke="#27272a" strokeWidth={0.5} />
-              <text x={x} y={graphTop - 4} textAnchor="middle" fill="#71717a" fontSize={9}>{t}s</text>
-            </g>
-          );
-        })}
+      {/* Background */}
+      <rect x={graphLeft} y={graphTop} width={graphWidth} height={graphHeight} fill="#18181b" rx={2} />
 
-        {/* Horizontal grid */}
-        {[0, 0.25, 0.5, 0.75, 1].map((frac) => {
-          const y = graphTop + frac * graphHeight;
-          return <line key={frac} x1={graphLeft} y1={y} x2={graphRight} y2={y} stroke="#27272a" strokeWidth={0.5} />;
-        })}
+      {/* Percentage labels on left */}
+      {percentLabels.map(({ pct, y }) => (
+        <g key={pct}>
+          <line x1={graphLeft} y1={y} x2={graphRight} y2={y} stroke="#27272a" strokeWidth={0.5} />
+          <text x={graphLeft - 4} y={y + 3} textAnchor="end" fill="#52525b" fontSize={8} fontFamily="monospace">
+            {pct}%
+          </text>
+        </g>
+      ))}
 
-        {/* Curves */}
+      {/* Time ruler ticks */}
+      {ticks.map((t) => {
+        const x = timeToX(t);
+        if (x < graphLeft - 10 || x > graphRight + 10) return null;
+        return (
+          <g key={t}>
+            <line x1={x} y1={graphTop} x2={x} y2={graphBottom} stroke="#27272a" strokeWidth={0.5} />
+            <text x={x} y={graphBottom + 12} textAnchor="middle" fill="#71717a" fontSize={8}>
+              {t % 1 === 0 ? `${t}s` : `${t.toFixed(1)}s`}
+            </text>
+          </g>
+        );
+      })}
+
+      {/* Curves — clipped to graph area */}
+      <g clipPath="url(#graph-clip)">
         {curves.map((curve) => {
+          const isSelectedParam = curve.param.path === selectedParamPath;
+          const curveOpacity = isSelectedParam ? 1 : 0.35;
+
           const polylinePoints = curve.points.map((p) => `${p.x},${p.y}`).join(" ");
           return (
             <g key={curve.param.path}>
@@ -726,83 +1010,90 @@ function CurveGraph({
                   points={polylinePoints}
                   fill="none"
                   stroke={curve.param.color}
-                  strokeWidth={1.5}
+                  strokeWidth={isSelectedParam ? 2 : 1}
                   strokeLinejoin="round"
-                  opacity={0.85}
+                  opacity={curveOpacity}
                 />
               ) : (
                 curve.diamonds.map((d, i, arr) => {
                   const nextX = i < arr.length - 1 ? arr[i + 1].x : timeToX(sceneDuration);
                   return (
                     <line key={i} x1={d.x} y1={d.y} x2={nextX} y2={d.y}
-                      stroke={curve.param.color} strokeWidth={1.5} opacity={0.85} />
+                      stroke={curve.param.color} strokeWidth={isSelectedParam ? 2 : 1} opacity={curveOpacity} />
                   );
                 })
               )}
 
               {/* Diamond keyframe markers */}
-              {curve.diamonds.map((d) => (
-                <g
-                  key={d.kfCtx.keyframe.id}
-                  data-kf-diamond
-                  className="cursor-grab"
-                  onPointerDown={(e) => handleDiamondPointerDown(e, d)}
-                  onDoubleClick={(e) => handleDiamondDoubleClick(e, d)}
-                  onContextMenu={(e) => handleDiamondContextMenu(e, d)}
-                >
-                  {/* Larger invisible hit area */}
-                  <rect
-                    x={d.x - DIAMOND_SIZE - 3}
-                    y={d.y - DIAMOND_SIZE - 3}
-                    width={(DIAMOND_SIZE + 3) * 2}
-                    height={(DIAMOND_SIZE + 3) * 2}
-                    fill="transparent"
-                  />
-                  <rect
-                    x={d.x - DIAMOND_SIZE}
-                    y={d.y - DIAMOND_SIZE}
-                    width={DIAMOND_SIZE * 2}
-                    height={DIAMOND_SIZE * 2}
-                    fill={curve.param.color}
-                    stroke="#fff"
-                    strokeWidth={0.5}
-                    transform={`rotate(45 ${d.x} ${d.y})`}
-                    rx={0.5}
-                  />
-                  {/* Easing indicator: small text below diamond */}
-                  {d.kfCtx.keyframe.easing.type !== "linear" && (
-                    <text
-                      x={d.x}
-                      y={d.y + DIAMOND_SIZE + 8}
-                      textAnchor="middle"
+              {curve.diamonds.map((d) => {
+                const isSelectedDiamond = d.kfCtx.keyframe.id === selectedKeyframeId;
+                return (
+                  <g
+                    key={d.kfCtx.keyframe.id}
+                    data-kf-diamond
+                    className="cursor-grab"
+                    onPointerDown={(e) => handleDiamondPointerDown(e, d)}
+                    onDoubleClick={(e) => handleDiamondDoubleClick(e, d)}
+                  >
+                    <rect
+                      x={d.x - DIAMOND_SIZE - 3}
+                      y={d.y - DIAMOND_SIZE - 3}
+                      width={(DIAMOND_SIZE + 3) * 2}
+                      height={(DIAMOND_SIZE + 3) * 2}
+                      fill="transparent"
+                    />
+                    {isSelectedDiamond && (
+                      <rect
+                        x={d.x - DIAMOND_SIZE - 2}
+                        y={d.y - DIAMOND_SIZE - 2}
+                        width={(DIAMOND_SIZE + 2) * 2}
+                        height={(DIAMOND_SIZE + 2) * 2}
+                        fill="none"
+                        stroke="#818cf8"
+                        strokeWidth={1.5}
+                        transform={`rotate(45 ${d.x} ${d.y})`}
+                        rx={0.5}
+                      />
+                    )}
+                    <rect
+                      x={d.x - DIAMOND_SIZE}
+                      y={d.y - DIAMOND_SIZE}
+                      width={DIAMOND_SIZE * 2}
+                      height={DIAMOND_SIZE * 2}
                       fill={curve.param.color}
-                      fontSize={6}
-                      opacity={0.7}
-                    >
-                      {d.kfCtx.keyframe.easing.type}
-                    </text>
-                  )}
-                </g>
-              ))}
+                      stroke={isSelectedDiamond ? "#fff" : "#aaa"}
+                      strokeWidth={isSelectedDiamond ? 1 : 0.5}
+                      transform={`rotate(45 ${d.x} ${d.y})`}
+                      rx={0.5}
+                      opacity={isSelectedParam ? 1 : 0.5}
+                    />
+                    {d.kfCtx.keyframe.easing.type !== "linear" && (
+                      <text
+                        x={d.x}
+                        y={d.y + DIAMOND_SIZE + 8}
+                        textAnchor="middle"
+                        fill={curve.param.color}
+                        fontSize={6}
+                        opacity={0.7}
+                      >
+                        {d.kfCtx.keyframe.easing.type}
+                      </text>
+                    )}
+                  </g>
+                );
+              })}
             </g>
           );
         })}
+      </g>
 
-        {/* Playhead */}
-        <line x1={playheadX} y1={graphTop - 2} x2={playheadX} y2={graphBottom + 2} stroke="#ef4444" strokeWidth={1} />
-        <polygon points={`${playheadX - 4},${graphTop - 2} ${playheadX + 4},${graphTop - 2} ${playheadX},${graphTop + 4}`} fill="#ef4444" />
-      </svg>
-
-      {/* Easing context menu */}
-      {easingMenu && (
-        <EasingMenu
-          x={easingMenu.x}
-          y={easingMenu.y}
-          currentEasing={easingMenu.kfCtx.keyframe.easing}
-          onSelect={handleEasingSelect}
-          onClose={() => setEasingMenu(null)}
-        />
+      {/* Playhead */}
+      {playheadX >= graphLeft && playheadX <= graphRight && (
+        <>
+          <line x1={playheadX} y1={graphTop - 2} x2={playheadX} y2={graphBottom + 2} stroke="#ef4444" strokeWidth={1} />
+          <polygon points={`${playheadX - 4},${graphTop - 2} ${playheadX + 4},${graphTop - 2} ${playheadX},${graphTop + 4}`} fill="#ef4444" />
+        </>
       )}
-    </>
+    </svg>
   );
 }

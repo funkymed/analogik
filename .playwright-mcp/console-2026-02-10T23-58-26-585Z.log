@@ -1,1 +1,18 @@
 [    5569ms] [WARNING] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio @ http://localhost:5174/src/components/PreviewCanvas.tsx:45
+[  486463ms] ReferenceError: allDia is not defined
+    at http://localhost:5174/src/components/gantt/scene/SceneParametersPanel.tsx?t=1770768392957:683:11
+    at Array.map (<anonymous>)
+    at http://localhost:5174/src/components/gantt/scene/SceneParametersPanel.tsx?t=1770768392957:671:37
+    at Array.map (<anonymous>)
+    at http://localhost:5174/src/components/gantt/scene/SceneParametersPanel.tsx?t=1770768392957:656:34
+    at updateMemo (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:6545:21)
+    at Object.useMemo (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:18969:20)
+    at exports.useMemo (http://localhost:5174/node_modules/.vite/deps/chunk-RY7GF66K.js?v=d81fa452:947:36)
+    at CurveGraph (http://localhost:5174/src/components/gantt/scene/SceneParametersPanel.tsx?t=1770768392957:655:22)
+    at Object.react_stack_bottom_frame (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:18509:20)
+[  486458ms] [WARNING] %s
+
+%s
+ An error occurred in the <CurveGraph> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:6965
+[  494396ms] [WARNING] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio @ http://localhost:5174/src/components/PreviewCanvas.tsx:45

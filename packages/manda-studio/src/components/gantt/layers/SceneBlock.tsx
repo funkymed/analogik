@@ -2,8 +2,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import ChevronRight from "lucide-react/dist/esm/icons/chevron-right.js";
 import ChevronDown from "lucide-react/dist/esm/icons/chevron-down.js";
 import X from "lucide-react/dist/esm/icons/x.js";
-import { ResizeHandle } from "../shared/ResizeHandle.tsx";
+import { useGanttStore } from "@/store/useGanttStore.ts";
 import type { TimelineScene } from "@/timeline/ganttTypes.ts";
+
+const MIN_DURATION = 0.5; // seconds
 
 interface SceneBlockProps {
   scene: TimelineScene;
@@ -17,8 +19,7 @@ interface SceneBlockProps {
   /** Actual pixel heights of each scene track row (accounts for expanded sequences). */
   sceneTrackHeights: number[];
   onSelect: () => void;
-  onMove: (newStartTime: number) => void;
-  onResize: (newDuration: number, side: "left" | "right") => void;
+  onUpdate: (patch: Partial<Pick<TimelineScene, "startTime" | "duration">>) => void;
   onToggleCollapse: () => void;
   onRemove: () => void;
   onTrackChange: (newTrackIndex: number) => void;
@@ -34,38 +35,37 @@ export function SceneBlock({
   trackCount,
   sceneTrackHeights,
   onSelect,
-  onMove,
-  onResize,
+  onUpdate,
   onToggleCollapse,
   onRemove,
   onTrackChange,
   onDoubleClick,
 }: SceneBlockProps) {
+  const snapTime = useGanttStore((s) => s.snapTime);
+
   const left = scene.startTime * pixelsPerSecond;
   const width = scene.duration * pixelsPerSecond;
 
-  // --- Drag to move (horizontal + vertical) ---
-  const dragStartRef = useRef<{
+  // --- Drag to move ---
+  const dragRef = useRef<{
     clientX: number;
     clientY: number;
     startTime: number;
     trackIndex: number;
   } | null>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const dragCleanupRef = useRef<(() => void) | null>(null);
+  const cleanupRef = useRef<(() => void) | null>(null);
 
-  // Cleanup drag listeners on unmount to prevent leaks
   useEffect(() => {
-    return () => { dragCleanupRef.current?.(); };
+    return () => { cleanupRef.current?.(); };
   }, []);
 
   const handlePointerDown = useCallback(
     (e: React.PointerEvent) => {
-      // Ignore if clicking on resize handle or buttons
       if ((e.target as HTMLElement).closest("[data-no-drag]")) return;
       e.stopPropagation();
       onSelect();
-      dragStartRef.current = {
+      dragRef.current = {
         clientX: e.clientX,
         clientY: e.clientY,
         startTime: scene.startTime,
@@ -73,16 +73,19 @@ export function SceneBlock({
       };
 
       const handlePointerMove = (ev: PointerEvent) => {
-        if (!dragStartRef.current) return;
-        const deltaX = ev.clientX - dragStartRef.current.clientX;
-        const deltaY = ev.clientY - dragStartRef.current.clientY;
-        const timeDelta = deltaX / pixelsPerSecond;
+        if (!dragRef.current) return;
+        const deltaX = ev.clientX - dragRef.current.clientX;
+        const deltaY = ev.clientY - dragRef.current.clientY;
         setIsDragging(true);
-        onMove(Math.max(0, dragStartRef.current.startTime + timeDelta));
+
+        // Horizontal: snap the new start time
+        const rawTime = dragRef.current.startTime + deltaX / pixelsPerSecond;
+        const snapped = snapTime(Math.max(0, rawTime));
+        onUpdate({ startTime: snapped });
 
         // Vertical: compute target track from cumulative heights
         let startTrackY = 0;
-        for (let i = 0; i < dragStartRef.current.trackIndex; i++) {
+        for (let i = 0; i < dragRef.current.trackIndex; i++) {
           startTrackY += sceneTrackHeights[i] ?? rowHeight;
         }
         const targetY = startTrackY + rowHeight / 2 + deltaY;
@@ -104,59 +107,77 @@ export function SceneBlock({
       };
 
       const handlePointerUp = () => {
-        dragStartRef.current = null;
+        dragRef.current = null;
         setIsDragging(false);
-        dragCleanupRef.current = null;
+        cleanupRef.current = null;
         window.removeEventListener("pointermove", handlePointerMove);
         window.removeEventListener("pointerup", handlePointerUp);
       };
 
       window.addEventListener("pointermove", handlePointerMove);
       window.addEventListener("pointerup", handlePointerUp);
-
-      dragCleanupRef.current = () => {
+      cleanupRef.current = () => {
         window.removeEventListener("pointermove", handlePointerMove);
         window.removeEventListener("pointerup", handlePointerUp);
       };
     },
-    [onSelect, scene.startTime, scene.trackIndex, pixelsPerSecond, rowHeight, trackCount, sceneTrackHeights, onMove, onTrackChange],
+    [onSelect, scene.startTime, scene.trackIndex, pixelsPerSecond, rowHeight, trackCount, sceneTrackHeights, onUpdate, onTrackChange, snapTime],
   );
 
   // --- Resize ---
-  const resizeStartRef = useRef({ duration: scene.duration, startTime: scene.startTime });
+  const resizeRef = useRef({ startTime: scene.startTime, duration: scene.duration });
 
-  const handleResizeLeft = useCallback(
-    (deltaPx: number) => {
-      const timeDelta = deltaPx / pixelsPerSecond;
-      const newStart = Math.max(0, resizeStartRef.current.startTime + timeDelta);
-      const newDuration = resizeStartRef.current.duration - (newStart - resizeStartRef.current.startTime);
-      if (newDuration >= 1) {
-        onResize(newDuration, "left");
-        onMove(newStart);
-      }
-    },
-    [pixelsPerSecond, onResize, onMove],
-  );
-
-  const handleResizeRight = useCallback(
-    (deltaPx: number) => {
-      const timeDelta = deltaPx / pixelsPerSecond;
-      const newDuration = Math.max(1, resizeStartRef.current.duration + timeDelta);
-      onResize(newDuration, "right");
-    },
-    [pixelsPerSecond, onResize],
-  );
-
-  const handleResizeEnd = useCallback(() => {
-    resizeStartRef.current = { duration: scene.duration, startTime: scene.startTime };
-  }, [scene.duration, scene.startTime]);
-
-  // Keep resizeStartRef in sync when scene changes (non-drag)
+  // Keep ref in sync when not dragging
   useEffect(() => {
     if (!isDragging) {
-      resizeStartRef.current = { duration: scene.duration, startTime: scene.startTime };
+      resizeRef.current = { startTime: scene.startTime, duration: scene.duration };
     }
-  }, [scene.duration, scene.startTime, isDragging]);
+  }, [scene.startTime, scene.duration, isDragging]);
+
+  const resizeCleanupRef = useRef<(() => void) | null>(null);
+  useEffect(() => {
+    return () => { resizeCleanupRef.current?.(); };
+  }, []);
+
+  const handleResizeStart = useCallback((e: React.PointerEvent, side: "left" | "right") => {
+    e.stopPropagation();
+    e.preventDefault();
+    const startX = e.clientX;
+    const initial = { ...resizeRef.current };
+
+    const handlePointerMove = (ev: PointerEvent) => {
+      const deltaPx = ev.clientX - startX;
+      const timeDelta = deltaPx / pixelsPerSecond;
+
+      if (side === "right") {
+        const rawEnd = initial.startTime + initial.duration + timeDelta;
+        const snappedEnd = snapTime(rawEnd);
+        const newDuration = Math.max(MIN_DURATION, snappedEnd - initial.startTime);
+        onUpdate({ duration: newDuration });
+      } else {
+        const endTime = initial.startTime + initial.duration;
+        const rawStart = initial.startTime + timeDelta;
+        const snappedStart = snapTime(Math.max(0, rawStart));
+        const newDuration = endTime - snappedStart;
+        if (newDuration >= MIN_DURATION) {
+          onUpdate({ startTime: snappedStart, duration: newDuration });
+        }
+      }
+    };
+
+    const handlePointerUp = () => {
+      resizeCleanupRef.current = null;
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", handlePointerUp);
+    };
+
+    window.addEventListener("pointermove", handlePointerMove);
+    window.addEventListener("pointerup", handlePointerUp);
+    resizeCleanupRef.current = () => {
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", handlePointerUp);
+    };
+  }, [pixelsPerSecond, snapTime, onUpdate, scene.startTime, scene.duration]);
 
   return (
     <div
@@ -182,10 +203,11 @@ export function SceneBlock({
       }}
     >
       {/* Left resize handle */}
-      <ResizeHandle
-        side="left"
-        onResize={handleResizeLeft}
-        onResizeEnd={handleResizeEnd}
+      <div
+        data-no-drag
+        onPointerDown={(e) => handleResizeStart(e, "left")}
+        className="absolute top-0 left-0 z-10 h-full w-1.5 cursor-col-resize opacity-0 transition-opacity hover:opacity-100"
+        style={{ backgroundColor: "rgba(255,255,255,0.4)" }}
       />
 
       {/* Content */}
@@ -226,10 +248,11 @@ export function SceneBlock({
       </div>
 
       {/* Right resize handle */}
-      <ResizeHandle
-        side="right"
-        onResize={handleResizeRight}
-        onResizeEnd={handleResizeEnd}
+      <div
+        data-no-drag
+        onPointerDown={(e) => handleResizeStart(e, "right")}
+        className="absolute top-0 right-0 z-10 h-full w-1.5 cursor-col-resize opacity-0 transition-opacity hover:opacity-100"
+        style={{ backgroundColor: "rgba(255,255,255,0.4)" }}
       />
     </div>
   );
