@@ -67,7 +67,7 @@ export function ColorInput({ label, value, onChange }: ColorInputProps) {
         {open && (
           <div
             ref={popoverRef}
-            className="absolute left-0 top-8 z-50 rounded-lg border border-zinc-700 bg-zinc-900 p-2 shadow-xl"
+            className="absolute bottom-8 left-0 z-50 rounded-lg border border-zinc-700 bg-zinc-900 p-2 shadow-xl"
           >
             <HexColorPicker color={value || "#000000"} onChange={onChange} />
           </div>

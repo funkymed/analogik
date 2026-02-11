@@ -2,11 +2,11 @@
  * PreviewCanvas - WebGL visualization canvas for MandaStudio.
  *
  * Renders a full-parent-size canvas, initializes MandaRenderer on mount,
- * drives the animation loop with requestAnimationFrame, and auto-resizes
- * via ResizeObserver.
+ * and auto-resizes via ResizeObserver.
  *
- * Receives the AudioContext and AnalyserNode from the parent (useAudio)
- * so the renderer visualizes the actual playing audio.
+ * NO requestAnimationFrame loop here. All rendering is driven by
+ * PlaybackEngine (during playback) or PlaybackEngine.renderFrame()
+ * (on seek / config edits when paused).
  */
 
 import {
@@ -18,7 +18,6 @@ import {
 
 import { MandaRenderer } from "@mandafunk/core/MandaRenderer";
 import type { ConfigType } from "@mandafunk/config/types";
-import { useGanttStore } from "@/store/useGanttStore.ts";
 
 // ---------------------------------------------------------------------------
 // Props
@@ -72,7 +71,6 @@ export function PreviewCanvas({
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   const rendererRef = useRef<MandaRenderer | null>(null);
-  const rafIdRef = useRef<number | null>(null);
 
   const [initialized, setInitialized] = useState(false);
 
@@ -120,24 +118,14 @@ export function PreviewCanvas({
       onRendererReadyRef.current?.(renderer);
       onCanvasReadyRef.current?.(canvas);
 
-      // Start animation loop.
-      const tick = () => {
-        if (disposed) return;
-        renderer.render();
-        rafIdRef.current = requestAnimationFrame(tick);
-      };
-      rafIdRef.current = requestAnimationFrame(tick);
+      // Render one initial frame at time 0 so the canvas isn't blank.
+      renderer.render(0);
     };
 
     void initRenderer();
 
     return () => {
       disposed = true;
-
-      if (rafIdRef.current !== null) {
-        cancelAnimationFrame(rafIdRef.current);
-        rafIdRef.current = null;
-      }
 
       if (rendererRef.current) {
         rendererRef.current.dispose();
@@ -149,34 +137,6 @@ export function PreviewCanvas({
     // config is intentionally omitted -- we only use it on first init.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [audioContext, analyserNode]);
-
-  // ---------------------------------------------------------------------------
-  // Sync live config changes to the renderer (only when user edits, NOT during
-  // playback — PlaybackEngine already pushes config directly to the renderer).
-  // ---------------------------------------------------------------------------
-
-  const prevShaderRef = useRef<string | undefined>(config.scene?.shader);
-  const isPlaying = useGanttStore((s) => s.isPlaying);
-
-  useEffect(() => {
-    const renderer = rendererRef.current;
-    if (!renderer || !initialized) return;
-
-    // During playback, PlaybackEngine drives the renderer directly at 60fps.
-    // Skip this React-driven sync to avoid duplicate expensive GPU updates.
-    if (isPlaying) return;
-
-    const shaderChanged = config.scene?.shader !== prevShaderRef.current;
-    prevShaderRef.current = config.scene?.shader;
-
-    if (shaderChanged) {
-      // Shader change requires full async loadConfig (clones internally).
-      void renderer.loadConfig(config);
-    } else {
-      // Non-shader changes can use sync updateConfig (merges internally).
-      renderer.updateConfig(config);
-    }
-  }, [config, initialized, isPlaying]);
 
   // ---------------------------------------------------------------------------
   // ResizeObserver

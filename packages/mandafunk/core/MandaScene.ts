@@ -160,6 +160,26 @@ export class MandaScene {
   }
 
   /**
+   * Propagates config changes to the active shader without reloading it.
+   * Updates the shader's config reference so parameter changes (speed, opacity,
+   * sin/cos) take effect on the next frame.
+   */
+  updateShaderConfig(config: ConfigType) {
+    this.config = config;
+
+    // Update background color (visible behind shader when opacity < 1)
+    if (config.scene.bgColor) {
+      this.scene.background = new Color(config.scene.bgColor);
+    } else if (!config.scene.background && !this.shader) {
+      this.scene.background = null;
+    }
+
+    if (this.shader && this.shader.updateConfig) {
+      this.shader.updateConfig(config);
+    }
+  }
+
+  /**
    * Updates the active shader's time uniform for animation.
    * @param time - Current animation time in seconds
    */

@@ -85,13 +85,25 @@ export function usePlaybackEngine(
         }
       }
 
-      // Seek from ruler click (when not playing)
+      // Seek from ruler click / scrub (when not playing) → render one frame
       if (
         !state.isPlaying &&
         state.currentTime !== prevState.currentTime &&
         !engine.isPlaying()
       ) {
         engine.seek(state.currentTime);
+        engine.renderFrame();
+      }
+
+      // Timeline changed while paused (keyframe edit, config change via bridge)
+      // → re-evaluate and render one frame at current position
+      if (
+        !state.isPlaying &&
+        !engine.isPlaying() &&
+        state.timeline !== prevState.timeline &&
+        state.currentTime === prevState.currentTime
+      ) {
+        engine.renderFrame();
       }
 
       // Loop toggle

@@ -34,7 +34,6 @@
  */
 
 import {
-  Clock,
   PerspectiveCamera,
   WebGLRenderer,
 } from "three";
@@ -118,9 +117,6 @@ export class MandaRenderer {
 
   /** Three.js perspective camera. */
   private camera: PerspectiveCamera | null = null;
-
-  /** Internal clock for elapsed time tracking. */
-  private clock: Clock | null = null;
 
   /** Scene manager for backgrounds and shaders. */
   private scene: MandaScene | null = null;
@@ -210,9 +206,6 @@ export class MandaRenderer {
 
     const width = this.canvas.clientWidth || window.innerWidth;
     const height = this.canvas.clientHeight || window.innerHeight;
-
-    // Clock
-    this.clock = new Clock();
 
     // Camera
     this.camera = new PerspectiveCamera(
@@ -315,6 +308,9 @@ export class MandaRenderer {
     this.ensureInitialized();
     this.config = mergeConfig(this.config, partial);
 
+    if (this.scene) {
+      this.scene.updateShaderConfig(this.config);
+    }
     if (this.staticItems) {
       this.staticItems.update(this.config);
     }
@@ -346,22 +342,23 @@ export class MandaRenderer {
    * the visualization. It updates all audio-reactive elements and
    * runs the post-processing pipeline.
    *
-   * @param time - The current elapsed time in seconds (typically from `Clock.getElapsedTime()`).
-   *               If omitted, the internal clock is used.
+   * @param time - The current timeline time in seconds. All animations
+   *               (shaders, post-processing) are driven by this value.
+   *               When paused, pass the same time to freeze the visuals.
    *
    * @example
    * ```typescript
-   * function animate() {
+   * function animate(timestamp: number) {
+   *   renderer.render(currentTime);
    *   requestAnimationFrame(animate);
-   *   renderer.render();
    * }
-   * animate();
+   * requestAnimationFrame(animate);
    * ```
    */
-  render(time?: number): void {
+  render(time: number): void {
     this.ensureInitialized();
 
-    const t = time ?? (this.clock?.getElapsedTime() ?? 0);
+    const t = time;
 
     // Update audio-reactive visualizations
     if (this.staticItems) {
@@ -491,15 +488,6 @@ export class MandaRenderer {
   }
 
   /**
-   * Returns the internal Clock instance.
-   *
-   * @returns The clock, or `null` if not yet initialized.
-   */
-  getClock(): Clock | null {
-    return this.clock;
-  }
-
-  /**
    * Returns whether the renderer has been initialized.
    */
   isInitialized(): boolean {
@@ -557,7 +545,6 @@ export class MandaRenderer {
     this.composer = null;
     this.staticItems = null;
     this.camera = null;
-    this.clock = null;
     this.player = null;
   }
 

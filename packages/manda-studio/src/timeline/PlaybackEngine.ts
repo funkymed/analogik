@@ -11,9 +11,12 @@ import type { MultiAudioEngine } from "@/audio/MultiAudioEngine.ts";
  * 1. Advances currentTime based on wall-clock delta
  * 2. Calls onTick to get the latest timeline from the store
  * 3. Evaluates the timeline to find the active scene's config
- * 4. Pushes config to the MandaRenderer directly (60fps)
+ * 4. Pushes config + renders via renderer.render(time)
  * 5. Syncs audio clips via MultiAudioEngine
  * 6. Updates the gantt store's currentTime at ~10fps (for UI playhead)
+ *
+ * When paused, call renderFrame() to render a single frame at currentTime
+ * (for seek preview, config edits, etc.). No RAF runs in pause = 0 CPU.
  */
 export class PlaybackEngine {
   private renderer: MandaRenderer | null = null;
@@ -124,7 +127,27 @@ export class PlaybackEngine {
   }
 
   // -----------------------------------------------------------------------
-  // RAF loop (single loop — no secondary RAF needed in the hook)
+  // Single-frame render (for pause: seek, config edits)
+  // -----------------------------------------------------------------------
+
+  /**
+   * Render exactly one frame at the current time.
+   * Called when paused and something changes (seek, config edit).
+   * No RAF loop — just evaluate + render once.
+   */
+  renderFrame(): void {
+    if (!this.renderer || this.playing) return;
+
+    if (this.onTick) {
+      const timeline = this.onTick();
+      this.evaluateWithTimeline(timeline);
+    }
+
+    this.renderer.render(this.currentTime);
+  }
+
+  // -----------------------------------------------------------------------
+  // RAF loop (single loop — runs only during playback)
   // -----------------------------------------------------------------------
 
   private startLoop(): void {
@@ -147,6 +170,11 @@ export class PlaybackEngine {
       if (this.onTick) {
         const timeline = this.onTick();
         this.evaluateWithTimeline(timeline);
+      }
+
+      // Render the frame at the current timeline time
+      if (this.renderer) {
+        this.renderer.render(this.currentTime);
       }
 
       // Throttled store update for UI
@@ -179,7 +207,7 @@ export class PlaybackEngine {
 
   /**
    * Evaluate the timeline at currentTime.
-   * Called from the single RAF loop via onTick, or externally for seeks.
+   * Called from the single RAF loop via onTick, or from renderFrame().
    */
   evaluateWithTimeline(timeline: Timeline): void {
     const result = evaluateTimelineAtTime(timeline, this.currentTime);
@@ -207,7 +235,7 @@ export class PlaybackEngine {
       this.onSceneChange?.(newSceneId);
     }
 
-    // Push config to renderer
+    // Push config to renderer (does NOT render — render() is called separately)
     if (result.config && this.renderer) {
       this.pushConfigToRenderer(result.config);
     }
@@ -222,23 +250,30 @@ export class PlaybackEngine {
     if (!this.renderer) return;
 
     // Skip if the config reference is the same as last frame (no change).
-    // This is the common case when a scene has no active sequences/keyframes:
-    // evaluator returns scene.baseConfig directly, same reference every frame.
     if (config === this.lastPushedConfig) return;
     this.lastPushedConfig = config;
 
-    const shaderChanged = config.scene?.shader !== this.currentShader;
+    const newShader = config.scene?.shader;
+
+    // First time seeing a shader — just sync the name without reloading.
+    // PreviewCanvas already loaded the shader during init.
+    if (this.currentShader === undefined) {
+      this.currentShader = newShader;
+      this.renderer.updateConfig(config);
+      return;
+    }
+
+    const shaderChanged = newShader !== this.currentShader;
 
     if (shaderChanged && !this.loadingConfig) {
-      this.currentShader = config.scene?.shader;
+      this.currentShader = newShader;
       this.loadingConfig = true;
       void this.renderer.loadConfig(config).then(() => {
         this.loadingConfig = false;
       });
-    } else if (!shaderChanged && !this.loadingConfig) {
+    } else if (!shaderChanged) {
       this.renderer.updateConfig(config);
     }
-    // If loadingConfig is true, skip updates until the async load finishes
   }
 
   private getTimelineDuration(timeline: Timeline): number {

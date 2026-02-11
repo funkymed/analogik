@@ -43,6 +43,7 @@ export interface BackgroundShader {
   shaderMaterial: ShaderMaterial;
   mesh: Mesh;
   init(config: ConfigType, scene: Scene, staticItems: TextureSpectrumProvider): Promise<void>;
+  updateConfig(config: ConfigType): void;
   update(time: number): void;
   clear(): void;
   afterInit(): void;
@@ -152,7 +153,7 @@ export abstract class ShaderAbstract implements BackgroundShader {
       uniforms: this.uniforms,
       vertexShader: this.vshader,
       fragmentShader: this.fshader,
-      transparent: false,
+      transparent: true,
       blending: AdditiveBlending,
     });
 
@@ -178,6 +179,18 @@ export abstract class ShaderAbstract implements BackgroundShader {
     this.uniforms.iResolution.value.xy = window.innerWidth / window.innerHeight;
     this.mesh.position.z =
       (isMobile ? -0 : -500) * (this.config.scene.shader_zoom || 1);
+  }
+
+  /**
+   * Updates the config reference and refreshes uniforms that depend on it.
+   * Called when the user changes shader parameters (speed, opacity, etc.)
+   * without switching to a different shader.
+   */
+  updateConfig(config: ConfigType): void {
+    this.config = config;
+    this.uniforms.iOpacity.value = config.scene.shader_opacity ?? 1.0;
+    this.mesh.position.z =
+      (isMobile ? -0 : -500) * (config.scene.shader_zoom || 1);
   }
 
   /**

@@ -1,5 +1,6 @@
 import { lazy, Suspense, useCallback, useEffect, useRef } from "react";
 import { useStudioStore } from "@/store/useStudioStore.ts";
+import { useGanttStore } from "@/store/useGanttStore.ts";
 import { seedSamplePresets } from "@/db/samplePresets";
 import { useAudioContext } from "@/hooks/useAudioContext.ts";
 import { useFps } from "@/hooks/useFps.ts";
@@ -38,7 +39,8 @@ function App() {
 
   const { audioContext, analyserNode } = useAudioContext();
 
-  const fps = useFps();
+  const isPlaying = useGanttStore((s) => s.isPlaying);
+  const fps = useFps(isPlaying);
   const { setCanvas: setPreviewCanvas, capture: captureThumbnail } =
     useThumbnailCapture();
 

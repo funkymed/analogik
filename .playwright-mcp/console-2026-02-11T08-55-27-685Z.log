@@ -1,2 +1,88 @@
 [    1709ms] [WARNING] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio @ http://localhost:5174/src/components/PreviewCanvas.tsx:45
 [  134316ms] [WARNING] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio @ http://localhost:5174/src/components/PreviewCanvas.tsx:45
+[  181054ms] [WARNING] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio @ http://localhost:5174/src/components/PreviewCanvas.tsx:45
+[  858922ms] [WARNING] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio @ http://localhost:5174/src/components/PreviewCanvas.tsx?t=1770800969945:45
+[ 1006884ms] [WARNING] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio @ http://localhost:5174/src/components/PreviewCanvas.tsx?t=1770801103700:44
+[ 1014391ms] ReferenceError: useGanttStore is not defined
+    at App (http://localhost:5174/src/App.tsx?t=1770801142023:40:21)
+    at Object.react_stack_bottom_frame (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:18509:20)
+    at renderWithHooks (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:5654:24)
+    at updateFunctionComponent (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:7475:21)
+    at beginWork (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:8525:20)
+    at runWithFiberInDEV (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:997:72)
+    at performUnitOfWork (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:12561:98)
+    at workLoopSync (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:12424:43)
+    at renderRootSync (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:12408:13)
+    at performWorkOnRoot (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:11827:37)
+[ 1014390ms] [WARNING] %s
+
+%s
+ An error occurred in the <App> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:6965
+[ 1014394ms] TypeError: Cannot read properties of null (reading 'clearScene')
+    at MandaRenderer.loadConfig (http://localhost:5174/@fs/Users/cyrilpereira/Sites/mandarine/analogik/packages/mandafunk/core/MandaRenderer.ts?t=1770800969945:150:18)
+[ 1021241ms] ReferenceError: useGanttStore is not defined
+    at App (http://localhost:5174/src/App.tsx?t=1770801142023:40:21)
+    at Object.react_stack_bottom_frame (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:18509:20)
+    at renderWithHooks (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:5654:24)
+    at updateFunctionComponent (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:7475:21)
+    at beginWork (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:8525:20)
+    at runWithFiberInDEV (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:997:72)
+    at performUnitOfWork (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:12561:98)
+    at workLoopSync (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:12424:43)
+    at renderRootSync (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:12408:13)
+    at performWorkOnRoot (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:11827:37)
+[ 1021190ms] [WARNING] %s
+
+%s
+ An error occurred in the <App> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:6965
+[ 1022752ms] ReferenceError: useGanttStore is not defined
+    at App (http://localhost:5174/src/App.tsx?t=1770801142023:40:21)
+    at Object.react_stack_bottom_frame (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:18509:20)
+    at renderWithHooks (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:5654:24)
+    at updateFunctionComponent (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:7475:21)
+    at beginWork (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:8525:20)
+    at runWithFiberInDEV (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:997:72)
+    at performUnitOfWork (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:12561:98)
+    at workLoopSync (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:12424:43)
+    at renderRootSync (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:12408:13)
+    at performWorkOnRoot (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:11827:37)
+[ 1022723ms] [WARNING] %s
+
+%s
+ An error occurred in the <App> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:6965
+[ 1023022ms] ReferenceError: useGanttStore is not defined
+    at App (http://localhost:5174/src/App.tsx?t=1770801142023:40:21)
+    at Object.react_stack_bottom_frame (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:18509:20)
+    at renderWithHooks (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:5654:24)
+    at updateFunctionComponent (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:7475:21)
+    at beginWork (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:8525:20)
+    at runWithFiberInDEV (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:997:72)
+    at performUnitOfWork (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:12561:98)
+    at workLoopSync (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:12424:43)
+    at renderRootSync (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:12408:13)
+    at performWorkOnRoot (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:11827:37)
+[ 1022884ms] [WARNING] %s
+
+%s
+ An error occurred in the <App> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:6965
+[ 1023082ms] ReferenceError: useGanttStore is not defined
+    at App (http://localhost:5174/src/App.tsx?t=1770801142023:40:21)
+    at Object.react_stack_bottom_frame (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:18509:20)
+    at renderWithHooks (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:5654:24)
+    at updateFunctionComponent (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:7475:21)
+    at beginWork (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:8525:20)
+    at runWithFiberInDEV (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:997:72)
+    at performUnitOfWork (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:12561:98)
+    at workLoopSync (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:12424:43)
+    at renderRootSync (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:12408:13)
+    at performWorkOnRoot (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:11827:37)
+[ 1023008ms] [WARNING] %s
+
+%s
+ An error occurred in the <App> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:6965
+[ 1027865ms] [WARNING] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio @ http://localhost:5174/src/components/PreviewCanvas.tsx?t=1770801103700:44

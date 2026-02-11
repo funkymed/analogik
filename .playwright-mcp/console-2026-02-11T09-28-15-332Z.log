@@ -1,0 +1,17 @@
+[     154ms] [WARNING] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio @ http://localhost:5174/src/components/PreviewCanvas.tsx?t=1770802080364:44
+[ 4466011ms] ReferenceError: useGanttStore is not defined
+    at PreviewCanvas (http://localhost:5174/src/components/PreviewCanvas.tsx?t=1770806561233:70:21)
+    at Object.react_stack_bottom_frame (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:18509:20)
+    at renderWithHooks (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:5654:24)
+    at updateFunctionComponent (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:7475:21)
+    at beginWork (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:8525:20)
+    at runWithFiberInDEV (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:997:72)
+    at performUnitOfWork (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:12561:98)
+    at workLoopSync (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:12424:43)
+    at renderRootSync (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:12408:13)
+    at performWorkOnRoot (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:11827:37)
+[ 4465995ms] [WARNING] %s
+
+%s
+ An error occurred in the <PreviewCanvas> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=d81fa452:6965
