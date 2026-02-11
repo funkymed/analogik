@@ -240,8 +240,8 @@ export class PlaybackEngine {
       this.pushConfigToRenderer(result.config);
     }
 
-    // Sync audio clips
-    if (this.audioEngine) {
+    // Sync audio clips (only during playback — not when paused/seeking)
+    if (this.audioEngine && this.playing) {
       this.audioEngine.syncToTime(timeline.audioClips, this.currentTime);
     }
   }

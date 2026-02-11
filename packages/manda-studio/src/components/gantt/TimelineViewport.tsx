@@ -9,9 +9,10 @@ import { Playhead } from "./shared/Playhead.tsx";
 interface TimelineViewportProps {
   children: ReactNode;
   onVerticalScroll?: (scrollTop: number) => void;
+  onLoadAudioFile?: (file: File, trackIndex?: number, startTime?: number) => Promise<void>;
 }
 
-export function TimelineViewport({ children, onVerticalScroll }: TimelineViewportProps) {
+export function TimelineViewport({ children, onVerticalScroll, onLoadAudioFile }: TimelineViewportProps) {
   const pixelsPerSecond = useGanttStore((s) => s.pixelsPerSecond);
   const setPixelsPerSecond = useGanttStore((s) => s.setPixelsPerSecond);
   const currentTime = useGanttStore((s) => s.currentTime);
@@ -90,9 +91,7 @@ export function TimelineViewport({ children, onVerticalScroll }: TimelineViewpor
   // --- Drop handling for library items ---
   const [dropOver, setDropOver] = useState(false);
   const { sceneTrackHeights, audioTrackHeights } = useTrackHeights();
-  const sceneTrackCount = useGanttStore((s) => s.sceneTrackCount);
   const addScene = useGanttStore((s) => s.addScene);
-  const addAudioClip = useGanttStore((s) => s.addAudioClip);
   const getDropTarget = useCallback(
     (e: React.DragEvent) => {
       const el = scrollRef.current;
@@ -165,27 +164,19 @@ export function TimelineViewport({ children, onVerticalScroll }: TimelineViewpor
         const { updateScene } = useGanttStore.getState();
         updateScene(id, { startTime: useGanttStore.getState().snapTime(target.time) });
       } else if (data.type === "audio" && target.zone === "audio") {
-        // Load audio blob and create an audio clip
+        // Load audio blob via the playback engine so buffer is decoded (waveform + playback)
         const audioItem = await getAudioItem(data.id);
         if (!audioItem) return;
-        const blobUrl = URL.createObjectURL(audioItem.blob);
-        addAudioClip({
-          name: audioItem.name,
-          url: blobUrl,
-          startTime: useGanttStore.getState().snapTime(target.time),
-          duration: audioItem.duration,
-          trimStart: 0,
-          volume: 1,
-          muted: false,
-          trackIndex: target.trackIndex,
-        });
+        const file = new File([audioItem.blob], audioItem.name, { type: audioItem.mimeType });
+        const dropTime = useGanttStore.getState().snapTime(target.time);
+        await onLoadAudioFile?.(file, target.trackIndex, dropTime);
       } else if (data.type === "scenes" && target.zone === "audio") {
         // Can't drop scenes on audio tracks - ignore
       } else if (data.type === "audio" && target.zone === "scene") {
         // Can't drop audio on scene tracks - ignore
       }
     },
-    [getDropTarget, addScene, addAudioClip],
+    [getDropTarget, addScene, onLoadAudioFile],
   );
 
   const handleClick = useCallback(

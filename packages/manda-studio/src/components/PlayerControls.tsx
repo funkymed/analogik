@@ -91,7 +91,7 @@ export function PlayerControls({
 
       {/* Progress slider */}
       <div className="flex flex-1 items-center gap-3">
-        <span className="w-10 text-right font-mono text-xs text-zinc-500">
+        <span className="w-[4.5rem] shrink-0 text-right font-mono text-[10px] tabular-nums text-zinc-500">
           {formatTime(currentTime)}
         </span>
 
@@ -113,7 +113,7 @@ export function PlayerControls({
           <Slider.Thumb className="block h-3 w-3 rounded-full bg-white shadow-md transition-transform focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500" />
         </Slider.Root>
 
-        <span className="w-10 font-mono text-xs text-zinc-500">
+        <span className="w-[4.5rem] shrink-0 font-mono text-[10px] tabular-nums text-zinc-500">
           {formatTime(duration)}
         </span>
       </div>

@@ -8,7 +8,7 @@ export interface UsePlaybackEngineReturn {
   /** Call to connect the renderer once it's initialized. */
   setRenderer: (renderer: MandaRenderer | null) => void;
   /** Load an audio file and add it as a clip on the timeline. */
-  addAudioFile: (file: File, trackIndex?: number) => Promise<void>;
+  addAudioFile: (file: File, trackIndex?: number, startTime?: number) => Promise<void>;
   /** Get a decoded AudioBuffer by clip URL (for waveform drawing). */
   getAudioBuffer: (url: string) => AudioBuffer | null;
 }
@@ -124,7 +124,7 @@ export function usePlaybackEngine(
   }, []);
 
   // --- Add audio file as timeline clip ---
-  const addAudioFile = useCallback(async (file: File, trackIndex?: number) => {
+  const addAudioFile = useCallback(async (file: File, trackIndex?: number, startTime?: number) => {
     const multiAudio = multiAudioRef.current;
     if (!multiAudio) return;
 
@@ -140,7 +140,7 @@ export function usePlaybackEngine(
       gantt.addAudioClip({
         name: file.name,
         url: blobUrl,
-        startTime: gantt.currentTime,
+        startTime: startTime ?? gantt.currentTime,
         duration: audioBuffer.duration,
         trimStart: 0,
         volume: 1,

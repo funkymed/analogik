@@ -114,7 +114,7 @@ export function GanttToolbar() {
       </button>
 
       {/* Current time display */}
-      <span className="min-w-[3rem] text-center font-mono text-[10px] text-zinc-400">
+      <span className="min-w-[4.5rem] text-center font-mono text-[10px] tabular-nums text-zinc-400">
         {formatTime(currentTime)}
       </span>
 

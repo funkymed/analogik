@@ -12,7 +12,7 @@ import { TrackLabelsPanel } from "./shared/TrackLabelsPanel.tsx";
 const LABEL_PANEL_WIDTH = 80;
 
 interface GanttTimelineProps {
-  onLoadAudioFile?: (file: File, trackIndex?: number) => Promise<void>;
+  onLoadAudioFile?: (file: File, trackIndex?: number, startTime?: number) => Promise<void>;
   getAudioBuffer?: (url: string) => AudioBuffer | null;
 }
 
@@ -110,7 +110,7 @@ export function GanttTimeline({ onLoadAudioFile, getAudioBuffer }: GanttTimeline
 
         {/* Scrollable right viewport */}
         <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
-          <TimelineViewport onVerticalScroll={handleViewportScroll}>
+          <TimelineViewport onVerticalScroll={handleViewportScroll} onLoadAudioFile={onLoadAudioFile}>
             <SceneLayer pixelsPerSecond={pixelsPerSecond} />
             <div className="border-t border-zinc-700/50" />
             <AudioLayer
