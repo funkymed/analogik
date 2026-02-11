@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import X from "lucide-react/dist/esm/icons/x.js";
 import ImageIcon from "lucide-react/dist/esm/icons/image.js";
 import { useStudioStore } from "@/store/useStudioStore";
@@ -28,9 +28,12 @@ export function BackgroundPanel() {
 
   const bgMode: BgMode = bgModeOverride ?? detectedMode;
 
-  if (bgModeOverride && detectedMode === bgModeOverride) {
-    setBgModeOverride(null);
-  }
+  // Clear override once config catches up (moved out of render to avoid setState-in-render)
+  useEffect(() => {
+    if (bgModeOverride && detectedMode === bgModeOverride) {
+      setBgModeOverride(null);
+    }
+  }, [bgModeOverride, detectedMode]);
 
   const handleSliderPointerDown = useCallback(() => {
     pushHistory();

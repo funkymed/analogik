@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import ChevronRight from "lucide-react/dist/esm/icons/chevron-right.js";
 import ChevronDown from "lucide-react/dist/esm/icons/chevron-down.js";
 import X from "lucide-react/dist/esm/icons/x.js";
@@ -26,7 +26,7 @@ interface SceneBlockProps {
   onDoubleClick?: () => void;
 }
 
-export function SceneBlock({
+export const SceneBlock = memo(function SceneBlock({
   scene,
   pixelsPerSecond,
   trackHeight,
@@ -257,4 +257,4 @@ export function SceneBlock({
       />
     </div>
   );
-}
+});

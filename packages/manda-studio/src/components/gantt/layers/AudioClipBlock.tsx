@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import Volume2 from "lucide-react/dist/esm/icons/volume-2.js";
 import VolumeX from "lucide-react/dist/esm/icons/volume-x.js";
 import X from "lucide-react/dist/esm/icons/x.js";
@@ -24,7 +24,7 @@ interface AudioClipBlockProps {
   onTrackChange: (newTrackIndex: number) => void;
 }
 
-export function AudioClipBlock({
+export const AudioClipBlock = memo(function AudioClipBlock({
   clip,
   pixelsPerSecond,
   trackHeight,
@@ -237,4 +237,4 @@ export function AudioClipBlock({
       />
     </div>
   );
-}
+});

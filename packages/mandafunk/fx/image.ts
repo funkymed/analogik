@@ -11,12 +11,15 @@ import { ConfigType, ImageType } from "../config/types";
  * @param config - Current configuration with image definitions
  */
 export const updateImages = function (scene: Scene, config: ConfigType) {
-  for (let mesh in scene.children) {
-    const item: any = scene.children[mesh];
-    const objType: string = item?.objType || "undefined";
-    if (objType === "image") {
-      scene.remove(item);
-    }
+  // Collect first, then remove — avoids mutating array mid-iteration
+  const toRemove = scene.children.filter((child: any) => child?.objType === "image");
+  for (const item of toRemove) {
+    const mesh = item as Mesh;
+    mesh.geometry?.dispose();
+    const mat = mesh.material as MeshBasicMaterial;
+    mat?.map?.dispose();
+    mat?.dispose();
+    scene.remove(item);
   }
 
   for (let image in config.images) {
@@ -111,7 +114,7 @@ export const updateImageFast = function (
       (material.map?.image.height ?? 1) * zoom
     );
 
-    const plane: PlaneGeometry = new PlaneGeometry(width, height);
-    meshObj.geometry = plane;
+    meshObj.geometry.dispose();
+    meshObj.geometry = new PlaneGeometry(width, height);
   }
 };

@@ -1,4 +1,4 @@
-import { Color, Scene, LinearFilter } from "three";
+import { Color, Scene, LinearFilter, Texture } from "three";
 import {
   canvas2texture,
   canvasTexture,
@@ -73,7 +73,15 @@ export class MandaScene {
    * Creates a canvas texture from the loaded image, applying blur and brightness filters,
    * and sets it as the scene background with correct aspect ratio.
    */
+  /** Dispose the current background texture (if any) to free GPU memory. */
+  private disposeBackgroundTexture() {
+    if (this.scene.background && this.scene.background instanceof Texture) {
+      this.scene.background.dispose();
+    }
+  }
+
   onLoad() {
+    this.disposeBackgroundTexture();
     const bgFit = this.config.scene.bgFit ?? "cover";
     const blur = this.config.scene.blur || 0;
     let brightness: number = this.config.scene.brightness || 100;
@@ -259,13 +267,35 @@ export class MandaScene {
    * Used during track transitions to clean up before loading new overlays.
    */
   clearScene() {
-    for (let mesh in this.scene.children) {
-      const item: any = this.scene.children[mesh];
-      const objType: string = item?.objType || "undefined";
-      if (objType === "text" || objType === "image") {
-        this.scene.remove(this.scene.children[mesh]);
-      }
+    const toRemove = this.scene.children.filter((child: any) => {
+      const objType = child?.objType || "undefined";
+      return objType === "text" || objType === "image";
+    });
+    for (const item of toRemove) {
+      const mesh = item as any;
+      mesh.geometry?.dispose();
+      mesh.material?.map?.dispose();
+      mesh.material?.dispose();
+      this.scene.remove(item);
     }
+  }
+
+  /**
+   * Fully disposes the scene: shader, background texture, and all child meshes.
+   */
+  dispose() {
+    // Dispose shader
+    if (this.shader && this.shader.clear) {
+      this.shader.clear();
+      this.shader = false;
+    }
+
+    // Dispose background texture
+    this.disposeBackgroundTexture();
+    this.scene.background = null;
+
+    // Remove and dispose all child meshes
+    this.clearScene();
   }
 
   /**

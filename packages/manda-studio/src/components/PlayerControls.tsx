@@ -16,7 +16,8 @@ export function PlayerControls({
 }: PlayerControlsProps) {
   const isPlaying = useGanttStore((s) => s.isPlaying);
   const currentTime = useGanttStore((s) => s.currentTime);
-  const duration = useGanttStore((s) => s.getTimelineDuration());
+  const getTimelineDuration = useGanttStore((s) => s.getTimelineDuration);
+  const duration = getTimelineDuration();
   const volume = useGanttStore((s) => s.masterVolume);
   const setPlaying = useGanttStore((s) => s.setPlaying);
   const setCurrentTime = useGanttStore((s) => s.setCurrentTime);

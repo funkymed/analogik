@@ -273,7 +273,13 @@ interface AccordionItemProps {
 
 function AccordionItem({ item, isOpen, onToggle, onDelete, label }: AccordionItemProps) {
   const Icon = ICON_MAP[item.type];
-  const config = useStudioStore((s) => s.config);
+  // Only subscribe to texts/images when this specific item type needs them
+  const texts = useStudioStore((s) =>
+    item.type === "text" && item.configKey ? s.config.texts : undefined,
+  );
+  const images = useStudioStore((s) =>
+    item.type === "image" && item.configKey ? s.config.images : undefined,
+  );
 
   return (
     <div className="border-b border-zinc-800">
@@ -311,14 +317,14 @@ function AccordionItem({ item, isOpen, onToggle, onDelete, label }: AccordionIte
           {item.type === "progressbar" && <ProgressBarPanel />}
           {item.type === "timecode" && <TimecodePanel />}
           {item.type === "text" && item.configKey && (() => {
-            const texts = (config.texts ?? {}) as Record<string, TextType>;
-            const textItem = texts[item.configKey!];
+            const textsRecord = (texts ?? {}) as Record<string, TextType>;
+            const textItem = textsRecord[item.configKey!];
             if (!textItem) return null;
             return <TextItemEditor itemKey={item.configKey!} item={textItem} />;
           })()}
           {item.type === "image" && item.configKey && (() => {
-            const images = (config.images ?? {}) as Record<string, ImageType>;
-            const imageItem = images[item.configKey!];
+            const imagesRecord = (images ?? {}) as Record<string, ImageType>;
+            const imageItem = imagesRecord[item.configKey!];
             if (!imageItem) return null;
             return <ImageItemEditor itemKey={item.configKey!} item={imageItem} zMin={-200} zMax={200} />;
           })()}

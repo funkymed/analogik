@@ -69,22 +69,21 @@ export function resolveAssetUrl(
 export async function resolveAllAssets(timeline: Timeline): Promise<void> {
   const { assets } = timeline;
 
-  // 1. Resolve runtimeUrl for every asset entry without one
+  // 1. Resolve runtimeUrl for every asset entry
   for (const entry of Object.values(assets)) {
-    if (entry.runtimeUrl) continue;
     if (!entry.libraryId) continue;
 
     if (entry.type === "image") {
+      // Skip if already resolved
+      if (entry.runtimeUrl) continue;
       const img = await getImage(entry.libraryId);
       if (img) {
-        // Revoke any stale blob URL before creating a new one
-        if (entry.runtimeUrl) URL.revokeObjectURL(entry.runtimeUrl);
         entry.runtimeUrl = URL.createObjectURL(img.blob);
       }
     } else if (entry.type === "audio") {
+      if (entry.runtimeUrl) continue;
       const audio = await getAudioItem(entry.libraryId);
       if (audio) {
-        if (entry.runtimeUrl) URL.revokeObjectURL(entry.runtimeUrl);
         entry.runtimeUrl = URL.createObjectURL(audio.blob);
       }
     }
@@ -132,7 +131,7 @@ export async function resolveAllAssets(timeline: Timeline): Promise<void> {
 export function stripRuntimeData(timeline: Timeline): Timeline {
   const clone = structuredClone(timeline);
 
-  for (const entry of Object.values(clone.assets)) {
+  for (const entry of Object.values(clone.assets ?? {})) {
     delete entry.runtimeUrl;
   }
 

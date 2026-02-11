@@ -122,6 +122,8 @@ export class Composer {
    * @param config - Configuration controlling which effects are active and their parameters
    */
   updateComposer(config: ConfigType) {
+    // Dispose previous render targets before creating new composer
+    this.composer.dispose();
     this.composer = new EffectComposer(this.renderer);
     this.composer.setSize(this.width, this.height);
 
@@ -195,6 +197,13 @@ export class Composer {
       this.staticPass.uniforms["size"].value = config.composer.static.size;
       this.composer.addPass(this.staticPass);
     }
+  }
+
+  /**
+   * Disposes all GPU resources held by the composer (render targets, passes).
+   */
+  dispose() {
+    this.composer.dispose();
   }
 
   /**

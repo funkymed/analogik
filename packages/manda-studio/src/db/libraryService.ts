@@ -37,14 +37,14 @@ function getAudioDuration(blob: Blob): Promise<number> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = async () => {
+      const ctx = new AudioContext();
       try {
-        const ctx = new AudioContext();
         const buffer = await ctx.decodeAudioData(reader.result as ArrayBuffer);
-        const duration = buffer.duration;
-        await ctx.close();
-        resolve(duration);
+        resolve(buffer.duration);
       } catch (err) {
         reject(err);
+      } finally {
+        await ctx.close();
       }
     };
     reader.onerror = () => reject(new Error("Failed to read audio file"));

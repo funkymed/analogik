@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 
 interface KeyframeDotProps {
   keyframeId: string;
@@ -23,7 +23,7 @@ const DRAG_THRESHOLD = 3;
  * Diamond-shaped keyframe marker on a sequence row.
  * Supports horizontal dragging to move keyframes in time.
  */
-export function KeyframeDot({
+export const KeyframeDot = memo(function KeyframeDot({
   keyframeId,
   leftPx,
   isSelected,
@@ -81,9 +81,10 @@ export function KeyframeDot({
     [keyframeId, onSelect, onClick, onDrag, onDragEnd],
   );
 
-  // No separate cleanup effect needed — cleanupRef is called in handlePointerUp
-  // and listeners are removed. If unmounted mid-drag, React removes the DOM
-  // element and the pointermove/pointerup just no-op.
+  // Clean up window listeners if unmounted mid-drag
+  useEffect(() => {
+    return () => { cleanupRef.current?.(); };
+  }, []);
 
   const handleDoubleClick = useCallback(
     (e: React.MouseEvent) => {
@@ -109,4 +110,4 @@ export function KeyframeDot({
       title="Keyframe"
     />
   );
-}
+});

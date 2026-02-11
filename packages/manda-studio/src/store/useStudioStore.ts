@@ -42,29 +42,36 @@ interface StudioState {
 
 const MAX_HISTORY = 50;
 
+/**
+ * Immutable path-based setter: shallow-clones only the objects along the path
+ * instead of deep-cloning the entire config tree (structuredClone).
+ */
 function setNestedValue(
   obj: Record<string, unknown>,
   path: string,
   value: unknown,
 ): Record<string, unknown> {
-  const clone = structuredClone(obj);
   const keys = path.split(".");
-  let current: Record<string, unknown> = clone;
+  // Build new root
+  const root = { ...obj };
+  let current: Record<string, unknown> = root;
 
   for (let i = 0; i < keys.length - 1; i++) {
     const key = keys[i];
-    if (
-      current[key] === undefined ||
-      typeof current[key] !== "object" ||
-      current[key] === null
-    ) {
-      current[key] = {};
+    const child = current[key];
+    if (child == null || typeof child !== "object") {
+      const fresh: Record<string, unknown> = {};
+      current[key] = fresh;
+      current = fresh;
+    } else {
+      const cloned = { ...(child as Record<string, unknown>) };
+      current[key] = cloned;
+      current = cloned;
     }
-    current = current[key] as Record<string, unknown>;
   }
 
   current[keys[keys.length - 1]] = value;
-  return clone;
+  return root;
 }
 
 export const useStudioStore = create<StudioState>((set, get) => ({

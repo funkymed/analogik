@@ -42,17 +42,25 @@ function findActiveScene(
 
 /**
  * Set a nested value on an object using a dot-separated path.
- * Mutates the object in place (caller should pass a clone).
+ * Shallow-clones each intermediate object along the path so the
+ * original baseConfig is never mutated.
  */
 function setByPath(obj: Record<string, unknown>, path: string, value: unknown): void {
   const parts = path.split(".");
   let current: Record<string, unknown> = obj;
   for (let i = 0; i < parts.length - 1; i++) {
     const key = parts[i];
-    if (current[key] == null || typeof current[key] !== "object") {
-      current[key] = {};
+    const child = current[key];
+    if (child == null || typeof child !== "object") {
+      const fresh: Record<string, unknown> = {};
+      current[key] = fresh;
+      current = fresh;
+    } else {
+      // Shallow clone this level so we don't mutate the original
+      const cloned = { ...(child as Record<string, unknown>) };
+      current[key] = cloned;
+      current = cloned;
     }
-    current = current[key] as Record<string, unknown>;
   }
   current[parts[parts.length - 1]] = value;
 }
@@ -144,12 +152,10 @@ function evaluateScene(scene: TimelineScene, time: number): ConfigType {
   // Time relative to scene start
   const sceneLocalTime = time - scene.startTime;
 
-  // Sort sequences by order for deterministic layering
-  const sorted = [...scene.sequences].sort((a, b) => a.order - b.order);
-
+  // Sequences are assumed to be stored in order (no sort needed at 60fps).
   // Collect only active sequences to avoid cloning when none are active.
   const activeSeqs: { seq: Sequence; sequenceTime: number }[] = [];
-  for (const seq of sorted) {
+  for (const seq of scene.sequences) {
     if (
       sceneLocalTime < seq.startOffset ||
       sceneLocalTime >= seq.startOffset + seq.duration
@@ -162,8 +168,9 @@ function evaluateScene(scene: TimelineScene, time: number): ConfigType {
   // No active sequences: return baseConfig directly (renderer clones internally).
   if (activeSeqs.length === 0) return scene.baseConfig;
 
-  // Clone only when we actually need to mutate (apply keyframes / sequence overrides).
-  const config = structuredClone(scene.baseConfig) as ConfigType & Record<string, unknown>;
+  // Shallow clone top-level + deep clone only the mutated sub-sections.
+  // Much cheaper than structuredClone of the entire config on every frame.
+  const config = { ...scene.baseConfig } as ConfigType & Record<string, unknown>;
 
   for (const { seq, sequenceTime } of activeSeqs) {
     // Apply sequence's baseConfig overrides

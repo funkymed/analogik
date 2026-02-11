@@ -63,6 +63,9 @@ function savePersistedProject(state: {
 // Helpers
 // ---------------------------------------------------------------------------
 
+/** Shared empty array for keyframeIds to avoid new `[]` refs on every selection change. */
+const _emptyKfIds: string[] = [];
+
 let _idCounter = 0;
 export function generateId(prefix = "id"): string {
   _idCounter++;
@@ -298,17 +301,18 @@ export const useGanttStore = create<GanttState>((set, get) => ({
   setRecordEnabled: (enabled) => set({ recordEnabled: enabled }),
 
   // --- Selection ---
-  selection: { sceneId: null, sequenceId: null, keyframeIds: [] },
+  // Shared empty array to avoid new reference on every scene/sequence selection
+  selection: { sceneId: null, sequenceId: null, keyframeIds: _emptyKfIds },
   selectScene: (sceneId) =>
-    set({ selection: { sceneId, sequenceId: null, keyframeIds: [] } }),
+    set({ selection: { sceneId, sequenceId: null, keyframeIds: _emptyKfIds } }),
   selectSequence: (sequenceId) =>
     set((s) => ({
-      selection: { ...s.selection, sequenceId, keyframeIds: [] },
+      selection: { ...s.selection, sequenceId, keyframeIds: _emptyKfIds },
     })),
   selectKeyframes: (keyframeIds) =>
     set((s) => ({ selection: { ...s.selection, keyframeIds } })),
   clearSelection: () =>
-    set({ selection: { sceneId: null, sequenceId: null, keyframeIds: [] } }),
+    set({ selection: { sceneId: null, sequenceId: null, keyframeIds: _emptyKfIds } }),
 
   // --- Zoom / Scroll ---
   pixelsPerSecond: 50,
@@ -439,7 +443,7 @@ export const useGanttStore = create<GanttState>((set, get) => ({
       },
     };
     if (selection.sceneId === sceneId) {
-      updates.selection = { sceneId: null, sequenceId: null, keyframeIds: [] };
+      updates.selection = { sceneId: null, sequenceId: null, keyframeIds: _emptyKfIds };
     }
     set(updates);
   },

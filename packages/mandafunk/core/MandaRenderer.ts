@@ -531,21 +531,30 @@ export class MandaRenderer {
     this.disposed = true;
     this.initialized = false;
 
+    // Dispose composer render targets and passes
+    if (this.composer) {
+      this.composer.dispose();
+      this.composer = null;
+    }
+
+    // Dispose static items (textures, meshes, sparks)
+    if (this.staticItems) {
+      this.staticItems.dispose();
+      this.staticItems = null;
+    }
+
+    // Clean up scene resources (shader, background texture, overlays)
+    if (this.scene) {
+      this.scene.dispose();
+      this.scene = null;
+    }
+
     // Dispose Three.js renderer (releases WebGL context)
     if (this.renderer) {
       this.renderer.dispose();
       this.renderer = null;
     }
 
-    // Clean up scene resources
-    if (this.scene) {
-      // scene.clearScene() removes text and image meshes
-      this.scene.clearScene();
-      this.scene = null;
-    }
-
-    this.composer = null;
-    this.staticItems = null;
     this.camera = null;
     this.player = null;
   }

@@ -231,8 +231,26 @@ export class StaticItems {
     const width: number = option.width ?? material.map?.image.width ?? 1;
     const height: number = option.height ?? material.map?.image.height ?? 1;
 
-    const plane: PlaneGeometry = new PlaneGeometry(width * zoom, height * zoom);
-    mesh.geometry = plane;
+    mesh.geometry.dispose();
+    mesh.geometry = new PlaneGeometry(width * zoom, height * zoom);
+  }
+
+  /**
+   * Disposes all GPU resources (textures, geometries, materials, meshes).
+   */
+  dispose() {
+    const meshes = [this.vumeterObj, this.oscilloObj, this.progressbarObj, this.timerObj];
+    for (const mesh of meshes) {
+      mesh.geometry?.dispose();
+      (mesh.material as MeshBasicMaterial)?.map?.dispose();
+      (mesh.material as MeshBasicMaterial)?.dispose();
+      this.scene.remove(mesh);
+    }
+    this.textureSpectrum.texture.dispose();
+    this.textureOscillo.texture.dispose();
+    this.textureProgress.texture.dispose();
+    this.textureTimer.texture.dispose();
+    this.sparksManager.dispose();
   }
 
   /**
