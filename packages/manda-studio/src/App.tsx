@@ -14,6 +14,7 @@ import { ScenePanel } from "@/components/panels/ScenePanel.tsx";
 import { VumetersPanel } from "@/components/panels/VumetersPanel.tsx";
 import { ComposerPanel } from "@/components/panels/ComposerPanel.tsx";
 import { TextsImagesPanel } from "@/components/panels/TextsImagesPanel.tsx";
+import { SparksPanel } from "@/components/panels/SparksPanel.tsx";
 import { GanttTimeline } from "@/components/gantt/GanttTimeline.tsx";
 import { useGanttBridge } from "@/hooks/useGanttBridge.ts";
 import { usePlaybackEngine } from "@/hooks/usePlaybackEngine.ts";
@@ -104,6 +105,7 @@ function App() {
             {activePanel === "composer" && <ComposerPanel />}
             {activePanel === "texts" && <TextsImagesPanel panelType="texts" />}
             {activePanel === "images" && <TextsImagesPanel panelType="images" />}
+            {activePanel === "sparks" && <SparksPanel />}
           </div>
         </aside>
 

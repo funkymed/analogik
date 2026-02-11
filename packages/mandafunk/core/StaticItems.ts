@@ -14,6 +14,7 @@ import { spectrum } from "../fx/spectrum";
 import { oscillo } from "../fx/oscilloscope";
 import { progressbar } from "../fx/progressbar";
 import { progresstimer } from "../fx/progresstimer";
+import { SparksManager } from "../fx/SparksManager";
 
 /**
  * Manages the static visual elements rendered on canvas textures in the 3D scene.
@@ -54,6 +55,8 @@ export class StaticItems {
   meta: any;
   /** Current animation time. */
   time: number;
+  /** Sparks particle system manager. */
+  sparksManager: SparksManager;
 
   /**
    * Creates and initializes all static visual elements.
@@ -160,6 +163,8 @@ export class StaticItems {
     );
     this.scene.add(this.timerObj);
 
+    this.sparksManager = new SparksManager(scene);
+
     this.update(config);
   }
 
@@ -191,6 +196,7 @@ export class StaticItems {
     this.updateMesh(this.timerObj, config.timer);
     this.updateMesh(this.vumeterObj, config.vumeters.spectrum);
     this.updateMesh(this.oscilloObj, config.vumeters.oscilloscop);
+    this.sparksManager.update(config.sparks);
   }
 
   /**
@@ -229,6 +235,12 @@ export class StaticItems {
    */
   rendering(time: number) {
     this.time = time;
+
+    // Update sparks particles
+    if (this.config.sparks?.enabled) {
+      this.sparksManager.rendering(time);
+    }
+
     this.vumeterObj.visible = this.config.vumeters.spectrum.show;
     this.oscilloObj.visible = this.config.vumeters.oscilloscop.show;
     this.timerObj.visible = this.config.timer.show;

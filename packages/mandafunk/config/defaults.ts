@@ -152,4 +152,9 @@ export const configDefault: ConfigType = {
 
   images: {},
   texts: {},
+
+  sparks: {
+    enabled: false,
+    emitters: [],
+  },
 };

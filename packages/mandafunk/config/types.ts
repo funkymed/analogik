@@ -459,6 +459,73 @@ export interface VuMetersConfig {
  * };
  * ```
  */
+// ---------------------------------------------------------------------------
+// Sparks / particle system
+// ---------------------------------------------------------------------------
+
+/** Configuration for the sparks particle system. */
+export interface SparksConfig {
+  /** Whether the sparks system is globally enabled. */
+  enabled: boolean;
+  /** List of particle emitters. */
+  emitters: SparkEmitter[];
+}
+
+/** Configuration for a single spark emitter. */
+export interface SparkEmitter {
+  /** Unique identifier for the emitter. */
+  id: string;
+  /** Human-readable name. */
+  name: string;
+  /** Number of particles. */
+  count: number;
+  /** Particle color as a CSS hex string. */
+  color: string;
+  /** Particle opacity (0-1). */
+  opacity: number;
+  /** Particle size. */
+  size: number;
+  /** Acceleration factor. */
+  acceleration: number;
+  /** Emission origin point. */
+  emissionOrigin: { x: number; y: number; z: number };
+  /** Direction of emission. */
+  emissionDirection: "up" | "down" | "left" | "right" | "radial";
+  /** Perturbation settings for wobble effect. */
+  perturbation: { enabled: boolean; amplitude: number; frequency: number };
+  /** Sprite texture path. */
+  sprite: string;
+  /** Blending mode for particles. */
+  blending: "additive" | "normal";
+  /** Whether this emitter is muted (hidden). */
+  muted: boolean;
+}
+
+// ---------------------------------------------------------------------------
+// Root configuration
+// ---------------------------------------------------------------------------
+
+/**
+ * Complete Mandafunk visualization engine configuration.
+ *
+ * This is the root configuration type that controls all aspects of the
+ * rendering: scene background, GLSL shaders, audio visualizations,
+ * post-processing effects, and overlay elements (images and text).
+ *
+ * @example
+ * ```typescript
+ * import { ConfigType, configDefault } from "@mandarine/mandafunk/config";
+ *
+ * const myConfig: ConfigType = {
+ *   ...configDefault,
+ *   scene: {
+ *     ...configDefault.scene,
+ *     shader: "Plasma",
+ *     brightness: 80,
+ *   },
+ * };
+ * ```
+ */
 export interface ConfigType {
   /** Scene background and shader configuration. */
   scene: SceneConfig;
@@ -476,4 +543,6 @@ export interface ConfigType {
   images?: Record<string, ImageType> | ImageType[];
   /** Text overlay configurations, keyed by name. */
   texts?: Record<string, TextType> | TextType[];
+  /** Sparks particle system configuration. */
+  sparks?: SparksConfig;
 }

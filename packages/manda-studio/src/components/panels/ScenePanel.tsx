@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo } from "react";
 import Search from "lucide-react/dist/esm/icons/search.js";
+import X from "lucide-react/dist/esm/icons/x.js";
 import { useStudioStore } from "@/store/useStudioStore";
 import { availableShaders } from "@mandafunk/shaders";
 import { LabeledSlider } from "@/components/ui/LabeledSlider";
@@ -11,14 +12,20 @@ function displayShaderName(name: string): string {
   return name.replace(/Shader$/, "");
 }
 
+type BgMode = "color" | "image";
+
 export function ScenePanel() {
   const config = useStudioStore((s) => s.config);
   const updateConfig = useStudioStore((s) => s.updateConfig);
   const pushHistory = useStudioStore((s) => s.pushHistory);
+  const setLibraryOpen = useStudioStore((s) => s.setLibraryOpen);
 
   const [searchQuery, setSearchQuery] = useState("");
 
   const scene = config.scene;
+
+  // Detect mode from config
+  const bgMode: BgMode = scene.background ? "image" : "color";
 
   const filteredShaders = useMemo(() => {
     if (!searchQuery) return availableShaders;
@@ -77,6 +84,28 @@ export function ScenePanel() {
   const handleColorPointerDown = useCallback(() => {
     pushHistory();
   }, [pushHistory]);
+
+  const handleBgModeSwitch = useCallback(
+    (mode: BgMode) => {
+      if (mode === "color" && bgMode === "image") {
+        pushHistory();
+        updateConfig("scene.background", "");
+      } else if (mode === "image" && bgMode === "color") {
+        // Open library on Images tab to choose an image
+        setLibraryOpen(true);
+      }
+    },
+    [bgMode, pushHistory, updateConfig, setLibraryOpen],
+  );
+
+  const handleRemoveBackground = useCallback(() => {
+    pushHistory();
+    updateConfig("scene.background", "");
+  }, [pushHistory, updateConfig]);
+
+  const handleChooseImage = useCallback(() => {
+    setLibraryOpen(true);
+  }, [setLibraryOpen]);
 
   return (
     <div className="space-y-0">
@@ -180,13 +209,90 @@ export function ScenePanel() {
       </SectionHeader>
 
       <SectionHeader title="Background" defaultOpen>
-        <div onPointerDown={handleColorPointerDown}>
-          <ColorInput
-            label="Background Color"
-            value={scene.bgColor}
-            onChange={(v) => handleColorChange("bgColor", v)}
-          />
+        {/* Mode toggle */}
+        <div className="flex gap-1">
+          <button
+            type="button"
+            onClick={() => handleBgModeSwitch("color")}
+            className={`flex-1 rounded py-1.5 text-xs font-medium transition-colors ${
+              bgMode === "color"
+                ? "bg-indigo-500/20 text-indigo-400 ring-1 ring-indigo-500"
+                : "bg-zinc-800 text-zinc-500 hover:text-zinc-300"
+            }`}
+          >
+            Color
+          </button>
+          <button
+            type="button"
+            onClick={() => handleBgModeSwitch("image")}
+            className={`flex-1 rounded py-1.5 text-xs font-medium transition-colors ${
+              bgMode === "image"
+                ? "bg-indigo-500/20 text-indigo-400 ring-1 ring-indigo-500"
+                : "bg-zinc-800 text-zinc-500 hover:text-zinc-300"
+            }`}
+          >
+            Image
+          </button>
         </div>
+
+        {bgMode === "color" && (
+          <div onPointerDown={handleColorPointerDown}>
+            <ColorInput
+              label="Background Color"
+              value={scene.bgColor}
+              onChange={(v) => handleColorChange("bgColor", v)}
+            />
+          </div>
+        )}
+
+        {bgMode === "image" && (
+          <>
+            {/* Image preview */}
+            {scene.background && (
+              <div className="flex items-center gap-2">
+                <div className="h-12 w-20 overflow-hidden rounded border border-zinc-700 bg-zinc-800">
+                  <img
+                    src={scene.background}
+                    alt="Background"
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+                <div className="flex flex-1 flex-col gap-1">
+                  <p className="truncate text-[10px] text-zinc-400">
+                    {scene.background.split("/").pop()}
+                  </p>
+                  <div className="flex gap-1">
+                    <button
+                      type="button"
+                      onClick={handleChooseImage}
+                      className="rounded bg-zinc-800 px-2 py-0.5 text-[10px] text-zinc-300 transition-colors hover:bg-zinc-700"
+                    >
+                      Choose
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleRemoveBackground}
+                      className="rounded bg-zinc-800 p-0.5 text-zinc-400 transition-colors hover:bg-zinc-700 hover:text-red-400"
+                      title="Remove background"
+                    >
+                      <X size={12} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+            {!scene.background && (
+              <button
+                type="button"
+                onClick={handleChooseImage}
+                className="w-full rounded border border-dashed border-zinc-700 py-3 text-xs text-zinc-500 transition-colors hover:border-zinc-500 hover:text-zinc-300"
+              >
+                Choose from Library
+              </button>
+            )}
+          </>
+        )}
+
         <LabeledSlider
           label="Brightness"
           value={scene.brightness}
