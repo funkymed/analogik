@@ -70,7 +70,7 @@ function App() {
   );
 
   return (
-    <div className="flex h-screen w-screen flex-col bg-zinc-950 text-zinc-100">
+    <div className="flex h-screen w-screen flex-col overflow-hidden bg-zinc-950 text-zinc-100">
       {/* Header */}
       <header className="flex h-10 shrink-0 items-center justify-between border-b border-zinc-800 px-4">
         <h1 className="text-sm font-semibold tracking-wide text-zinc-300">
@@ -106,7 +106,7 @@ function App() {
         </aside>
 
         {/* Right area: preview + player */}
-        <div className="flex min-w-0 flex-1 flex-col">
+        <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
           <PreviewCanvas
             className="flex-1"
             audioContext={audioContext}

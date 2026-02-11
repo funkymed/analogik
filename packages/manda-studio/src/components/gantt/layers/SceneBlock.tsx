@@ -10,11 +10,19 @@ interface SceneBlockProps {
   pixelsPerSecond: number;
   trackHeight: number;
   isSelected: boolean;
+  /** Pixel height of the base scene row (without expanded sequences). */
+  rowHeight: number;
+  /** Total number of scene tracks available. */
+  trackCount: number;
+  /** Actual pixel heights of each scene track row (accounts for expanded sequences). */
+  sceneTrackHeights: number[];
   onSelect: () => void;
   onMove: (newStartTime: number) => void;
   onResize: (newDuration: number, side: "left" | "right") => void;
   onToggleCollapse: () => void;
   onRemove: () => void;
+  onTrackChange: (newTrackIndex: number) => void;
+  onDoubleClick?: () => void;
 }
 
 export function SceneBlock({
@@ -22,17 +30,27 @@ export function SceneBlock({
   pixelsPerSecond,
   trackHeight,
   isSelected,
+  rowHeight,
+  trackCount,
+  sceneTrackHeights,
   onSelect,
   onMove,
   onResize,
   onToggleCollapse,
   onRemove,
+  onTrackChange,
+  onDoubleClick,
 }: SceneBlockProps) {
   const left = scene.startTime * pixelsPerSecond;
   const width = scene.duration * pixelsPerSecond;
 
-  // --- Drag to move ---
-  const dragStartRef = useRef<{ clientX: number; startTime: number } | null>(null);
+  // --- Drag to move (horizontal + vertical) ---
+  const dragStartRef = useRef<{
+    clientX: number;
+    clientY: number;
+    startTime: number;
+    trackIndex: number;
+  } | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const dragCleanupRef = useRef<(() => void) | null>(null);
 
@@ -47,14 +65,42 @@ export function SceneBlock({
       if ((e.target as HTMLElement).closest("[data-no-drag]")) return;
       e.stopPropagation();
       onSelect();
-      dragStartRef.current = { clientX: e.clientX, startTime: scene.startTime };
+      dragStartRef.current = {
+        clientX: e.clientX,
+        clientY: e.clientY,
+        startTime: scene.startTime,
+        trackIndex: scene.trackIndex,
+      };
 
       const handlePointerMove = (ev: PointerEvent) => {
         if (!dragStartRef.current) return;
-        const delta = ev.clientX - dragStartRef.current.clientX;
-        const timeDelta = delta / pixelsPerSecond;
+        const deltaX = ev.clientX - dragStartRef.current.clientX;
+        const deltaY = ev.clientY - dragStartRef.current.clientY;
+        const timeDelta = deltaX / pixelsPerSecond;
         setIsDragging(true);
         onMove(Math.max(0, dragStartRef.current.startTime + timeDelta));
+
+        // Vertical: compute target track from cumulative heights
+        let startTrackY = 0;
+        for (let i = 0; i < dragStartRef.current.trackIndex; i++) {
+          startTrackY += sceneTrackHeights[i] ?? rowHeight;
+        }
+        const targetY = startTrackY + rowHeight / 2 + deltaY;
+        let cumY = 0;
+        let newTrack = 0;
+        for (let i = 0; i < trackCount; i++) {
+          const h = sceneTrackHeights[i] ?? rowHeight;
+          if (targetY < cumY + h) {
+            newTrack = i;
+            break;
+          }
+          cumY += h;
+          newTrack = i;
+        }
+        newTrack = Math.max(0, Math.min(trackCount - 1, newTrack));
+        if (newTrack !== scene.trackIndex) {
+          onTrackChange(newTrack);
+        }
       };
 
       const handlePointerUp = () => {
@@ -73,7 +119,7 @@ export function SceneBlock({
         window.removeEventListener("pointerup", handlePointerUp);
       };
     },
-    [onSelect, scene.startTime, pixelsPerSecond, onMove],
+    [onSelect, scene.startTime, scene.trackIndex, pixelsPerSecond, rowHeight, trackCount, sceneTrackHeights, onMove, onTrackChange],
   );
 
   // --- Resize ---
@@ -129,6 +175,11 @@ export function SceneBlock({
         backgroundColor: scene.color + "cc",
       }}
       onPointerDown={handlePointerDown}
+      onDoubleClick={(e) => {
+        if ((e.target as HTMLElement).closest("[data-no-drag]")) return;
+        e.stopPropagation();
+        onDoubleClick?.();
+      }}
     >
       {/* Left resize handle */}
       <ResizeHandle

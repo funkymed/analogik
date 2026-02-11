@@ -12,12 +12,38 @@ interface KeyframeEditorProps {
   onClose: () => void;
 }
 
-const EASING_OPTIONS: { value: EasingType; label: string }[] = [
-  { value: "linear", label: "Linear" },
-  { value: "easeIn", label: "Ease In" },
-  { value: "easeOut", label: "Ease Out" },
-  { value: "easeInOut", label: "Ease In-Out" },
-  { value: "cubicBezier", label: "Bezier" },
+const EASING_GROUPS: { group: string; options: { value: EasingType; label: string }[] }[] = [
+  {
+    group: "Standard",
+    options: [
+      { value: "linear", label: "Linear" },
+      { value: "easeIn", label: "In" },
+      { value: "easeOut", label: "Out" },
+      { value: "easeInOut", label: "In-Out" },
+    ],
+  },
+  {
+    group: "Elastic",
+    options: [
+      { value: "elasticIn", label: "In" },
+      { value: "elasticOut", label: "Out" },
+      { value: "elasticInOut", label: "In-Out" },
+    ],
+  },
+  {
+    group: "Bounce",
+    options: [
+      { value: "bounceIn", label: "In" },
+      { value: "bounceOut", label: "Out" },
+      { value: "bounceInOut", label: "In-Out" },
+    ],
+  },
+  {
+    group: "Custom",
+    options: [
+      { value: "cubicBezier", label: "Bezier" },
+    ],
+  },
 ];
 
 /**
@@ -134,23 +160,28 @@ export function KeyframeEditor({
       {/* Easing */}
       <div className="mb-1.5">
         <label className="text-[9px] text-zinc-500">Easing</label>
-        <div className="mt-0.5 flex flex-wrap gap-1">
-          {EASING_OPTIONS.map((opt) => (
-            <button
-              key={opt.value}
-              type="button"
-              onClick={() => handleEasingChange(opt.value)}
-              className={[
-                "rounded px-1 py-0.5 text-[9px] transition-colors",
-                keyframe.easing.type === opt.value
-                  ? "bg-indigo-500/30 text-indigo-300"
-                  : "bg-zinc-800 text-zinc-400 hover:text-zinc-200",
-              ].join(" ")}
-            >
-              {opt.label}
-            </button>
-          ))}
-        </div>
+        {EASING_GROUPS.map((g) => (
+          <div key={g.group} className="mt-1">
+            <span className="text-[8px] text-zinc-600">{g.group}</span>
+            <div className="mt-0.5 flex flex-wrap gap-0.5">
+              {g.options.map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => handleEasingChange(opt.value)}
+                  className={[
+                    "rounded px-1 py-0.5 text-[9px] transition-colors",
+                    keyframe.easing.type === opt.value
+                      ? "bg-indigo-500/30 text-indigo-300"
+                      : "bg-zinc-800 text-zinc-400 hover:text-zinc-200",
+                  ].join(" ")}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Curve preview */}

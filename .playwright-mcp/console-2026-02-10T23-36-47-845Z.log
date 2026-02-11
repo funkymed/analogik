@@ -1,0 +1,3 @@
+[  330977ms] [WARNING] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio @ http://localhost:5173/src/components/PreviewCanvas.tsx:45
+[  335885ms] [WARNING] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio @ http://localhost:5173/src/hooks/useAudioContext.ts:16
+[  450376ms] [WARNING] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio @ http://localhost:5173/src/components/PreviewCanvas.tsx:45

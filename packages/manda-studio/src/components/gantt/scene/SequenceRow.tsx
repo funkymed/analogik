@@ -31,6 +31,7 @@ export function SequenceRow({
   const updateKeyframe = useGanttStore((s) => s.updateKeyframe);
   const removeKeyframe = useGanttStore((s) => s.removeKeyframe);
   const removeSequence = useGanttStore((s) => s.removeSequence);
+  const setCurrentTime = useGanttStore((s) => s.setCurrentTime);
 
   const [editingKeyframeId, setEditingKeyframeId] = useState<string | null>(null);
 
@@ -68,6 +69,18 @@ export function SequenceRow({
     [selectKeyframes],
   );
 
+  // Single click on keyframe: seek playhead to that keyframe's time
+  const handleClickKeyframe = useCallback(
+    (kfId: string) => {
+      const kf = sequence.keyframes.find((k) => k.id === kfId);
+      if (kf) {
+        setCurrentTime(sceneStartTime + sequence.startOffset + kf.time);
+      }
+    },
+    [sequence.keyframes, sequence.startOffset, sceneStartTime, setCurrentTime],
+  );
+
+  // Double-click on keyframe: open editor popover
   const handleDoubleClickKeyframe = useCallback((kfId: string) => {
     setEditingKeyframeId(kfId);
   }, []);
@@ -169,6 +182,7 @@ export function SequenceRow({
               leftPx={leftPx}
               isSelected={selectedKeyframeIds.includes(kf.id)}
               onSelect={handleSelectKeyframe}
+              onClick={handleClickKeyframe}
               onDoubleClick={handleDoubleClickKeyframe}
             />
           );

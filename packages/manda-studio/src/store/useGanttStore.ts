@@ -48,10 +48,12 @@ interface GanttState {
   currentTime: number;
   loopEnabled: boolean;
   masterVolume: number;
+  recordEnabled: boolean;
   setPlaying: (playing: boolean) => void;
   setCurrentTime: (time: number) => void;
   setLoopEnabled: (enabled: boolean) => void;
   setMasterVolume: (volume: number) => void;
+  setRecordEnabled: (enabled: boolean) => void;
 
   // --- Selection ---
   selection: GanttSelection;
@@ -78,9 +80,17 @@ interface GanttState {
   setTimelineHeight: (px: number) => void;
   toggleTimelineExpanded: () => void;
 
+  // --- Track management ---
+  sceneTrackCount: number;
+  audioTrackCount: number;
+  addSceneTrack: () => void;
+  removeSceneTrack: (index: number) => void;
+  addAudioTrack: () => void;
+  removeAudioTrack: (index: number) => void;
+
   // --- Scene CRUD ---
-  addScene: (config: ConfigType, name?: string) => string;
-  updateScene: (sceneId: string, patch: Partial<Pick<TimelineScene, "name" | "startTime" | "duration" | "color" | "collapsed" | "baseConfig">>) => void;
+  addScene: (config: ConfigType, name?: string, trackIndex?: number) => string;
+  updateScene: (sceneId: string, patch: Partial<Pick<TimelineScene, "name" | "startTime" | "duration" | "color" | "collapsed" | "trackIndex" | "baseConfig">>) => void;
   removeScene: (sceneId: string) => void;
   reorderScene: (sceneId: string, newStartTime: number) => void;
 
@@ -129,10 +139,12 @@ export const useGanttStore = create<GanttState>((set, get) => ({
   currentTime: 0,
   loopEnabled: false,
   masterVolume: 1,
+  recordEnabled: false,
   setPlaying: (playing) => set({ isPlaying: playing }),
   setCurrentTime: (time) => set({ currentTime: time }),
   setLoopEnabled: (enabled) => set({ loopEnabled: enabled }),
   setMasterVolume: (volume) => set({ masterVolume: Math.max(0, Math.min(1, volume)) }),
+  setRecordEnabled: (enabled) => set({ recordEnabled: enabled }),
 
   // --- Selection ---
   selection: { sceneId: null, sequenceId: null, keyframeIds: [] },
@@ -171,12 +183,52 @@ export const useGanttStore = create<GanttState>((set, get) => ({
     return { timelineExpanded: true, timelineHeight: halfScreen };
   }),
 
+  // --- Track management ---
+  sceneTrackCount: 1,
+  audioTrackCount: 1,
+
+  addSceneTrack: () => set((s) => ({ sceneTrackCount: s.sceneTrackCount + 1 })),
+  removeSceneTrack: (index) => {
+    const { sceneTrackCount, timeline } = get();
+    if (sceneTrackCount <= 1) return;
+    if (timeline.scenes.some((s) => s.trackIndex === index)) return;
+    set({
+      sceneTrackCount: sceneTrackCount - 1,
+      timeline: {
+        ...timeline,
+        scenes: timeline.scenes.map((s) =>
+          s.trackIndex > index ? { ...s, trackIndex: s.trackIndex - 1 } : s,
+        ),
+      },
+    });
+  },
+
+  addAudioTrack: () => set((s) => ({ audioTrackCount: s.audioTrackCount + 1 })),
+  removeAudioTrack: (index) => {
+    const { audioTrackCount, timeline } = get();
+    if (audioTrackCount <= 1) return;
+    if (timeline.audioClips.some((c) => c.trackIndex === index)) return;
+    set({
+      audioTrackCount: audioTrackCount - 1,
+      timeline: {
+        ...timeline,
+        audioClips: timeline.audioClips.map((c) =>
+          c.trackIndex > index ? { ...c, trackIndex: c.trackIndex - 1 } : c,
+        ),
+      },
+    });
+  },
+
   // --- Scene CRUD ---
 
-  addScene: (config, name) => {
+  addScene: (config, name, trackIndex) => {
     const { timeline } = get();
     const id = generateId("scene");
-    const lastScene = timeline.scenes[timeline.scenes.length - 1];
+    const ti = trackIndex ?? 0;
+    const trackScenes = timeline.scenes
+      .filter((s) => s.trackIndex === ti)
+      .sort((a, b) => a.startTime - b.startTime);
+    const lastScene = trackScenes[trackScenes.length - 1];
     const startTime = lastScene
       ? lastScene.startTime + lastScene.duration
       : 0;
@@ -188,6 +240,7 @@ export const useGanttStore = create<GanttState>((set, get) => ({
       duration: 30,
       color: pickSceneColor(timeline.scenes.length),
       collapsed: true,
+      trackIndex: ti,
       baseConfig: structuredClone(config),
       sequences: [],
     };
@@ -481,9 +534,19 @@ export const useGanttStore = create<GanttState>((set, get) => ({
 
   getSceneAt: (time) => {
     const { timeline } = get();
-    return timeline.scenes.find(
-      (s) => time >= s.startTime && time < s.startTime + s.duration,
-    );
+    let best: TimelineScene | undefined;
+    for (const s of timeline.scenes) {
+      if (time >= s.startTime && time < s.startTime + s.duration) {
+        if (
+          !best ||
+          s.trackIndex < best.trackIndex ||
+          (s.trackIndex === best.trackIndex && s.startTime > best.startTime)
+        ) {
+          best = s;
+        }
+      }
+    }
+    return best;
   },
 
   snapTime: (time) => {

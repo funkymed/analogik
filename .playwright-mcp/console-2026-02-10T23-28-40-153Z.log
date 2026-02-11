@@ -1,0 +1,2 @@
+[    1850ms] [WARNING] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio @ http://localhost:5175/src/components/PreviewCanvas.tsx:45
+[  231793ms] [ERROR] WebSocket connection to 'ws://localhost:5175/?token=bTerq1tEM9e3' failed:  @ http://localhost:5175/@vite/client:744

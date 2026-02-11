@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useRef } from "react";
+import { useGanttStore } from "@/store/useGanttStore.ts";
 
 interface TimelineRulerProps {
   /** Total timeline duration in seconds. */
@@ -24,6 +25,7 @@ export function TimelineRuler({
   onSeek,
 }: TimelineRulerProps) {
   const rulerRef = useRef<HTMLDivElement>(null);
+  const scrollLeft = useGanttStore((s) => s.scrollLeft);
 
   const ticks = useMemo(() => {
     const result: { x: number; label: string; major: boolean }[] = [];
@@ -52,7 +54,8 @@ export function TimelineRuler({
       const ruler = rulerRef.current;
       if (!ruler) return;
       const rect = ruler.getBoundingClientRect();
-      const x = e.clientX - rect.left + ruler.scrollLeft;
+      const sl = useGanttStore.getState().scrollLeft;
+      const x = e.clientX - rect.left + sl;
       const time = Math.max(0, x / pixelsPerSecond);
       onSeek(time);
     },
@@ -65,10 +68,13 @@ export function TimelineRuler({
   return (
     <div
       ref={rulerRef}
-      className="relative h-6 shrink-0 cursor-pointer select-none border-b border-zinc-800 bg-zinc-900/60"
+      className="relative h-6 shrink-0 cursor-pointer select-none overflow-hidden border-b border-zinc-800 bg-zinc-900/60"
       onClick={handleClick}
     >
-      <div className="relative h-full" style={{ width: totalWidth }}>
+      <div
+        className="relative h-full"
+        style={{ width: totalWidth, transform: `translateX(-${scrollLeft}px)` }}
+      >
         {ticks.map((tick, i) => (
           <div key={i} className="absolute top-0 h-full" style={{ left: tick.x }}>
             <div

@@ -9,6 +9,12 @@ export type EasingType =
   | "easeIn"
   | "easeOut"
   | "easeInOut"
+  | "elasticIn"
+  | "elasticOut"
+  | "elasticInOut"
+  | "bounceIn"
+  | "bounceOut"
+  | "bounceInOut"
   | "cubicBezier";
 
 export interface EasingConfig {
@@ -74,6 +80,8 @@ export interface TimelineScene {
   color: string;
   /** Whether the scene's sequences are collapsed in the UI. */
   collapsed: boolean;
+  /** Track index for multi-track layout (0 = first track). */
+  trackIndex: number;
   /** Full configuration for this scene. */
   baseConfig: ConfigType;
   /** Internal sequences (shader, vumeters, etc.). */
@@ -115,6 +123,8 @@ export interface AudioClip {
   volume: number;
   /** Whether this clip is muted. */
   muted: boolean;
+  /** Track index for multi-track layout (0 = first track). */
+  trackIndex: number;
 }
 
 // ---------------------------------------------------------------------------

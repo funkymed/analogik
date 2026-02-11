@@ -1,13 +1,15 @@
 import { useCallback, useEffect, useRef, type ReactNode } from "react";
 import { useGanttStore } from "@/store/useGanttStore.ts";
+import { useTrackHeights } from "@/hooks/useTrackHeights.ts";
 import { TimeGrid } from "./shared/TimeGrid.tsx";
 import { Playhead } from "./shared/Playhead.tsx";
 
 interface TimelineViewportProps {
   children: ReactNode;
+  onVerticalScroll?: (scrollTop: number) => void;
 }
 
-export function TimelineViewport({ children }: TimelineViewportProps) {
+export function TimelineViewport({ children, onVerticalScroll }: TimelineViewportProps) {
   const pixelsPerSecond = useGanttStore((s) => s.pixelsPerSecond);
   const setPixelsPerSecond = useGanttStore((s) => s.setPixelsPerSecond);
   const currentTime = useGanttStore((s) => s.currentTime);
@@ -22,11 +24,13 @@ export function TimelineViewport({ children }: TimelineViewportProps) {
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  const { totalHeight: viewportHeight } = useTrackHeights();
+
   const duration = getTimelineDuration();
   const totalWidth = duration * pixelsPerSecond;
-  const viewportHeight = Math.round(120 * trackHeight);
 
-  // Auto-scroll to keep playhead visible when follow is enabled
+  // Center-locked follow: playhead stays at viewport center,
+  // except at the very start (scroll=0) and very end (scroll=max).
   useEffect(() => {
     if (!followPlayhead || !isPlaying) return;
 
@@ -35,11 +39,13 @@ export function TimelineViewport({ children }: TimelineViewportProps) {
 
     const playheadX = currentTime * pixelsPerSecond;
     const viewportWidth = el.clientWidth;
-    const margin = viewportWidth * 0.2; // keep 20% margin from the right edge
+    const halfView = viewportWidth / 2;
+    const maxScroll = el.scrollWidth - viewportWidth;
 
-    if (playheadX < el.scrollLeft || playheadX > el.scrollLeft + viewportWidth - margin) {
-      el.scrollLeft = playheadX - margin;
-    }
+    // Desired scroll = playhead at center
+    const idealScroll = playheadX - halfView;
+    // Clamp to [0, maxScroll] — handles start & end phases naturally
+    el.scrollLeft = Math.max(0, Math.min(maxScroll, idealScroll));
   }, [currentTime, pixelsPerSecond, followPlayhead, isPlaying]);
 
   // Use refs to read latest values without re-attaching the wheel listener.
@@ -74,8 +80,9 @@ export function TimelineViewport({ children }: TimelineViewportProps) {
     const el = scrollRef.current;
     if (el) {
       setScrollLeft(el.scrollLeft);
+      onVerticalScroll?.(el.scrollTop);
     }
-  }, [setScrollLeft]);
+  }, [setScrollLeft, onVerticalScroll]);
 
   // Click on empty area to seek
   const handleClick = useCallback(

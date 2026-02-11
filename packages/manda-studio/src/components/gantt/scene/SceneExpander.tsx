@@ -1,118 +1,94 @@
-import { useCallback } from "react";
-import {
-  DndContext,
-  closestCenter,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  type DragEndEvent,
-} from "@dnd-kit/core";
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import Plus from "lucide-react/dist/esm/icons/plus.js";
-import type { TimelineScene, SequenceType } from "@/timeline/ganttTypes.ts";
-import { useGanttStore } from "@/store/useGanttStore.ts";
-import { SequenceRow } from "./SequenceRow.tsx";
+import { useMemo } from "react";
+import type { TimelineScene } from "@/timeline/ganttTypes.ts";
+import { ParameterRow, type ParameterEntry } from "./ParameterRow.tsx";
 
 interface SceneExpanderProps {
   scene: TimelineScene;
   pixelsPerSecond: number;
+  /** Pixel offset from the top of the track row (below the scene block). */
+  topOffset?: number;
+  /** Pixel offset from the left (scene start position). */
+  leftOffset?: number;
+  /** Pixel width (scene duration). */
+  widthPx?: number;
 }
 
-const SEQUENCE_TYPES: { value: SequenceType; label: string }[] = [
-  { value: "shader", label: "Shader" },
-  { value: "composer", label: "Composer" },
-  { value: "vumeters", label: "Vumeters" },
-  { value: "images", label: "Images" },
-  { value: "texts", label: "Texts" },
+const PARAM_COLORS = [
+  "bg-indigo-400",
+  "bg-cyan-400",
+  "bg-pink-400",
+  "bg-amber-400",
+  "bg-violet-400",
+  "bg-emerald-400",
+  "bg-rose-400",
+  "bg-sky-400",
+  "bg-orange-400",
+  "bg-teal-400",
 ];
 
 /**
- * Collapsible container that shows sequences below a scene block.
- * Only rendered when scene.collapsed === false.
+ * Collapsible container that shows per-parameter rows below a scene block.
+ * Each unique keyframe path across all sequences becomes its own row
+ * with individual keyframe diamonds.
  */
-export function SceneExpander({ scene, pixelsPerSecond }: SceneExpanderProps) {
-  const addSequence = useGanttStore((s) => s.addSequence);
-  const reorderSequences = useGanttStore((s) => s.reorderSequences);
+export function SceneExpander({
+  scene,
+  pixelsPerSecond,
+  topOffset = 0,
+  leftOffset,
+  widthPx,
+}: SceneExpanderProps) {
+  // Collect all keyframes grouped by path across all sequences
+  const parameterGroups = useMemo(() => {
+    const byPath = new Map<string, ParameterEntry[]>();
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 3 } }),
-  );
+    for (const seq of scene.sequences) {
+      for (const kf of seq.keyframes) {
+        let entries = byPath.get(kf.path);
+        if (!entries) {
+          entries = [];
+          byPath.set(kf.path, entries);
+        }
+        entries.push({
+          keyframe: kf,
+          sequenceId: seq.id,
+          startOffset: seq.startOffset,
+        });
+      }
+    }
 
-  const handleDragEnd = useCallback(
-    (event: DragEndEvent) => {
-      const { active, over } = event;
-      if (!over || active.id === over.id) return;
+    // Sort paths alphabetically for stable order
+    const sorted = [...byPath.entries()].sort((a, b) => a[0].localeCompare(b[0]));
 
-      const ids = scene.sequences.map((s) => s.id);
-      const oldIndex = ids.indexOf(active.id as string);
-      const newIndex = ids.indexOf(over.id as string);
-      if (oldIndex === -1 || newIndex === -1) return;
+    return sorted.map(([path, entries], index) => ({
+      path,
+      entries,
+      color: PARAM_COLORS[index % PARAM_COLORS.length],
+    }));
+  }, [scene.sequences]);
 
-      // arrayMove
-      const reordered = [...ids];
-      const [removed] = reordered.splice(oldIndex, 1);
-      reordered.splice(newIndex, 0, removed);
-
-      reorderSequences(scene.id, reordered);
-    },
-    [scene.id, scene.sequences, reorderSequences],
-  );
-
-  const handleAddSequence = useCallback(
-    (type: SequenceType) => {
-      addSequence(scene.id, {
-        type,
-        label: `${type} ${scene.sequences.length + 1}`,
-        startOffset: 0,
-        duration: scene.duration,
-        order: scene.sequences.length,
-        baseConfig: {},
-        keyframes: [],
-      });
-    },
-    [addSequence, scene.id, scene.duration, scene.sequences.length],
-  );
-
-  const sequenceIds = scene.sequences.map((s) => s.id);
+  if (parameterGroups.length === 0) return null;
 
   return (
-    <div className="border-b border-zinc-800/30 bg-zinc-900/40">
-      {/* Sequence rows */}
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-      >
-        <SortableContext items={sequenceIds} strategy={verticalListSortingStrategy}>
-          {scene.sequences.map((seq) => (
-            <SequenceRow
-              key={seq.id}
-              sceneId={scene.id}
-              sequence={seq}
-              pixelsPerSecond={pixelsPerSecond}
-              sceneStartTime={scene.startTime}
-            />
-          ))}
-        </SortableContext>
-      </DndContext>
-
-      {/* Add sequence button row */}
-      <div className="flex h-5 items-center gap-1 px-1">
-        <Plus size={8} className="text-zinc-600" />
-        {SEQUENCE_TYPES.map((st) => (
-          <button
-            key={st.value}
-            type="button"
-            onClick={() => handleAddSequence(st.value)}
-            className="rounded px-1 py-0.5 text-[8px] text-zinc-600 hover:bg-zinc-800 hover:text-zinc-400"
-          >
-            {st.label}
-          </button>
-        ))}
-      </div>
+    <div
+      className="absolute"
+      style={{
+        top: topOffset,
+        left: leftOffset ?? 0,
+        width: widthPx ?? "100%",
+      }}
+    >
+      {parameterGroups.map(({ path, entries, color }) => (
+        <ParameterRow
+          key={path}
+          sceneId={scene.id}
+          path={path}
+          entries={entries}
+          pixelsPerSecond={pixelsPerSecond}
+          sceneStartTime={scene.startTime}
+          color={color}
+        />
+      ))}
     </div>
   );
 }

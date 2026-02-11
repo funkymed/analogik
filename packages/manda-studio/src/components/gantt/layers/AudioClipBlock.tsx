@@ -12,11 +12,16 @@ interface AudioClipBlockProps {
   trackHeight: number;
   isSelected: boolean;
   audioBuffer: AudioBuffer | null;
+  /** Pixel height of one track row (for vertical drag calculations). */
+  rowHeight: number;
+  /** Total number of audio tracks available. */
+  trackCount: number;
   onSelect: () => void;
   onMove: (newStartTime: number) => void;
   onResize: (newDuration: number) => void;
   onToggleMute: () => void;
   onRemove: () => void;
+  onTrackChange: (newTrackIndex: number) => void;
 }
 
 export function AudioClipBlock({
@@ -25,11 +30,14 @@ export function AudioClipBlock({
   trackHeight,
   isSelected,
   audioBuffer,
+  rowHeight,
+  trackCount,
   onSelect,
   onMove,
   onResize,
   onToggleMute,
   onRemove,
+  onTrackChange,
 }: AudioClipBlockProps) {
   const left = clip.startTime * pixelsPerSecond;
   const width = clip.duration * pixelsPerSecond;
@@ -75,8 +83,13 @@ export function AudioClipBlock({
     };
   }, [audioBuffer, clip.trimStart, clip.duration]);
 
-  // --- Drag to move ---
-  const dragStartRef = useRef<{ clientX: number; startTime: number } | null>(null);
+  // --- Drag to move (horizontal + vertical) ---
+  const dragStartRef = useRef<{
+    clientX: number;
+    clientY: number;
+    startTime: number;
+    trackIndex: number;
+  } | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const dragCleanupRef = useRef<(() => void) | null>(null);
 
@@ -90,14 +103,30 @@ export function AudioClipBlock({
       if ((e.target as HTMLElement).closest("[data-no-drag]")) return;
       e.stopPropagation();
       onSelect();
-      dragStartRef.current = { clientX: e.clientX, startTime: clip.startTime };
+      dragStartRef.current = {
+        clientX: e.clientX,
+        clientY: e.clientY,
+        startTime: clip.startTime,
+        trackIndex: clip.trackIndex,
+      };
 
       const handlePointerMove = (ev: PointerEvent) => {
         if (!dragStartRef.current) return;
-        const delta = ev.clientX - dragStartRef.current.clientX;
-        const timeDelta = delta / pixelsPerSecond;
+        const deltaX = ev.clientX - dragStartRef.current.clientX;
+        const deltaY = ev.clientY - dragStartRef.current.clientY;
+        const timeDelta = deltaX / pixelsPerSecond;
         setIsDragging(true);
         onMove(Math.max(0, dragStartRef.current.startTime + timeDelta));
+
+        // Vertical: compute track change
+        const trackDelta = Math.round(deltaY / rowHeight);
+        const newTrack = Math.max(
+          0,
+          Math.min(trackCount - 1, dragStartRef.current.trackIndex + trackDelta),
+        );
+        if (newTrack !== clip.trackIndex) {
+          onTrackChange(newTrack);
+        }
       };
 
       const handlePointerUp = () => {
@@ -116,7 +145,7 @@ export function AudioClipBlock({
         window.removeEventListener("pointerup", handlePointerUp);
       };
     },
-    [onSelect, clip.startTime, pixelsPerSecond, onMove],
+    [onSelect, clip.startTime, clip.trackIndex, pixelsPerSecond, rowHeight, trackCount, onMove, onTrackChange],
   );
 
   // --- Resize (right only for audio clips) ---

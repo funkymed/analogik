@@ -20,6 +20,59 @@ function easeInOut(t: number): number {
   return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
 }
 
+// ---------------------------------------------------------------------------
+// Elastic easing
+// ---------------------------------------------------------------------------
+
+function elasticIn(t: number): number {
+  if (t === 0 || t === 1) return t;
+  return -Math.pow(2, 10 * (t - 1)) * Math.sin((t - 1.1) * 5 * Math.PI);
+}
+
+function elasticOut(t: number): number {
+  if (t === 0 || t === 1) return t;
+  return Math.pow(2, -10 * t) * Math.sin((t - 0.1) * 5 * Math.PI) + 1;
+}
+
+function elasticInOut(t: number): number {
+  if (t === 0 || t === 1) return t;
+  const s = t * 2;
+  if (s < 1) {
+    return -0.5 * Math.pow(2, 10 * (s - 1)) * Math.sin((s - 1.1) * 5 * Math.PI);
+  }
+  return 0.5 * Math.pow(2, -10 * (s - 1)) * Math.sin((s - 1.1) * 5 * Math.PI) + 1;
+}
+
+// ---------------------------------------------------------------------------
+// Bounce easing
+// ---------------------------------------------------------------------------
+
+function bounceOut(t: number): number {
+  if (t < 1 / 2.75) {
+    return 7.5625 * t * t;
+  } else if (t < 2 / 2.75) {
+    const t2 = t - 1.5 / 2.75;
+    return 7.5625 * t2 * t2 + 0.75;
+  } else if (t < 2.5 / 2.75) {
+    const t2 = t - 2.25 / 2.75;
+    return 7.5625 * t2 * t2 + 0.9375;
+  } else {
+    const t2 = t - 2.625 / 2.75;
+    return 7.5625 * t2 * t2 + 0.984375;
+  }
+}
+
+function bounceIn(t: number): number {
+  return 1 - bounceOut(1 - t);
+}
+
+function bounceInOut(t: number): number {
+  if (t < 0.5) {
+    return bounceIn(t * 2) * 0.5;
+  }
+  return bounceOut(t * 2 - 1) * 0.5 + 0.5;
+}
+
 /**
  * Attempt cubic bezier with 2 control points (x1,y1) and (x2,y2).
  * Uses Newton-Raphson to solve for t given x, then evaluates y.
@@ -84,6 +137,12 @@ const EASING_FNS: Record<EasingType, (t: number) => number> = {
   easeIn,
   easeOut,
   easeInOut,
+  elasticIn,
+  elasticOut,
+  elasticInOut,
+  bounceIn,
+  bounceOut,
+  bounceInOut,
   // cubicBezier placeholder - overridden per-call when bezierPoints exist
   cubicBezier: easeInOut,
 };

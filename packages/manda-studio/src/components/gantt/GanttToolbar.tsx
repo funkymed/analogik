@@ -21,6 +21,8 @@ export function GanttToolbar() {
   const setCurrentTime = useGanttStore((s) => s.setCurrentTime);
   const loopEnabled = useGanttStore((s) => s.loopEnabled);
   const setLoopEnabled = useGanttStore((s) => s.setLoopEnabled);
+  const recordEnabled = useGanttStore((s) => s.recordEnabled);
+  const setRecordEnabled = useGanttStore((s) => s.setRecordEnabled);
   const pixelsPerSecond = useGanttStore((s) => s.pixelsPerSecond);
   const setPixelsPerSecond = useGanttStore((s) => s.setPixelsPerSecond);
   const snapEnabled = useGanttStore((s) => s.snapEnabled);
@@ -30,6 +32,7 @@ export function GanttToolbar() {
   const timelineExpanded = useGanttStore((s) => s.timelineExpanded);
   const toggleTimelineExpanded = useGanttStore((s) => s.toggleTimelineExpanded);
   const addScene = useGanttStore((s) => s.addScene);
+  const selectScene = useGanttStore((s) => s.selectScene);
   const config = useStudioStore((s) => s.config);
 
   const handlePlayPause = useCallback(() => {
@@ -50,8 +53,9 @@ export function GanttToolbar() {
   }, [pixelsPerSecond, setPixelsPerSecond]);
 
   const handleAddScene = useCallback(() => {
-    addScene(config);
-  }, [addScene, config]);
+    const sceneId = addScene(config);
+    selectScene(sceneId);
+  }, [addScene, selectScene, config]);
 
   return (
     <div className="flex shrink-0 items-center gap-1 border-b border-zinc-800 px-2 py-1">
@@ -87,6 +91,26 @@ export function GanttToolbar() {
         title={loopEnabled ? "Loop enabled" : "Loop disabled"}
       >
         <Repeat size={12} />
+      </button>
+
+      {/* Record toggle */}
+      <button
+        type="button"
+        onClick={() => setRecordEnabled(!recordEnabled)}
+        className={[
+          "rounded p-1 transition-colors",
+          recordEnabled
+            ? "bg-red-500/20 text-red-400"
+            : "text-zinc-500 hover:bg-zinc-800 hover:text-zinc-300",
+        ].join(" ")}
+        title={recordEnabled ? "Record mode ON — edits create keyframes" : "Record mode OFF"}
+      >
+        <div className={[
+          "h-2.5 w-2.5 rounded-full border-2",
+          recordEnabled
+            ? "border-red-400 bg-red-500"
+            : "border-current bg-transparent",
+        ].join(" ")} />
       </button>
 
       {/* Current time display */}

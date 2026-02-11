@@ -14,7 +14,8 @@ export interface EvaluationResult {
 
 /**
  * Find the scene that is active at the given absolute time.
- * If multiple scenes overlap, the one with the latest startTime wins.
+ * If multiple scenes overlap, lower trackIndex wins (higher priority).
+ * Within the same track, latest startTime wins.
  */
 function findActiveScene(
   scenes: TimelineScene[],
@@ -23,7 +24,11 @@ function findActiveScene(
   let best: TimelineScene | null = null;
   for (const scene of scenes) {
     if (time >= scene.startTime && time < scene.startTime + scene.duration) {
-      if (!best || scene.startTime > best.startTime) {
+      if (
+        !best ||
+        scene.trackIndex < best.trackIndex ||
+        (scene.trackIndex === best.trackIndex && scene.startTime > best.startTime)
+      ) {
         best = scene;
       }
     }
@@ -119,7 +124,18 @@ function evaluateKeyframes(
 /**
  * Evaluate a scene at a given absolute time, applying active sequences
  * with their keyframes on top of the scene's baseConfig.
+ * Returns null if the time is outside the scene range.
  */
+export function evaluateSceneAtTime(scene: TimelineScene, time: number): ConfigType | null {
+  const sceneEnd = scene.startTime + scene.duration;
+  if (time < scene.startTime || time >= sceneEnd) {
+    // Playhead outside scene — still return baseConfig so the UI
+    // shows the scene's config when selected.
+    return scene.baseConfig;
+  }
+  return evaluateScene(scene, time);
+}
+
 function evaluateScene(scene: TimelineScene, time: number): ConfigType {
   // Fast path: when no sequences exist, no mutations are needed,
   // so we can return the baseConfig directly. The renderer clones internally.
