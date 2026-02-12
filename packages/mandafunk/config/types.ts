@@ -228,8 +228,16 @@ export interface SceneConfig {
   show?: boolean;
   /** Background color as a CSS hex string. Empty string for no solid background. */
   bgColor: string;
+  /** Background color opacity (range: 0 to 1). Defaults to 1 (fully opaque). */
+  bgColor_opacity?: number;
+  /** Background color blending mode. Defaults to "normal". */
+  bgColor_blending?: "additive" | "normal" | "subtractive";
   /** Background image URL. Empty string for no background image. */
   background: string;
+  /** Background image opacity (range: 0 to 1). Defaults to 1 (fully opaque). */
+  bg_opacity?: number;
+  /** Background image blending mode. Defaults to "normal". */
+  bg_blending?: "additive" | "normal" | "subtractive";
   /** @deprecated Use bgAssetId instead. Library image ID for background persistence across sessions. */
   bgLibraryId?: number;
   /** Reference to an asset in the timeline's asset registry for the background image. */

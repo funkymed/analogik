@@ -1,4 +1,17 @@
-import { Color, Scene, LinearFilter, Texture } from "three";
+import {
+  AdditiveBlending,
+  type Blending,
+  Color,
+  Mesh,
+  MeshBasicMaterial,
+  NormalBlending,
+  PlaneGeometry,
+  Scene,
+  LinearFilter,
+  SubtractiveBlending,
+  Texture,
+  TextureLoader,
+} from "three";
 import {
   canvas2texture,
   canvasTexture,
@@ -6,6 +19,7 @@ import {
 import { ConfigType } from "../config/types";
 import { configDefault } from "../config/defaults";
 import { deepClone } from "../tools/deepClone";
+import type { BackgroundShader } from "../shaders/ShaderAbstract";
 import { loadShader } from "../shaders/shaderLoader";
 import { updateTexts } from "../fx/text";
 import { updateImages } from "../fx/image";
@@ -28,8 +42,12 @@ export class MandaScene {
   background: HTMLImageElement;
   /** Current configuration controlling scene appearance. */
   config: ConfigType;
-  /** Active shader instance, or false if no shader is loaded. */
-  shader: any;
+  /** All active shader instances (multi-layer compositing). */
+  shaders: BackgroundShader[];
+  /** Z-position for each shader in the layer stack (parallel to shaders[]). */
+  private layerShaderZ: number[] = [];
+  /** Per-layer background meshes (color/image planes). Managed by loadShaderLayers. */
+  private layerBgMeshes: Mesh[] = [];
   /** Reference to the StaticItems instance for shader audio data access. */
   staticItems: StaticItems | false;
   /** Whether the device is mobile (reduces brightness). Defaults to false. */
@@ -39,9 +57,14 @@ export class MandaScene {
     this.scene = new Scene();
     this.config = deepClone(configDefault);
     this.background = new Image();
-    this.shader = false;
+    this.shaders = [];
     this.staticItems = false;
     this.isMobile = false;
+  }
+
+  /** Backward-compat accessor: returns the primary (first) shader or false. */
+  get shader(): BackgroundShader | false {
+    return this.shaders[0] || false;
   }
 
   /**
@@ -192,16 +215,15 @@ export class MandaScene {
    */
   async addShaderBackground() {
     this.scene.background = null;
-    if (this.shader) {
-      this.shader.clear();
-    }
+    this.clearAllLayers();
     if (!this.config.scene.shader || this.config.scene.shader === "" || this.config.scene.shader_show === false) {
       return false;
     }
 
     try {
-      this.shader = await loadShader(this.config.scene.shader);
-      await this.shader.init(this.config, this.scene, this.staticItems);
+      const shader = await loadShader(this.config.scene.shader);
+      await shader.init(this.config, this.scene, this.staticItems as StaticItems);
+      this.shaders = [shader];
     } catch (error) {
       console.error(
         `Failed to load shader: ${this.config.scene.shader}`,
@@ -209,6 +231,184 @@ export class MandaScene {
       );
       return false;
     }
+  }
+
+  /**
+   * Load multiple layers for compositing.
+   * Each config contributes a background (color/image mesh) + shader.
+   * configs[0] = highest priority (S1, closest to camera).
+   * Layers are stacked back-to-front: last layer renders first, S1 on top.
+   */
+  async loadShaderLayers(configs: ConfigType[]): Promise<void> {
+    this.scene.background = null;
+    this.clearAllLayers();
+
+    const loaded: BackgroundShader[] = [];
+    const zPositions: number[] = [];
+    const n = configs.length;
+
+    for (let i = 0; i < n; i++) {
+      const cfg = configs[i];
+      // renderOrder controls draw order: bottom layer (last index) draws first,
+      // top layer (index 0 = S1) draws last and appears on top.
+      // Within a layer: bg draws before shader.
+      const layerOrder = (n - 1 - i) * 2;
+      const layerZ = -500;
+
+      // --- Background mesh (color or image) for this layer ---
+      await this.createLayerBgMesh(cfg, layerZ, layerOrder);
+
+      // --- Shader for this layer ---
+      if (!cfg.scene.shader || cfg.scene.shader === "" || cfg.scene.shader_show === false) {
+        continue;
+      }
+      try {
+        const shader = await loadShader(cfg.scene.shader);
+        await shader.init(cfg, this.scene, this.staticItems as StaticItems);
+        // Apply scene.opacity to per-shader transparency
+        const sceneOpacity = cfg.scene.opacity ?? 1;
+        shader.uniforms.iOpacity.value *= sceneOpacity;
+        // Force render order: S1 on top
+        shader.mesh.renderOrder = layerOrder + 1;
+        shader.mesh.position.z = layerZ;
+        // Disable depth so renderOrder alone controls compositing
+        shader.shaderMaterial.depthTest = false;
+        shader.shaderMaterial.depthWrite = false;
+        loaded.push(shader);
+        zPositions.push(layerZ);
+      } catch (error) {
+        console.error(`Failed to load shader layer: ${cfg.scene.shader}`, error);
+      }
+    }
+    this.shaders = loaded;
+    this.layerShaderZ = zPositions;
+  }
+
+  /**
+   * Create a background mesh (color or image) for a single layer.
+   * The mesh is a full-screen plane with opacity, positioned at bgZ.
+   */
+  private async createLayerBgMesh(cfg: ConfigType, bgZ: number, renderOrder: number): Promise<void> {
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+
+    if (cfg.scene.background) {
+      // Image background
+      const opacity = cfg.scene.bg_opacity ?? 1;
+      const blending = this.resolveBlending(cfg.scene.bg_blending);
+      try {
+        const texture = await new Promise<Texture>((resolve, reject) => {
+          new TextureLoader().load(
+            cfg.scene.background,
+            (tex) => { tex.minFilter = LinearFilter; resolve(tex); },
+            undefined,
+            () => reject(new Error("Image load failed")),
+          );
+        });
+        const geo = new PlaneGeometry(w, h);
+        const mat = new MeshBasicMaterial({
+          map: texture,
+          transparent: true,
+          opacity,
+          blending,
+          depthWrite: false,
+          depthTest: false,
+        });
+        const mesh = new Mesh(geo, mat);
+        (mesh as any).objType = "layerBg";
+        mesh.renderOrder = renderOrder;
+        mesh.position.z = bgZ;
+        this.scene.add(mesh);
+        this.layerBgMeshes.push(mesh);
+      } catch {
+        // Image failed to load — skip
+      }
+    } else if (cfg.scene.bgColor) {
+      // Solid color background
+      const opacity = cfg.scene.bgColor_opacity ?? 1;
+      const blending = this.resolveBlending(cfg.scene.bgColor_blending);
+      const geo = new PlaneGeometry(w, h);
+      const mat = new MeshBasicMaterial({
+        color: new Color(cfg.scene.bgColor),
+        transparent: true,
+        opacity,
+        blending,
+        depthWrite: false,
+        depthTest: false,
+      });
+      const mesh = new Mesh(geo, mat);
+      (mesh as any).objType = "layerBg";
+      mesh.renderOrder = renderOrder;
+      mesh.position.z = bgZ;
+      this.scene.add(mesh);
+      this.layerBgMeshes.push(mesh);
+    }
+  }
+
+  /** Maps config blending string to Three.js blending constant. */
+  private resolveBlending(mode?: string): Blending {
+    switch (mode) {
+      case "additive": return AdditiveBlending;
+      case "subtractive": return SubtractiveBlending;
+      default: return NormalBlending;
+    }
+  }
+
+  /**
+   * Lightweight config update for each shader layer without reloading.
+   * Assumes the layer stack hasn't changed (same shaders in same order).
+   */
+  updateShaderLayers(configs: ConfigType[]): void {
+    let shaderIdx = 0;
+    let bgIdx = 0;
+    for (const cfg of configs) {
+      // Update background mesh opacity
+      if ((cfg.scene.background || cfg.scene.bgColor) && bgIdx < this.layerBgMeshes.length) {
+        const bgMesh = this.layerBgMeshes[bgIdx];
+        const mat = bgMesh.material as MeshBasicMaterial;
+        if (cfg.scene.background) {
+          mat.opacity = cfg.scene.bg_opacity ?? 1;
+          mat.blending = this.resolveBlending(cfg.scene.bg_blending);
+        } else if (cfg.scene.bgColor) {
+          mat.opacity = cfg.scene.bgColor_opacity ?? 1;
+          mat.blending = this.resolveBlending(cfg.scene.bgColor_blending);
+          mat.color.set(cfg.scene.bgColor);
+        }
+        // Keep transparent: true always — required for renderOrder compositing
+        mat.transparent = true;
+        bgIdx++;
+      }
+
+      // Update shader
+      if (!cfg.scene.shader || cfg.scene.shader === "" || cfg.scene.shader_show === false) {
+        continue;
+      }
+      if (shaderIdx < this.shaders.length) {
+        this.shaders[shaderIdx].updateConfig(cfg);
+        // Re-apply layer z-position (updateConfig resets mesh.position.z)
+        this.shaders[shaderIdx].mesh.position.z = this.layerShaderZ[shaderIdx];
+        // Apply scene.opacity as per-shader transparency (multiply with shader_opacity)
+        const sceneOpacity = cfg.scene.opacity ?? 1;
+        this.shaders[shaderIdx].uniforms.iOpacity.value *= sceneOpacity;
+        shaderIdx++;
+      }
+    }
+  }
+
+  /** Clear all active shaders and layer background meshes from the scene. */
+  private clearAllLayers(): void {
+    for (const s of this.shaders) {
+      s.clear();
+    }
+    this.shaders = [];
+    this.layerShaderZ = [];
+    for (const m of this.layerBgMeshes) {
+      m.geometry?.dispose();
+      (m.material as MeshBasicMaterial).map?.dispose();
+      (m.material as MeshBasicMaterial).dispose();
+      this.scene.remove(m);
+    }
+    this.layerBgMeshes = [];
   }
 
   /**
@@ -233,12 +433,14 @@ export class MandaScene {
     } else if (config.scene.bgColor) {
       // Background color (visible behind shader when opacity < 1)
       this.scene.background = new Color(config.scene.bgColor);
-    } else if (!this.shader) {
+    } else if (this.shaders.length === 0) {
       this.scene.background = null;
     }
 
-    if (this.shader && this.shader.updateConfig) {
-      this.shader.updateConfig(config);
+    // Update the primary shader's config (single-scene path)
+    const primary = this.shaders[0];
+    if (primary && primary.updateConfig) {
+      primary.updateConfig(config);
     }
   }
 
@@ -247,8 +449,10 @@ export class MandaScene {
    * @param time - Current animation time in seconds
    */
   updateShader(time: number) {
-    if (this.shader.uniforms) {
-      this.shader.update(time);
+    for (const s of this.shaders) {
+      if (s.uniforms) {
+        s.update(time);
+      }
     }
   }
 
@@ -257,8 +461,8 @@ export class MandaScene {
    * Updates resolution uniforms and repositions the shader mesh.
    */
   updateAfterResize() {
-    if (this.shader) {
-      this.shader.updateResolution();
+    for (const s of this.shaders) {
+      s.updateResolution();
     }
   }
 
@@ -284,11 +488,8 @@ export class MandaScene {
    * Fully disposes the scene: shader, background texture, and all child meshes.
    */
   dispose() {
-    // Dispose shader
-    if (this.shader && this.shader.clear) {
-      this.shader.clear();
-      this.shader = false;
-    }
+    // Dispose all layers (shaders + background meshes)
+    this.clearAllLayers();
 
     // Dispose background texture
     this.disposeBackgroundTexture();

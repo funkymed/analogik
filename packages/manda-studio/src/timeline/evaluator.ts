@@ -3,6 +3,14 @@ import type { Timeline, TimelineScene, Sequence, Keyframe } from "./ganttTypes.t
 import { applyEasing, interpolateValue } from "./interpolation.ts";
 
 /**
+ * A single evaluated layer: one active scene with its resolved config.
+ */
+export interface EvaluatedLayer {
+  config: ConfigType;
+  scene: TimelineScene;
+}
+
+/**
  * Result of evaluating the timeline at a given time.
  */
 export interface EvaluationResult {
@@ -10,6 +18,8 @@ export interface EvaluationResult {
   config: ConfigType | null;
   /** The active scene (if any). */
   activeScene: TimelineScene | null;
+  /** All active layers sorted by priority (lowest trackIndex first). */
+  layers: EvaluatedLayer[];
 }
 
 /**
@@ -216,12 +226,19 @@ export function evaluateTimelineAtTime(
 ): EvaluationResult {
   const candidates = findActiveScenesAtTime(timeline.scenes, time);
 
-  // Try scenes by priority — skip those with scene.show === false
+  // Evaluate ALL visible candidates to build the layers array
+  const layers: EvaluatedLayer[] = [];
   for (const scene of candidates) {
     const config = evaluateScene(scene, time);
     if (config.scene?.show === false) continue;
-    return { config, activeScene: scene };
+    layers.push({ config, scene });
   }
 
-  return { config: null, activeScene: null };
+  // Primary = first layer (highest priority); backward-compat fields
+  const primary = layers[0] ?? null;
+  return {
+    config: primary?.config ?? null,
+    activeScene: primary?.scene ?? null,
+    layers,
+  };
 }

@@ -33,7 +33,11 @@ export const configDefault: ConfigType = {
   scene: {
     show: true,
     bgColor: "",
+    bgColor_opacity: 1,
+    bgColor_blending: "normal" as const,
     background: "",
+    bg_opacity: 1,
+    bg_blending: "normal" as const,
     blur: 0,
     brightness: 100,
     shader: "",

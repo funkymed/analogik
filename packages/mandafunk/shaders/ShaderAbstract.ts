@@ -47,6 +47,7 @@ export interface BackgroundShader {
   init(config: ConfigType, scene: Scene, staticItems: TextureSpectrumProvider): Promise<void>;
   updateConfig(config: ConfigType): void;
   update(time: number): void;
+  updateResolution(): void;
   clear(): void;
   afterInit(): void;
 }

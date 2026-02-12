@@ -76,7 +76,8 @@
       "mcp__chrome-devtools__hover",
       "mcp__plugin_playwright_playwright__browser_press_key",
       "Bash(find:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(git stash:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

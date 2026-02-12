@@ -2,6 +2,7 @@ import type { MandaRenderer } from "@mandafunk/core/MandaRenderer";
 import type { ConfigType } from "@mandafunk/config/types";
 import type { Timeline } from "./ganttTypes.ts";
 import { evaluateTimelineAtTime } from "./evaluator.ts";
+import type { EvaluatedLayer } from "./evaluator.ts";
 import type { MultiAudioEngine } from "@/audio/MultiAudioEngine.ts";
 
 /**
@@ -35,6 +36,8 @@ export class PlaybackEngine {
   private loadingConfig = false;
   /** Last config reference pushed to renderer — skip updateConfig if unchanged. */
   private lastPushedConfig: ConfigType | null = null;
+  /** Shader names of current layer stack, for detecting stack changes. */
+  private lastLayerShaders: string[] = [];
 
   /** Callback to update the gantt store's currentTime. Throttled. */
   private onTimeUpdate: ((time: number) => void) | null = null;
@@ -106,6 +109,7 @@ export class PlaybackEngine {
     this.currentTime = 0;
     this.lastSceneId = null;
     this.lastPushedConfig = null;
+    this.lastLayerShaders = [];
     this.onTimeUpdate?.(0);
     this.audioEngine?.stopAll();
   }
@@ -252,17 +256,24 @@ export class PlaybackEngine {
       this.lastSceneId = newSceneId;
       this.currentShader = null; // force shader reload on scene change
       this.lastPushedConfig = null;   // force config push on scene change
+      this.lastLayerShaders = [];     // force layer stack reload on scene change
       this.onSceneChange?.(newSceneId);
     }
 
-    // Push config to renderer (does NOT render — render() is called separately).
+    // Push layers to renderer (does NOT render — render() is called separately).
     // Fire-and-forget during playback — the RAF loop renders every frame.
-    // Always push config so the renderer is ready when visibility changes.
-    if (result.config && this.renderer) {
+    if (result.layers.length > 0 && this.renderer) {
       this.sceneVisible =
-        result.config.scene?.show !== false &&
-        result.config.scene?.opacity !== 0;
-      void this.pushConfigToRenderer(result.config);
+        result.config!.scene?.show !== false &&
+        result.config!.scene?.opacity !== 0;
+
+      if (result.layers.length === 1) {
+        // Single scene: use existing optimized path
+        void this.pushConfigToRenderer(result.config!);
+      } else {
+        // Multi-layer compositing
+        void this.pushLayersToRenderer(result.layers);
+      }
     } else {
       this.sceneVisible = false;
     }
@@ -305,6 +316,31 @@ export class PlaybackEngine {
       this.loadingConfig = false;
     } else if (!shaderChanged) {
       this.renderer.updateConfig(config);
+    }
+  }
+
+  private async pushLayersToRenderer(layers: EvaluatedLayer[]): Promise<void> {
+    if (!this.renderer) return;
+
+    // Build the shader name stack for change detection
+    const shaderNames = layers
+      .map((l) => l.config.scene?.shader || "")
+      .filter((s) => s !== "");
+
+    const stackChanged =
+      shaderNames.length !== this.lastLayerShaders.length ||
+      shaderNames.some((s, i) => s !== this.lastLayerShaders[i]);
+
+    const configs = layers.map((l) => l.config);
+
+    if (stackChanged && !this.loadingConfig) {
+      this.lastLayerShaders = shaderNames;
+      this.currentShader = shaderNames[0] ?? undefined;
+      this.loadingConfig = true;
+      await this.renderer.loadLayers(configs);
+      this.loadingConfig = false;
+    } else if (!stackChanged) {
+      this.renderer.updateLayers(configs);
     }
   }
 

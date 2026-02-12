@@ -291,6 +291,60 @@ export class MandaRenderer {
   }
 
   /**
+   * Loads multiple scene layers for compositing.
+   * configs[0] is the primary (drives composer, staticItems, texts, images, background).
+   * All configs contribute their shaders via scene.loadShaderLayers().
+   */
+  async loadLayers(configs: ConfigType[]): Promise<void> {
+    this.ensureInitialized();
+    if (configs.length === 0) return;
+
+    const primary = structuredClone(configs[0]);
+    this.config = primary;
+
+    if (this.scene && this.staticItems && this.composer) {
+      this.scene.config = primary;
+
+      // Load all layers: per-layer bg meshes + shaders (handles scene.background = null)
+      await this.scene.loadShaderLayers(configs);
+
+      this.scene.clearScene();
+      this.scene.updateTextsAndImages(primary);
+      this.staticItems.update(primary);
+
+      // For multi-layer, set OpacityPass to 1.0 — per-layer opacity is in iOpacity
+      const composerConfig = { ...primary, scene: { ...primary.scene, opacity: 1 } };
+      this.composer.updateComposer(composerConfig);
+    }
+  }
+
+  /**
+   * Lightweight update for existing shader layers (no reload).
+   * configs[0] is the primary (drives composer, staticItems, etc.).
+   * All configs update their respective shaders.
+   */
+  updateLayers(configs: ConfigType[]): void {
+    this.ensureInitialized();
+    if (configs.length === 0) return;
+
+    const primary = configs[0];
+    this.config = primary;
+
+    if (this.scene) {
+      this.scene.updateShaderLayers(configs);
+      this.scene.updateTextsAndImages(primary);
+    }
+    if (this.staticItems) {
+      this.staticItems.update(primary);
+    }
+    if (this.composer) {
+      // For multi-layer, set OpacityPass to 1.0 — per-layer opacity is in iOpacity
+      const composerConfig = { ...primary, scene: { ...primary.scene, opacity: 1 } };
+      this.composer.updateComposer(composerConfig);
+    }
+  }
+
+  /**
    * Applies a partial configuration update by merging into the current config.
    *
    * Use this for incremental changes (e.g., adjusting a single effect
