@@ -228,6 +228,7 @@ interface GanttState {
   mutedAudioTracks: Set<number>;
   addSceneTrack: () => void;
   removeSceneTrack: (index: number) => void;
+  swapSceneTracks: (indexA: number, indexB: number) => void;
   addAudioTrack: () => void;
   removeAudioTrack: (index: number) => void;
   toggleAudioTrackMuted: (index: number) => void;
@@ -347,6 +348,22 @@ export const useGanttStore = create<GanttState>((set, get) => ({
   mutedAudioTracks: new Set<number>(),
 
   addSceneTrack: () => set((s) => ({ sceneTrackCount: s.sceneTrackCount + 1 })),
+
+  swapSceneTracks: (indexA, indexB) => {
+    if (indexA === indexB) return;
+    const { timeline } = get();
+    set({
+      timeline: {
+        ...timeline,
+        scenes: timeline.scenes.map((s) => {
+          if (s.trackIndex === indexA) return { ...s, trackIndex: indexB };
+          if (s.trackIndex === indexB) return { ...s, trackIndex: indexA };
+          return s;
+        }),
+      },
+    });
+  },
+
   removeSceneTrack: (index) => {
     const { sceneTrackCount, timeline } = get();
     if (sceneTrackCount <= 1) return;

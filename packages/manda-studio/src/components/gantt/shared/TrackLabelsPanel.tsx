@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useRef } from "react";
 import Eye from "lucide-react/dist/esm/icons/eye.js";
 import EyeOff from "lucide-react/dist/esm/icons/eye-off.js";
+import GripVertical from "lucide-react/dist/esm/icons/grip-vertical.js";
 import Volume2 from "lucide-react/dist/esm/icons/volume-2.js";
 import VolumeX from "lucide-react/dist/esm/icons/volume-x.js";
 import Plus from "lucide-react/dist/esm/icons/plus.js";
@@ -59,6 +60,7 @@ export function TrackLabelsPanel({ onLoadAudioFile }: TrackLabelsPanelProps) {
   const audioClips = useGanttStore((s) => s.timeline.audioClips);
   const mutedAudioTracks = useGanttStore((s) => s.mutedAudioTracks);
   const toggleAudioTrackMuted = useGanttStore((s) => s.toggleAudioTrackMuted);
+  const swapSceneTracks = useGanttStore((s) => s.swapSceneTracks);
   const config = useStudioStore((s) => s.config);
 
   const { sceneTrackHeights, audioTrackHeights } = useTrackHeights();
@@ -88,6 +90,53 @@ export function TrackLabelsPanel({ onLoadAudioFile }: TrackLabelsPanelProps) {
       addScene(config, undefined, trackIndex);
     },
     [addScene, config],
+  );
+
+  const trackHeight = useGanttStore((s) => s.trackHeight);
+  const baseRowHeight = Math.round(SCENE_ROW_BASE * trackHeight);
+
+  const trackDragRef = useRef<{ sourceIndex: number; clientY: number } | null>(null);
+
+  const handleTrackDragStart = useCallback(
+    (e: React.PointerEvent, sourceIndex: number) => {
+      e.preventDefault();
+      trackDragRef.current = { sourceIndex, clientY: e.clientY };
+
+      const handlePointerMove = (ev: PointerEvent) => {
+        if (!trackDragRef.current) return;
+        const deltaY = ev.clientY - trackDragRef.current.clientY;
+        // Compute which track the pointer is over
+        let startY = 0;
+        for (let i = 0; i < trackDragRef.current.sourceIndex; i++) {
+          startY += sceneTrackHeights[i] ?? baseRowHeight;
+        }
+        const midY = startY + (sceneTrackHeights[trackDragRef.current.sourceIndex] ?? baseRowHeight) / 2 + deltaY;
+        let cumY = 0;
+        let target = 0;
+        for (let i = 0; i < sceneTrackCount; i++) {
+          const h = sceneTrackHeights[i] ?? baseRowHeight;
+          if (midY < cumY + h) { target = i; break; }
+          cumY += h;
+          target = i;
+        }
+        target = Math.max(0, Math.min(sceneTrackCount - 1, target));
+        if (target !== trackDragRef.current.sourceIndex) {
+          swapSceneTracks(trackDragRef.current.sourceIndex, target);
+          trackDragRef.current.sourceIndex = target;
+          trackDragRef.current.clientY = ev.clientY;
+        }
+      };
+
+      const handlePointerUp = () => {
+        trackDragRef.current = null;
+        window.removeEventListener("pointermove", handlePointerMove);
+        window.removeEventListener("pointerup", handlePointerUp);
+      };
+
+      window.addEventListener("pointermove", handlePointerMove);
+      window.addEventListener("pointerup", handlePointerUp);
+    },
+    [sceneTrackHeights, sceneTrackCount, swapSceneTracks, baseRowHeight],
   );
 
   const canRemoveSceneTrack = useCallback(
@@ -126,8 +175,6 @@ export function TrackLabelsPanel({ onLoadAudioFile }: TrackLabelsPanelProps) {
     [scenes, updateScene],
   );
 
-  const trackHeight = useGanttStore((s) => s.trackHeight);
-  const baseRowHeight = Math.round(SCENE_ROW_BASE * trackHeight);
   const paramRowHeight = Math.round(PARAMETER_ROW_HEIGHT * trackHeight);
 
   // Pre-compute parameter paths per expanded scene
@@ -161,6 +208,14 @@ export function TrackLabelsPanel({ onLoadAudioFile }: TrackLabelsPanelProps) {
               style={{ height: baseRowHeight }}
             >
               <div className="flex items-center gap-1">
+                {sceneTrackCount > 1 && (
+                  <span
+                    onPointerDown={(e) => handleTrackDragStart(e, i)}
+                    className="cursor-grab text-zinc-600 hover:text-zinc-400 active:cursor-grabbing"
+                  >
+                    <GripVertical size={10} />
+                  </span>
+                )}
                 <span className="text-[10px] font-medium text-zinc-500">
                   S{i + 1}
                 </span>

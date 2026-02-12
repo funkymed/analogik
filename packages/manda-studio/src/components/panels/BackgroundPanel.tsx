@@ -6,6 +6,7 @@ import { useGanttStore } from "@/store/useGanttStore";
 import { createAssetEntry } from "@/services/assetRegistry";
 import { LabeledSlider } from "@/components/ui/LabeledSlider";
 import { ColorInput } from "@/components/ui/ColorInput";
+import { BlendingControl } from "@/components/ui/BlendingControl";
 
 type BgMode = "transparent" | "color" | "image";
 
@@ -144,11 +145,26 @@ export function BackgroundPanel() {
       </div>
 
       {bgMode === "color" && (
-        <div onPointerDown={handleColorPointerDown}>
-          <ColorInput
-            label="Background Color"
-            value={scene.bgColor}
-            onChange={(v) => handleColorChange("bgColor", v)}
+        <div className="space-y-3">
+          <div onPointerDown={handleColorPointerDown}>
+            <ColorInput
+              label="Background Color"
+              value={scene.bgColor}
+              onChange={(v) => handleColorChange("bgColor", v)}
+            />
+          </div>
+          <LabeledSlider
+            label="Opacity"
+            value={scene.bgColor_opacity ?? 1}
+            min={0}
+            max={1}
+            step={0.01}
+            onChange={(v) => handleSceneUpdate("bgColor_opacity", v)}
+            onPointerDown={handleSliderPointerDown}
+          />
+          <BlendingControl
+            path="scene.bgColor_blending"
+            value={scene.bgColor_blending}
           />
         </div>
       )}
@@ -253,6 +269,19 @@ export function BackgroundPanel() {
             suffix="px"
             onChange={(v) => handleSceneUpdate("blur", v)}
             onPointerDown={handleSliderPointerDown}
+          />
+          <LabeledSlider
+            label="Opacity"
+            value={scene.bg_opacity ?? 1}
+            min={0}
+            max={1}
+            step={0.01}
+            onChange={(v) => handleSceneUpdate("bg_opacity", v)}
+            onPointerDown={handleSliderPointerDown}
+          />
+          <BlendingControl
+            path="scene.bg_blending"
+            value={scene.bg_blending}
           />
         </div>
       )}
