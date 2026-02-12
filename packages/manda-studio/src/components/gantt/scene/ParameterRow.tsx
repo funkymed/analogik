@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef } from "react";
 import type { Keyframe } from "@/timeline/ganttTypes.ts";
 import { useGanttStore } from "@/store/useGanttStore.ts";
 import { KeyframeDot } from "../keyframes/KeyframeDot.tsx";
@@ -30,15 +30,21 @@ export function ParameterRow({
   rowHeight,
 }: ParameterRowProps) {
   const selectedKeyframeIds = useGanttStore((s) => s.selection.keyframeIds);
+  const editingKeyframeId = useGanttStore((s) => s.selection.editingKeyframeId);
   const selectKeyframes = useGanttStore((s) => s.selectKeyframes);
+  const setEditingKeyframe = useGanttStore((s) => s.setEditingKeyframe);
   const updateKeyframe = useGanttStore((s) => s.updateKeyframe);
   const removeKeyframe = useGanttStore((s) => s.removeKeyframe);
   const setCurrentTime = useGanttStore((s) => s.setCurrentTime);
 
-  const [editingEntry, setEditingEntry] = useState<ParameterEntry | null>(null);
-
+  const rowRef = useRef<HTMLDivElement>(null);
   // Track the original keyframe time when drag starts, keyed by keyframeId
   const dragOriginsRef = useRef<Map<string, number>>(new Map());
+
+  // Find the editing entry from the global editingKeyframeId
+  const editingEntry = editingKeyframeId
+    ? entries.find((e) => e.keyframe.id === editingKeyframeId) ?? null
+    : null;
 
   const handleSelectKeyframe = useCallback(
     (kfId: string, additive: boolean) => {
@@ -68,10 +74,9 @@ export function ParameterRow({
 
   const handleDoubleClickKeyframe = useCallback(
     (kfId: string) => {
-      const entry = entries.find((e) => e.keyframe.id === kfId);
-      if (entry) setEditingEntry(entry);
+      setEditingKeyframe(kfId);
     },
-    [entries],
+    [setEditingKeyframe],
   );
 
   const handleDragKeyframe = useCallback(
@@ -113,11 +118,11 @@ export function ParameterRow({
   const handleRemoveKeyframe = useCallback(() => {
     if (!editingEntry) return;
     removeKeyframe(sceneId, editingEntry.sequenceId, editingEntry.keyframe.id);
-    setEditingEntry(null);
-  }, [sceneId, editingEntry, removeKeyframe]);
+    setEditingKeyframe(null);
+  }, [sceneId, editingEntry, removeKeyframe, setEditingKeyframe]);
 
   return (
-    <div className="relative flex w-full border-b border-zinc-800/30" style={{ height: rowHeight ?? 24 }}>
+    <div ref={rowRef} className="relative flex w-full border-b border-zinc-800/30" style={{ height: rowHeight ?? 24 }}>
       {/* Keyframe area (labels are in TrackLabelsPanel) */}
       <div className="relative flex-1">
         {entries.map((entry) => {
@@ -137,16 +142,17 @@ export function ParameterRow({
           );
         })}
 
-        {/* Keyframe editor popover */}
+        {/* Keyframe editor popover (portal) */}
         {editingEntry && (
           <KeyframeEditor
             keyframe={editingEntry.keyframe}
+            anchorEl={rowRef.current}
             anchorLeftPx={
               (editingEntry.startOffset + editingEntry.keyframe.time) * pixelsPerSecond
             }
             onUpdate={handleUpdateKeyframe}
             onRemove={handleRemoveKeyframe}
-            onClose={() => setEditingEntry(null)}
+            onClose={() => setEditingKeyframe(null)}
           />
         )}
       </div>

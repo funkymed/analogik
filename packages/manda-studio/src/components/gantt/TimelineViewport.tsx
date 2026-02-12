@@ -212,14 +212,15 @@ export function TimelineViewport({ children, onVerticalScroll, onLoadAudioFile }
           height={viewportHeight}
         />
 
-        {/* Layer content */}
-        <div className="relative z-10">{children}</div>
-
+        {/* Playhead behind layer content so keyframe popovers appear on top */}
         <Playhead
           currentTime={currentTime}
           pixelsPerSecond={pixelsPerSecond}
           height={viewportHeight}
         />
+
+        {/* Layer content above playhead so keyframe popovers render on top */}
+        <div className="relative z-20">{children}</div>
       </div>
     </div>
   );

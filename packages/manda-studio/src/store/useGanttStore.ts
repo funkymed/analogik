@@ -201,6 +201,7 @@ interface GanttState {
   selectScene: (sceneId: string | null) => void;
   selectSequence: (sequenceId: string | null) => void;
   selectKeyframes: (keyframeIds: string[]) => void;
+  setEditingKeyframe: (keyframeId: string | null) => void;
   clearSelection: () => void;
 
   // --- Zoom / Scroll ---
@@ -302,17 +303,19 @@ export const useGanttStore = create<GanttState>((set, get) => ({
 
   // --- Selection ---
   // Shared empty array to avoid new reference on every scene/sequence selection
-  selection: { sceneId: null, sequenceId: null, keyframeIds: _emptyKfIds },
+  selection: { sceneId: null, sequenceId: null, keyframeIds: _emptyKfIds, editingKeyframeId: null },
   selectScene: (sceneId) =>
-    set({ selection: { sceneId, sequenceId: null, keyframeIds: _emptyKfIds } }),
+    set({ selection: { sceneId, sequenceId: null, keyframeIds: _emptyKfIds, editingKeyframeId: null } }),
   selectSequence: (sequenceId) =>
     set((s) => ({
-      selection: { ...s.selection, sequenceId, keyframeIds: _emptyKfIds },
+      selection: { ...s.selection, sequenceId, keyframeIds: _emptyKfIds, editingKeyframeId: null },
     })),
   selectKeyframes: (keyframeIds) =>
     set((s) => ({ selection: { ...s.selection, keyframeIds } })),
+  setEditingKeyframe: (keyframeId) =>
+    set((s) => ({ selection: { ...s.selection, editingKeyframeId: keyframeId } })),
   clearSelection: () =>
-    set({ selection: { sceneId: null, sequenceId: null, keyframeIds: _emptyKfIds } }),
+    set({ selection: { sceneId: null, sequenceId: null, keyframeIds: _emptyKfIds, editingKeyframeId: null } }),
 
   // --- Zoom / Scroll ---
   pixelsPerSecond: 50,
@@ -443,7 +446,7 @@ export const useGanttStore = create<GanttState>((set, get) => ({
       },
     };
     if (selection.sceneId === sceneId) {
-      updates.selection = { sceneId: null, sequenceId: null, keyframeIds: _emptyKfIds };
+      updates.selection = { sceneId: null, sequenceId: null, keyframeIds: _emptyKfIds, editingKeyframeId: null };
     }
     set(updates);
   },

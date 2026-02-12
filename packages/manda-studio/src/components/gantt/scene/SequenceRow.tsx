@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useRef } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import type { Sequence, Keyframe } from "@/timeline/ganttTypes.ts";
@@ -26,14 +26,16 @@ export function SequenceRow({
   sceneStartTime,
 }: SequenceRowProps) {
   const selectedKeyframeIds = useGanttStore((s) => s.selection.keyframeIds);
+  const editingKeyframeId = useGanttStore((s) => s.selection.editingKeyframeId);
   const selectKeyframes = useGanttStore((s) => s.selectKeyframes);
+  const setEditingKeyframe = useGanttStore((s) => s.setEditingKeyframe);
   const addKeyframe = useGanttStore((s) => s.addKeyframe);
   const updateKeyframe = useGanttStore((s) => s.updateKeyframe);
   const removeKeyframe = useGanttStore((s) => s.removeKeyframe);
   const removeSequence = useGanttStore((s) => s.removeSequence);
   const setCurrentTime = useGanttStore((s) => s.setCurrentTime);
 
-  const [editingKeyframeId, setEditingKeyframeId] = useState<string | null>(null);
+  const rowRef = useRef<HTMLDivElement>(null);
 
   // --- DnD sortable ---
   const {
@@ -51,6 +53,11 @@ export function SequenceRow({
     transition,
     opacity: isDragging ? 0.5 : 1,
   };
+
+  // Find the editing keyframe from the global editingKeyframeId
+  const editingKeyframe = editingKeyframeId
+    ? sequence.keyframes.find((kf) => kf.id === editingKeyframeId) ?? null
+    : null;
 
   // --- Keyframe selection ---
   const handleSelectKeyframe = useCallback(
@@ -80,10 +87,13 @@ export function SequenceRow({
     [sequence.keyframes, sequence.startOffset, sceneStartTime, setCurrentTime],
   );
 
-  // Double-click on keyframe: open editor popover
-  const handleDoubleClickKeyframe = useCallback((kfId: string) => {
-    setEditingKeyframeId(kfId);
-  }, []);
+  // Double-click on keyframe: open editor popover (global — closes any other open editor)
+  const handleDoubleClickKeyframe = useCallback(
+    (kfId: string) => {
+      setEditingKeyframe(kfId);
+    },
+    [setEditingKeyframe],
+  );
 
   // --- Add keyframe on double-click in empty area ---
   const handleDoubleClickRow = useCallback(
@@ -122,10 +132,6 @@ export function SequenceRow({
   );
 
   // --- Keyframe editor callbacks ---
-  const editingKeyframe = editingKeyframeId
-    ? sequence.keyframes.find((kf) => kf.id === editingKeyframeId) ?? null
-    : null;
-
   const handleUpdateKeyframe = useCallback(
     (patch: Partial<Omit<Keyframe, "id">>) => {
       if (!editingKeyframeId) return;
@@ -137,16 +143,15 @@ export function SequenceRow({
   const handleRemoveKeyframe = useCallback(() => {
     if (!editingKeyframeId) return;
     removeKeyframe(sceneId, sequence.id, editingKeyframeId);
-    setEditingKeyframeId(null);
-  }, [sceneId, sequence.id, editingKeyframeId, removeKeyframe]);
-
-  const handleCloseEditor = useCallback(() => {
-    setEditingKeyframeId(null);
-  }, []);
+    setEditingKeyframe(null);
+  }, [sceneId, sequence.id, editingKeyframeId, removeKeyframe, setEditingKeyframe]);
 
   return (
     <div
-      ref={setNodeRef}
+      ref={(node) => {
+        setNodeRef(node);
+        (rowRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
+      }}
       style={style}
       {...attributes}
       className="relative flex h-6 w-full border-b border-zinc-800/30"
@@ -188,14 +193,15 @@ export function SequenceRow({
           );
         })}
 
-        {/* Keyframe editor popover */}
+        {/* Keyframe editor popover (portal) */}
         {editingKeyframe && (
           <KeyframeEditor
             keyframe={editingKeyframe}
+            anchorEl={rowRef.current}
             anchorLeftPx={(sequence.startOffset + editingKeyframe.time) * pixelsPerSecond}
             onUpdate={handleUpdateKeyframe}
             onRemove={handleRemoveKeyframe}
-            onClose={handleCloseEditor}
+            onClose={() => setEditingKeyframe(null)}
           />
         )}
       </div>

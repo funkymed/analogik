@@ -12,7 +12,7 @@ export function Playhead({ currentTime, pixelsPerSecond, height }: PlayheadProps
 
   return (
     <div
-      className="pointer-events-none absolute top-0 z-30"
+      className="pointer-events-none absolute top-0 z-10"
       style={{ left: x, height }}
     >
       {/* Triangle head */}

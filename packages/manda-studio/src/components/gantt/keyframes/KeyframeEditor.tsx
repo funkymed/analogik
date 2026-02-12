@@ -1,11 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import X from "lucide-react/dist/esm/icons/x.js";
 import type { Keyframe, EasingType } from "@/timeline/ganttTypes.ts";
 import { KeyframeCurvePreview } from "./KeyframeCurvePreview.tsx";
 
 interface KeyframeEditorProps {
   keyframe: Keyframe;
-  /** Pixel position from left of container for popover placement. */
+  /** Ref to the anchor element (keyframe dot's parent row) for positioning. */
+  anchorEl: HTMLElement | null;
+  /** Pixel position from left of container for horizontal alignment. */
   anchorLeftPx: number;
   onUpdate: (patch: Partial<Omit<Keyframe, "id">>) => void;
   onRemove: () => void;
@@ -46,11 +49,15 @@ const EASING_GROUPS: { group: string; options: { value: EasingType; label: strin
   },
 ];
 
+const POPOVER_WIDTH = 180;
+
 /**
  * Popover for editing a keyframe's value and easing.
+ * Rendered via Portal so it's never clipped by overflow containers.
  */
 export function KeyframeEditor({
   keyframe,
+  anchorEl,
   anchorLeftPx,
   onUpdate,
   onRemove,
@@ -58,6 +65,23 @@ export function KeyframeEditor({
 }: KeyframeEditorProps) {
   const popoverRef = useRef<HTMLDivElement>(null);
   const [localValue, setLocalValue] = useState(String(keyframe.value));
+  const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
+
+  // Compute fixed position from the anchor element
+  useEffect(() => {
+    if (!anchorEl) return;
+    const rect = anchorEl.getBoundingClientRect();
+    // Find the scroll container to account for scroll offset
+    const scrollParent = anchorEl.closest("[class*='overflow']") as HTMLElement | null;
+    const scrollRect = scrollParent?.getBoundingClientRect();
+    const parentLeft = scrollRect ? scrollRect.left : rect.left;
+    const dotScreenX = parentLeft + anchorLeftPx - (scrollParent?.scrollLeft ?? 0);
+
+    setPos({
+      top: rect.top - 6, // 6px gap; translateY(-100%) pushes it above
+      left: Math.max(8, Math.min(dotScreenX - POPOVER_WIDTH / 2, window.innerWidth - POPOVER_WIDTH - 8)),
+    });
+  }, [anchorEl, anchorLeftPx]);
 
   // Close on click outside
   useEffect(() => {
@@ -104,15 +128,17 @@ export function KeyframeEditor({
     [keyframe.easing, onUpdate],
   );
 
-  return (
+  if (!pos) return null;
+
+  return createPortal(
     <div
       ref={popoverRef}
-      className="absolute z-50 rounded-lg border border-zinc-700 bg-zinc-900 p-2 shadow-xl"
+      className="fixed z-[9999] rounded-lg border border-zinc-700 bg-zinc-900 p-2 shadow-xl"
       style={{
-        left: Math.max(0, anchorLeftPx - 80),
-        bottom: "100%",
-        marginBottom: 6,
-        width: 180,
+        top: pos.top,
+        left: pos.left,
+        width: POPOVER_WIDTH,
+        transform: "translateY(-100%)",
       }}
     >
       {/* Header */}
@@ -197,6 +223,7 @@ export function KeyframeEditor({
       >
         Delete Keyframe
       </button>
-    </div>
+    </div>,
+    document.body,
   );
 }

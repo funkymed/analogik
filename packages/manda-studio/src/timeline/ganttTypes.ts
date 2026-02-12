@@ -206,4 +206,6 @@ export interface GanttSelection {
   sceneId: string | null;
   sequenceId: string | null;
   keyframeIds: string[];
+  /** Id of the keyframe currently open in the editor popover (only one at a time). */
+  editingKeyframeId: string | null;
 }
