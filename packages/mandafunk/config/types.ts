@@ -262,6 +262,8 @@ export interface SceneConfig {
   shader_sin_cos_space?: number;
   /** Whether particle spark effects are enabled. */
   sparks?: boolean;
+  /** Global scene opacity (0 = fully transparent / black, 1 = fully opaque). */
+  opacity?: number;
 }
 
 // ---------------------------------------------------------------------------

@@ -422,6 +422,7 @@ export function AccordionSidebar() {
   );
 
   const sceneShow = useStudioStore((s) => s.config.scene?.show !== false);
+  const sceneOpacity = useStudioStore((s) => s.config.scene?.opacity ?? 1);
   const updateStudioConfig = useStudioStore((s) => s.updateConfig);
   const pushHistory = useStudioStore((s) => s.pushHistory);
 
@@ -429,6 +430,17 @@ export function AccordionSidebar() {
     pushHistory();
     updateStudioConfig("scene.show", !sceneShow);
   }, [pushHistory, updateStudioConfig, sceneShow]);
+
+  const handleOpacityChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      updateStudioConfig("scene.opacity", parseFloat(e.target.value));
+    },
+    [updateStudioConfig],
+  );
+
+  const handleOpacityCommit = useCallback(() => {
+    pushHistory();
+  }, [pushHistory]);
 
   if (!selectedScene) {
     return (
@@ -455,6 +467,17 @@ export function AccordionSidebar() {
           onChange={handleSceneNameChange}
           className="min-w-0 flex-1 rounded bg-transparent px-1.5 py-0.5 text-sm font-medium text-zinc-200 outline-none ring-zinc-600 transition-shadow hover:ring-1 focus:ring-1 focus:ring-indigo-500"
           spellCheck={false}
+        />
+        <input
+          type="range"
+          min={0}
+          max={1}
+          step={0.01}
+          value={sceneOpacity}
+          onChange={handleOpacityChange}
+          onMouseDown={handleOpacityCommit}
+          className="h-1 w-16 shrink-0 cursor-pointer appearance-none rounded bg-zinc-700 accent-indigo-500 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-indigo-400"
+          title={`Opacity: ${Math.round(sceneOpacity * 100)}%`}
         />
         <button
           type="button"

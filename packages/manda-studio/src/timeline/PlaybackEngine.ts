@@ -259,7 +259,9 @@ export class PlaybackEngine {
     // Fire-and-forget during playback — the RAF loop renders every frame.
     // Always push config so the renderer is ready when visibility changes.
     if (result.config && this.renderer) {
-      this.sceneVisible = result.config.scene?.show !== false;
+      this.sceneVisible =
+        result.config.scene?.show !== false &&
+        result.config.scene?.opacity !== 0;
       void this.pushConfigToRenderer(result.config);
     } else {
       this.sceneVisible = false;

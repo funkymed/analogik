@@ -40,6 +40,7 @@ export const configDefault: ConfigType = {
     shader_speed: 1,
     shader_opacity: 1.0,
     shader_blending: "additive" as const,
+    opacity: 1,
   },
 
   music: "",

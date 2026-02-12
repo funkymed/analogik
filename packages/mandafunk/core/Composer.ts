@@ -12,6 +12,7 @@ import { LensShader } from "../fx/passes/LensShader";
 import { FXAAShader } from "../fx/passes/FXAAShader";
 import { ColorifyShader } from "../fx/passes/ColorifyShader";
 import { WaterShader } from "../fx/passes/WaterShader";
+import { OpacityShader } from "../fx/passes/OpacityPass";
 import { ConfigType } from "../config/types";
 import { MandaScene } from "./MandaScene";
 
@@ -57,6 +58,8 @@ export class Composer {
   colorifyPass: ShaderPass;
   /** Water distortion shader pass. */
   waterPass: ShaderPass;
+  /** Final opacity shader pass. */
+  opacityPass: ShaderPass;
   /** Reference to the Three.js Scene. */
   scene: Scene;
   /** Reference to the MandaScene wrapper. */
@@ -101,6 +104,7 @@ export class Composer {
     this.colorifyPass = new ShaderPass(ColorifyShader);
     this.lensPass = new ShaderPass(LensShader);
     this.waterPass = new ShaderPass(WaterShader);
+    this.opacityPass = new ShaderPass(OpacityShader);
     this.mandaScene = mandaScene;
     this.scene = mandaScene.getScene();
     this.camera = camera;
@@ -197,6 +201,11 @@ export class Composer {
       this.staticPass.uniforms["size"].value = config.composer.static.size;
       this.composer.addPass(this.staticPass);
     }
+
+    // Final opacity pass — always added to avoid pipeline rebuilds
+    this.opacityPass.uniforms["uOpacity"].value =
+      config.scene?.opacity ?? 1;
+    this.composer.addPass(this.opacityPass);
   }
 
   /**
