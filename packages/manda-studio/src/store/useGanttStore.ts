@@ -730,6 +730,29 @@ export const useGanttStore = create<GanttState>((set, get) => ({
 
   registerAsset: (entry) => {
     const { timeline } = get();
+
+    // Deduplicate: reuse existing entry with same libraryId + type
+    if (entry.libraryId != null) {
+      const existing = Object.values(timeline.assets).find(
+        (a) => a.libraryId === entry.libraryId && a.type === entry.type,
+      );
+      if (existing) {
+        // Update runtimeUrl if the existing entry is missing one
+        if (entry.runtimeUrl && !existing.runtimeUrl) {
+          set({
+            timeline: {
+              ...timeline,
+              assets: {
+                ...timeline.assets,
+                [existing.id]: { ...existing, runtimeUrl: entry.runtimeUrl },
+              },
+            },
+          });
+        }
+        return;
+      }
+    }
+
     set({
       timeline: {
         ...timeline,
@@ -740,6 +763,34 @@ export const useGanttStore = create<GanttState>((set, get) => ({
 
   removeAsset: (assetId) => {
     const { timeline } = get();
+
+    // Referential integrity: don't remove if any scene or audio clip references this asset
+    const referencedByScene = timeline.scenes.some((s) => {
+      const cfg = s.baseConfig;
+      if (!cfg) return false;
+      // Background image
+      if (cfg.scene.bgAssetId === assetId) return true;
+      // Image overlays
+      if (cfg.images && !Array.isArray(cfg.images)) {
+        for (const img of Object.values(cfg.images as Record<string, { assetId?: string }>)) {
+          if (img.assetId === assetId) return true;
+        }
+      }
+      // Spark emitter sprites
+      if (cfg.sparks?.emitters && Array.isArray(cfg.sparks.emitters)) {
+        for (const emitter of cfg.sparks.emitters) {
+          if (emitter.assetId === assetId) return true;
+        }
+      }
+      return false;
+    });
+
+    const referencedByAudio = timeline.audioClips.some(
+      (c) => c.assetId === assetId,
+    );
+
+    if (referencedByScene || referencedByAudio) return;
+
     const { [assetId]: _removed, ...rest } = timeline.assets;
     set({
       timeline: { ...timeline, assets: rest },

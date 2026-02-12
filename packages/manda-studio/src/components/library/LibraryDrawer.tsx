@@ -15,6 +15,7 @@ import Trash2 from "lucide-react/dist/esm/icons/trash-2.js";
 import Play from "lucide-react/dist/esm/icons/play.js";
 import Loader2 from "lucide-react/dist/esm/icons/loader-2.js";
 import FilePlus from "lucide-react/dist/esm/icons/file-plus.js";
+import Code from "lucide-react/dist/esm/icons/code.js";
 import { usePresets } from "@/hooks/usePresets";
 import { useGanttStore } from "@/store/useGanttStore";
 import {
@@ -22,6 +23,7 @@ import {
   createProject,
   deleteProject as deleteProjectService,
   exportProjects,
+  exportCurrentProject,
   importProjects,
 } from "@/db/projectService";
 import type { Project } from "@/db/projectTypes";
@@ -209,6 +211,106 @@ function displayShaderName(name: string): string {
 }
 
 /* ------------------------------------------------------------------ */
+/*  JSON Viewer overlay                                               */
+/* ------------------------------------------------------------------ */
+
+/** Dracula-themed JSON syntax highlighter. */
+function highlightJson(json: string): (JSX.Element | string)[] {
+  // Regex matches: strings (keys + values), numbers, booleans, null
+  const tokenRe = /("(?:\\.|[^"\\])*")\s*(:)?|(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)|(\btrue\b|\bfalse\b)|(\bnull\b)/g;
+  const parts: (JSX.Element | string)[] = [];
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  let key = 0;
+  while ((match = tokenRe.exec(json)) !== null) {
+    // Push plain text before this match (braces, commas, whitespace)
+    if (match.index > lastIndex) {
+      parts.push(json.slice(lastIndex, match.index));
+    }
+
+    if (match[1] !== undefined) {
+      // String token — key or value?
+      if (match[2]) {
+        // Key (followed by colon)
+        parts.push(<span key={key++} style={{ color: "#8be9fd" }}>{match[1]}</span>);
+        parts.push(match[2]); // the colon
+      } else {
+        // String value
+        parts.push(<span key={key++} style={{ color: "#f1fa8c" }}>{match[1]}</span>);
+      }
+    } else if (match[3] !== undefined) {
+      // Number
+      parts.push(<span key={key++} style={{ color: "#bd93f9" }}>{match[3]}</span>);
+    } else if (match[4] !== undefined) {
+      // Boolean
+      parts.push(<span key={key++} style={{ color: "#ff79c6" }}>{match[4]}</span>);
+    } else if (match[5] !== undefined) {
+      // null
+      parts.push(<span key={key++} style={{ color: "#ff79c6" }}>{match[5]}</span>);
+    }
+
+    lastIndex = match.index + match[0].length;
+  }
+
+  // Remaining plain text
+  if (lastIndex < json.length) {
+    parts.push(json.slice(lastIndex));
+  }
+
+  return parts;
+}
+
+interface JsonViewerProps {
+  title: string;
+  json: string;
+  onClose: () => void;
+}
+
+function JsonViewer({ title, json, onClose }: JsonViewerProps) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = useCallback(() => {
+    void navigator.clipboard.writeText(json).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }, [json]);
+
+  const highlighted = highlightJson(json);
+
+  return (
+    <div className="absolute inset-0 z-10 flex flex-col" style={{ backgroundColor: "#282a36" }}>
+      <div className="flex shrink-0 items-center justify-between border-b px-4 py-2" style={{ borderColor: "#44475a" }}>
+        <span className="truncate text-xs font-semibold" style={{ color: "#f8f8f2" }}>{title}</span>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handleCopy}
+            className="flex items-center gap-1 rounded-md px-2 py-1 text-[10px] transition-colors hover:opacity-80"
+            style={{ color: "#6272a4" }}
+          >
+            <Copy size={12} />
+            {copied ? "Copied!" : "Copy"}
+          </button>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded p-1 transition-colors hover:opacity-80"
+            style={{ color: "#6272a4" }}
+          >
+            <X size={14} />
+          </button>
+        </div>
+      </div>
+      <pre className="flex-1 overflow-auto p-4 text-[11px] leading-relaxed" style={{ color: "#f8f8f2" }}>
+        <code>{highlighted}</code>
+      </pre>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /*  Library Drawer                                                    */
 /* ------------------------------------------------------------------ */
 
@@ -232,6 +334,7 @@ export function LibraryDrawer({ open, onClose, initialTab, loadAudioClipBuffer }
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [mediaSearchQuery, setMediaSearchQuery] = useState("");
   const [shaderSearchQuery, setShaderSearchQuery] = useState("");
+  const [jsonViewer, setJsonViewer] = useState<{ title: string; json: string } | null>(null);
 
   const config = useStudioStore((s) => s.config);
   const updateConfig = useStudioStore((s) => s.updateConfig);
@@ -486,16 +589,22 @@ export function LibraryDrawer({ open, onClose, initialTab, loadAudioClipBuffer }
     [showToast, refreshProjects],
   );
 
-  const handleExportProjects = useCallback(async () => {
-    const json = await exportProjects();
-    const blob = new Blob([json], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `manda-projects-${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-    showToast("Exported all projects");
+  const handleExportCurrentProject = useCallback(async () => {
+    const state = useGanttStore.getState();
+    await exportCurrentProject(
+      "current-project",
+      state.timeline,
+      state.sceneTrackCount,
+      state.audioTrackCount,
+    );
+    showToast("Exported current project");
+  }, [showToast]);
+
+  const handleExportProject = useCallback(async (project: Project) => {
+    const safeName = (project.name || "project").replace(/[^a-zA-Z0-9_-]/g, "_");
+    const filename = `${safeName}.manda`;
+    await exportProjects(project.id != null ? [project.id] : undefined, filename);
+    showToast(`Exported "${project.name}"`);
   }, [showToast]);
 
   const handleImportProjects = useCallback(
@@ -515,6 +624,22 @@ export function LibraryDrawer({ open, onClose, initialTab, loadAudioClipBuffer }
     },
     [showToast, refreshProjects],
   );
+
+  const handleViewCurrentJson = useCallback(() => {
+    const state = useGanttStore.getState();
+    const clean = stripRuntimeData(state.timeline);
+    setJsonViewer({
+      title: "Current Project",
+      json: JSON.stringify(clean, null, 2),
+    });
+  }, []);
+
+  const handleViewProjectJson = useCallback((project: Project) => {
+    setJsonViewer({
+      title: project.name,
+      json: JSON.stringify(project.timeline, null, 2),
+    });
+  }, []);
 
   const handleSearchChange = useCallback(
     (value: string) => {
@@ -731,6 +856,15 @@ export function LibraryDrawer({ open, onClose, initialTab, loadAudioClipBuffer }
                   <Save size={12} />
                   Save
                 </button>
+                <button
+                  type="button"
+                  onClick={handleViewCurrentJson}
+                  className="flex items-center gap-1.5 rounded-md bg-zinc-700 px-2.5 py-1.5 text-xs font-medium text-zinc-200 transition-colors hover:bg-zinc-600"
+                  title="View current project JSON"
+                >
+                  <Code size={12} />
+                  JSON
+                </button>
               </>
             )}
 
@@ -740,15 +874,15 @@ export function LibraryDrawer({ open, onClose, initialTab, loadAudioClipBuffer }
               type="button"
               onClick={() => projectFileInputRef.current?.click()}
               className="rounded-md p-1.5 text-zinc-400 transition-colors hover:bg-zinc-800 hover:text-zinc-200"
-              title="Import projects"
+              title="Import project (.manda)"
             >
               <Upload size={14} />
             </button>
             <button
               type="button"
-              onClick={() => void handleExportProjects()}
+              onClick={() => void handleExportCurrentProject()}
               className="rounded-md p-1.5 text-zinc-400 transition-colors hover:bg-zinc-800 hover:text-zinc-200"
-              title="Export all projects"
+              title="Export current project"
             >
               <Download size={14} />
             </button>
@@ -756,7 +890,7 @@ export function LibraryDrawer({ open, onClose, initialTab, loadAudioClipBuffer }
             <input
               ref={projectFileInputRef}
               type="file"
-              accept=".json"
+              accept=".manda,.json"
               className="hidden"
               onChange={(e) => void handleImportProjects(e)}
             />
@@ -801,6 +935,22 @@ export function LibraryDrawer({ open, onClose, initialTab, loadAudioClipBuffer }
                         title="Load project"
                       >
                         <Play size={12} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleViewProjectJson(project)}
+                        className="rounded-md bg-zinc-600 p-1.5 text-white transition-colors hover:bg-zinc-500"
+                        title="View JSON"
+                      >
+                        <Code size={12} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => void handleExportProject(project)}
+                        className="rounded-md bg-zinc-600 p-1.5 text-white transition-colors hover:bg-zinc-500"
+                        title="Export .manda"
+                      >
+                        <Download size={12} />
                       </button>
                       <button
                         type="button"
@@ -852,6 +1002,15 @@ export function LibraryDrawer({ open, onClose, initialTab, loadAudioClipBuffer }
       {/* Media tabs content */}
       {activeTab !== "scenes" && activeTab !== "projects" && activeTab !== "shaders" && (
         <MediaLibraryGrid type={activeTab} searchQuery={mediaSearchQuery} />
+      )}
+
+      {/* JSON viewer overlay */}
+      {jsonViewer && (
+        <JsonViewer
+          title={jsonViewer.title}
+          json={jsonViewer.json}
+          onClose={() => setJsonViewer(null)}
+        />
       )}
 
       {/* Toast notification */}

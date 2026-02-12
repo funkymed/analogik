@@ -1,0 +1,3515 @@
+{
+  "version": "1.0",
+  "exportedAt": "2026-02-11T17:10:57.938Z",
+  "projects": [
+    {
+      "name": "caca",
+      "timeline": {
+        "assets": {
+          "asset_mli85hm5_2": {
+            "id": "asset_mli85hm5_2",
+            "type": "image",
+            "name": "Capture d’écran 2026-01-09 à 10.08.32.png",
+            "mimeType": "image/png",
+            "libraryId": 5,
+            "meta": {
+              "width": 774,
+              "height": 734
+            }
+          },
+          "asset_mli8ag98_2": {
+            "id": "asset_mli8ag98_2",
+            "type": "image",
+            "name": "robot2.jpg",
+            "mimeType": "image/jpeg",
+            "libraryId": 4,
+            "meta": {
+              "width": 774,
+              "height": 734
+            }
+          },
+          "asset_mli8krsc_1": {
+            "id": "asset_mli8krsc_1",
+            "type": "image",
+            "name": "Capture d’écran 2026-01-09 à 10.08.32.png",
+            "mimeType": "image/png",
+            "libraryId": 5,
+            "meta": {
+              "width": 774,
+              "height": 734
+            }
+          },
+          "asset_mli8oekk_4": {
+            "id": "asset_mli8oekk_4",
+            "type": "image",
+            "name": "Capture d’écran 2026-01-09 à 10.08.32.png",
+            "mimeType": "image/png",
+            "libraryId": 5,
+            "meta": {
+              "width": 774,
+              "height": 734
+            }
+          },
+          "asset_mli8qozd_c": {
+            "id": "asset_mli8qozd_c",
+            "type": "audio",
+            "name": "med-merci-monsieur.wav",
+            "mimeType": "audio/wav",
+            "libraryId": 1,
+            "meta": {
+              "duration": 152.1000453514739
+            }
+          },
+          "asset_mli8sul3_1": {
+            "id": "asset_mli8sul3_1",
+            "type": "image",
+            "name": "robot3.jpg",
+            "mimeType": "image/jpeg",
+            "libraryId": 3,
+            "meta": {
+              "width": 774,
+              "height": 734
+            }
+          },
+          "asset_mli8vf5w_1": {
+            "id": "asset_mli8vf5w_1",
+            "type": "image",
+            "name": "Capture d’écran 2026-01-09 à 10.08.32.png",
+            "mimeType": "image/png",
+            "libraryId": 5,
+            "meta": {
+              "width": 774,
+              "height": 734
+            }
+          },
+          "asset_mli8wrui_1": {
+            "id": "asset_mli8wrui_1",
+            "type": "image",
+            "name": "Capture d’écran 2026-01-09 à 10.08.32.png",
+            "mimeType": "image/png",
+            "libraryId": 5,
+            "meta": {
+              "width": 774,
+              "height": 734
+            }
+          },
+          "asset_mli9a0xf_1": {
+            "id": "asset_mli9a0xf_1",
+            "type": "image",
+            "name": "Capture d’écran 2026-01-09 à 10.08.32.png",
+            "mimeType": "image/png",
+            "libraryId": 5,
+            "meta": {
+              "width": 774,
+              "height": 734
+            }
+          },
+          "asset_mli9r990_2": {
+            "id": "asset_mli9r990_2",
+            "type": "audio",
+            "name": "med-merci-monsieur.wav",
+            "mimeType": "audio/wav",
+            "libraryId": 1,
+            "meta": {
+              "duration": 152.1000453514739
+            }
+          },
+          "asset_mlia8rtu_1": {
+            "id": "asset_mlia8rtu_1",
+            "type": "image",
+            "name": "Capture d’écran 2026-01-09 à 10.08.32.png",
+            "mimeType": "image/png",
+            "libraryId": 5,
+            "meta": {
+              "width": 774,
+              "height": 734
+            }
+          },
+          "asset_mlia9nq4_2": {
+            "id": "asset_mlia9nq4_2",
+            "type": "audio",
+            "name": "med-merci-monsieur.wav",
+            "mimeType": "audio/wav",
+            "libraryId": 1,
+            "meta": {
+              "duration": 152.1000453514739
+            }
+          }
+        },
+        "scenes": [
+          {
+            "id": "scene_mli8aw09_3",
+            "name": "Scene 1",
+            "startTime": 0,
+            "duration": 6.51,
+            "color": "#6366f1",
+            "collapsed": true,
+            "hidden": false,
+            "trackIndex": 0,
+            "baseConfig": {
+              "scene": {
+                "bgColor": "",
+                "background": "",
+                "blur": 0,
+                "brightness": 92.81189956709957,
+                "shader": "Plasma",
+                "shader_speed": 0.8,
+                "shader_opacity": 1,
+                "shader_blending": "additive",
+                "shader_show": false,
+                "bgAssetId": "asset_mlia8rtu_1",
+                "bgLibraryId": 5,
+                "bgFit": "contain"
+              },
+              "music": "",
+              "timer": {
+                "show": false,
+                "color": "#ffffff",
+                "bgColor": false,
+                "opacity": 0.7,
+                "order": 1,
+                "width": 512,
+                "height": 64,
+                "size": 20,
+                "font": "Kdam Thmor Pro",
+                "align": "center",
+                "x": 0,
+                "y": -227.4,
+                "z": -500,
+                "rotationX": 0,
+                "rotationY": 0,
+                "rotationZ": 0
+              },
+              "progressbar": {
+                "show": false,
+                "color": "#ffffff",
+                "cursorColor": "#ffffff",
+                "bgColor": false,
+                "opacity": 0.32,
+                "order": 1,
+                "width": 512,
+                "height": 64,
+                "x": 0,
+                "y": -185.4,
+                "z": -500,
+                "rotationX": 0,
+                "rotationY": 0,
+                "rotationZ": 0
+              },
+              "vumeters": {
+                "oscilloscop": {
+                  "show": false,
+                  "color": "#00ff88",
+                  "bgColor": false,
+                  "motionBlur": true,
+                  "motionBlurLength": 0.25,
+                  "opacity": 0.9,
+                  "order": 1,
+                  "width": 1024,
+                  "height": 92,
+                  "x": 0,
+                  "y": 0,
+                  "z": -250,
+                  "rotationX": 0,
+                  "rotationY": 0,
+                  "rotationZ": 0
+                },
+                "spectrum": {
+                  "show": false,
+                  "color": "#ffffff",
+                  "bgColor": false,
+                  "multiColor": true,
+                  "centerSpectrum": false,
+                  "motionBlur": true,
+                  "motionBlurLength": 0.25,
+                  "opacity": 0.8,
+                  "order": 1,
+                  "bars": 64,
+                  "width": 512,
+                  "height": 48,
+                  "x": 0,
+                  "y": -156.3,
+                  "z": -500,
+                  "zoom": 1,
+                  "rotationX": 0,
+                  "rotationY": 0,
+                  "rotationZ": 0
+                }
+              },
+              "composer": {
+                "bloom": {
+                  "show": true,
+                  "strength": 0.85,
+                  "threshold": 0.73,
+                  "radius": 0.3
+                },
+                "rgb": {
+                  "show": false,
+                  "amount": 0.005,
+                  "angle": 0.7
+                },
+                "film": {
+                  "show": true,
+                  "count": 1000,
+                  "sIntensity": 0.22,
+                  "nIntensity": 0.59,
+                  "grayscale": false
+                },
+                "static": {
+                  "show": false,
+                  "amount": 0.2,
+                  "size": 2
+                },
+                "hue": {
+                  "show": true,
+                  "hue": 0,
+                  "saturation": 0
+                }
+              },
+              "images": {},
+              "texts": {},
+              "sparks": {
+                "enabled": false,
+                "emitters": []
+              }
+            },
+            "sequences": [
+              {
+                "type": "shader",
+                "label": "shader",
+                "startOffset": 0,
+                "duration": 30,
+                "order": 0,
+                "baseConfig": {},
+                "keyframes": [
+                  {
+                    "time": 0,
+                    "path": "scene.brightness",
+                    "value": 1,
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli8b1vo_5"
+                  },
+                  {
+                    "time": 1.77,
+                    "path": "scene.brightness",
+                    "value": 92,
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli8b8gu_8"
+                  },
+                  {
+                    "time": 6.01,
+                    "path": "scene.brightness",
+                    "value": 1,
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli8bmsk_a"
+                  },
+                  {
+                    "time": 4.08,
+                    "path": "scene.brightness",
+                    "value": 100,
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli8lau2_2"
+                  }
+                ],
+                "id": "seq_mli8b1vm_4"
+              },
+              {
+                "type": "shader",
+                "label": "shader",
+                "startOffset": 0,
+                "duration": 30,
+                "order": 0,
+                "baseConfig": {},
+                "keyframes": [],
+                "id": "seq_mli8b1vp_6"
+              }
+            ],
+            "sidebarItems": [
+              {
+                "id": "bg-0",
+                "type": "background"
+              },
+              {
+                "id": "si_mlia1bhb_5",
+                "type": "composer"
+              }
+            ]
+          },
+          {
+            "id": "scene_mli8cfge_b",
+            "name": "Scene 2",
+            "startTime": 6.29,
+            "duration": 7.78,
+            "color": "#8b5cf6",
+            "collapsed": true,
+            "hidden": false,
+            "trackIndex": 1,
+            "baseConfig": {
+              "scene": {
+                "bgColor": "#ef4747",
+                "background": "",
+                "blur": 0,
+                "brightness": 1,
+                "shader": "Plasma",
+                "shader_speed": 0.8,
+                "shader_opacity": 1,
+                "shader_blending": "additive",
+                "shader_show": false,
+                "bgFit": "contain"
+              },
+              "music": "",
+              "timer": {
+                "show": false,
+                "color": "#ffffff",
+                "bgColor": false,
+                "opacity": 0.7,
+                "order": 1,
+                "width": 512,
+                "height": 64,
+                "size": 20,
+                "font": "Kdam Thmor Pro",
+                "align": "center",
+                "x": 0,
+                "y": -227.4,
+                "z": -500,
+                "rotationX": 0,
+                "rotationY": 0,
+                "rotationZ": 0
+              },
+              "progressbar": {
+                "show": false,
+                "color": "#ffffff",
+                "cursorColor": "#ffffff",
+                "bgColor": false,
+                "opacity": 0.32,
+                "order": 1,
+                "width": 512,
+                "height": 64,
+                "x": 0,
+                "y": -185.4,
+                "z": -500,
+                "rotationX": 0,
+                "rotationY": 0,
+                "rotationZ": 0
+              },
+              "vumeters": {
+                "oscilloscop": {
+                  "show": false,
+                  "color": "#00ff88",
+                  "bgColor": false,
+                  "motionBlur": true,
+                  "motionBlurLength": 0.25,
+                  "opacity": 0.9,
+                  "order": 1,
+                  "width": 1024,
+                  "height": 92,
+                  "x": 0,
+                  "y": 0,
+                  "z": -250,
+                  "rotationX": 0,
+                  "rotationY": 0,
+                  "rotationZ": 0
+                },
+                "spectrum": {
+                  "show": false,
+                  "color": "#ffffff",
+                  "bgColor": false,
+                  "multiColor": true,
+                  "centerSpectrum": false,
+                  "motionBlur": true,
+                  "motionBlurLength": 0.25,
+                  "opacity": 0.8,
+                  "order": 1,
+                  "bars": 64,
+                  "width": 512,
+                  "height": 48,
+                  "x": 0,
+                  "y": -156.3,
+                  "z": -500,
+                  "zoom": 1,
+                  "rotationX": 0,
+                  "rotationY": 0,
+                  "rotationZ": 0
+                }
+              },
+              "composer": {
+                "bloom": {
+                  "show": false,
+                  "strength": 0.9,
+                  "threshold": 0.6,
+                  "radius": 0.5
+                },
+                "rgb": {
+                  "show": false,
+                  "amount": 0.003,
+                  "angle": 0.5
+                },
+                "film": {
+                  "show": false,
+                  "count": 800,
+                  "sIntensity": 0.15,
+                  "nIntensity": 0.4,
+                  "grayscale": false
+                },
+                "static": {
+                  "show": false,
+                  "amount": 0.2,
+                  "size": 2
+                },
+                "hue": {
+                  "show": false,
+                  "hue": 0,
+                  "saturation": 0
+                }
+              },
+              "images": {},
+              "texts": {
+                "text_1770827242100": {
+                  "show": true,
+                  "text": "Saucisse",
+                  "order": 1,
+                  "color": "#ffffff",
+                  "font": "Kdam Thmor Pro",
+                  "size": 24,
+                  "opacity": 1,
+                  "x": 0,
+                  "y": -119.67,
+                  "z": -500,
+                  "rotationX": 0,
+                  "rotationY": 0,
+                  "rotationZ": 0
+                }
+              },
+              "sparks": {
+                "enabled": false,
+                "emitters": ""
+              }
+            },
+            "sequences": [
+              {
+                "type": "shader",
+                "label": "shader",
+                "startOffset": 0,
+                "duration": 30,
+                "order": 0,
+                "baseConfig": {},
+                "keyframes": [
+                  {
+                    "time": 3.1902868652343734,
+                    "path": "scene.bgColor",
+                    "value": "#fd4b4b",
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli8dkzr_e"
+                  },
+                  {
+                    "time": 0,
+                    "path": "scene.bgColor",
+                    "value": "#000000",
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli8mdxl_1"
+                  },
+                  {
+                    "time": 5.4900573730468745,
+                    "path": "scene.bgColor",
+                    "value": "#ff5757",
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli8mkd9_2"
+                  },
+                  {
+                    "time": 7.730057373046875,
+                    "path": "scene.bgColor",
+                    "value": "#000000",
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli8mny2_3"
+                  }
+                ],
+                "id": "seq_mli8dhqg_c"
+              },
+              {
+                "type": "texts",
+                "label": "texts",
+                "startOffset": 0,
+                "duration": 7.78,
+                "order": 1,
+                "baseConfig": {},
+                "keyframes": [
+                  {
+                    "time": 1.271461705271328,
+                    "path": "texts.text_1770827242100.opacity",
+                    "value": 0.04,
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli8ts36_4"
+                  },
+                  {
+                    "time": 2.7496262478800846,
+                    "path": "texts.text_1770827242100.opacity",
+                    "value": 1,
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli8txn6_5"
+                  },
+                  {
+                    "time": 5.961791503933731,
+                    "path": "texts.text_1770827242100.opacity",
+                    "value": 1,
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli8u107_6"
+                  },
+                  {
+                    "time": 7.098841152094313,
+                    "path": "texts.text_1770827242100.opacity",
+                    "value": 0.01,
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli8u52t_7"
+                  }
+                ],
+                "id": "seq_mli8ts33_3"
+              }
+            ],
+            "sidebarItems": [
+              {
+                "id": "bg-0",
+                "type": "background"
+              },
+              {
+                "id": "si_mli8tgtw_2",
+                "type": "text",
+                "configKey": "text_1770827242100"
+              }
+            ]
+          },
+          {
+            "id": "scene_mli8oycr_5",
+            "name": "Scene 3",
+            "startTime": 13.81,
+            "duration": 6.479999999999999,
+            "color": "#ec4899",
+            "collapsed": true,
+            "hidden": false,
+            "trackIndex": 0,
+            "baseConfig": {
+              "scene": {
+                "bgColor": "#000000",
+                "background": "",
+                "blur": 0,
+                "brightness": 1,
+                "shader": "Med2",
+                "shader_speed": 0.8,
+                "shader_opacity": 1,
+                "shader_blending": "additive",
+                "shader_show": true,
+                "bgFit": "contain"
+              },
+              "music": "",
+              "timer": {
+                "show": false,
+                "color": "#ffffff",
+                "bgColor": false,
+                "opacity": 0.7,
+                "order": 1,
+                "width": 512,
+                "height": 64,
+                "size": 20,
+                "font": "Kdam Thmor Pro",
+                "align": "center",
+                "x": 0,
+                "y": -227.4,
+                "z": -500,
+                "rotationX": 0,
+                "rotationY": 0,
+                "rotationZ": 0
+              },
+              "progressbar": {
+                "show": false,
+                "color": "#ffffff",
+                "cursorColor": "#ffffff",
+                "bgColor": false,
+                "opacity": 0.32,
+                "order": 1,
+                "width": 512,
+                "height": 64,
+                "x": 0,
+                "y": -185.4,
+                "z": -500,
+                "rotationX": 0,
+                "rotationY": 0,
+                "rotationZ": 0
+              },
+              "vumeters": {
+                "oscilloscop": {
+                  "show": true,
+                  "color": "#ffffff",
+                  "bgColor": false,
+                  "motionBlur": true,
+                  "motionBlurLength": 0.25,
+                  "opacity": 1,
+                  "order": 1,
+                  "width": 1024,
+                  "height": 92,
+                  "x": 0,
+                  "y": 0,
+                  "z": -250,
+                  "rotationX": 0,
+                  "rotationY": 0,
+                  "rotationZ": 0
+                },
+                "spectrum": {
+                  "show": true,
+                  "color": "#ffffff",
+                  "bgColor": false,
+                  "multiColor": true,
+                  "centerSpectrum": false,
+                  "motionBlur": true,
+                  "motionBlurLength": 0.25,
+                  "opacity": 0.69,
+                  "order": 1,
+                  "bars": 128,
+                  "width": 512,
+                  "height": 48,
+                  "x": 0,
+                  "y": -156.3,
+                  "z": -500,
+                  "zoom": 1,
+                  "rotationX": 0,
+                  "rotationY": 0,
+                  "rotationZ": 0
+                }
+              },
+              "composer": {
+                "bloom": {
+                  "show": true,
+                  "strength": 0.85,
+                  "threshold": 0.73,
+                  "radius": 0.3
+                },
+                "rgb": {
+                  "show": false,
+                  "amount": 0.005,
+                  "angle": 0.7
+                },
+                "film": {
+                  "show": true,
+                  "count": 1000,
+                  "sIntensity": 0.22,
+                  "nIntensity": 0.59,
+                  "grayscale": false
+                },
+                "static": {
+                  "show": false,
+                  "amount": 0.2,
+                  "size": 2
+                },
+                "hue": {
+                  "show": true,
+                  "hue": 0,
+                  "saturation": 0
+                }
+              },
+              "images": {},
+              "texts": {},
+              "sparks": {
+                "enabled": false,
+                "emitters": ""
+              }
+            },
+            "sequences": [
+              {
+                "type": "shader",
+                "label": "shader",
+                "startOffset": 0,
+                "duration": 30,
+                "order": 0,
+                "baseConfig": {},
+                "keyframes": [
+                  {
+                    "time": 0.15005737304687372,
+                    "path": "scene.shader_opacity",
+                    "value": 0,
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli8q0mw_8"
+                  },
+                  {
+                    "time": 1.550057373046874,
+                    "path": "scene.shader_opacity",
+                    "value": 1,
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli8q51p_b"
+                  }
+                ],
+                "id": "seq_mli8q0mu_7"
+              },
+              {
+                "type": "shader",
+                "label": "shader",
+                "startOffset": 0,
+                "duration": 30,
+                "order": 0,
+                "baseConfig": {},
+                "keyframes": [
+                  {
+                    "time": 0.15005737304687372,
+                    "path": "sparks.emitters",
+                    "value": "",
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli8q0mx_a"
+                  }
+                ],
+                "id": "seq_mli8q0mx_9"
+              }
+            ],
+            "sidebarItems": [
+              {
+                "id": "bg-0",
+                "type": "background"
+              },
+              {
+                "id": "si_mli8pa72_6",
+                "type": "shader"
+              },
+              {
+                "id": "si_mli9s0q7_4",
+                "type": "vumeters"
+              },
+              {
+                "id": "si_mlia1m21_6",
+                "type": "composer"
+              }
+            ]
+          },
+          {
+            "id": "scene_mliaal8g_4",
+            "name": "Scene 4",
+            "startTime": 20.27,
+            "duration": 30,
+            "color": "#f59e0b",
+            "collapsed": true,
+            "hidden": false,
+            "trackIndex": 1,
+            "baseConfig": {
+              "scene": {
+                "bgColor": "",
+                "background": "",
+                "blur": 0,
+                "brightness": 1,
+                "shader": "Plasma",
+                "shader_speed": 0.8,
+                "shader_opacity": 1,
+                "shader_blending": "additive",
+                "shader_show": false,
+                "bgAssetId": "asset_mlia8rtu_1",
+                "bgLibraryId": 5,
+                "bgFit": "contain"
+              },
+              "music": "",
+              "timer": {
+                "show": false,
+                "color": "#ffffff",
+                "bgColor": false,
+                "opacity": 0.7,
+                "order": 1,
+                "width": 512,
+                "height": 64,
+                "size": 20,
+                "font": "Kdam Thmor Pro",
+                "align": "center",
+                "x": 0,
+                "y": -227.4,
+                "z": -500,
+                "rotationX": 0,
+                "rotationY": 0,
+                "rotationZ": 0
+              },
+              "progressbar": {
+                "show": false,
+                "color": "#ffffff",
+                "cursorColor": "#ffffff",
+                "bgColor": false,
+                "opacity": 0.32,
+                "order": 1,
+                "width": 512,
+                "height": 64,
+                "x": 0,
+                "y": -185.4,
+                "z": -500,
+                "rotationX": 0,
+                "rotationY": 0,
+                "rotationZ": 0
+              },
+              "vumeters": {
+                "oscilloscop": {
+                  "show": false,
+                  "color": "#00ff88",
+                  "bgColor": false,
+                  "motionBlur": true,
+                  "motionBlurLength": 0.25,
+                  "opacity": 0.9,
+                  "order": 1,
+                  "width": 1024,
+                  "height": 92,
+                  "x": 0,
+                  "y": 0,
+                  "z": -250,
+                  "rotationX": 0,
+                  "rotationY": 0,
+                  "rotationZ": 0
+                },
+                "spectrum": {
+                  "show": false,
+                  "color": "#ffffff",
+                  "bgColor": false,
+                  "multiColor": true,
+                  "centerSpectrum": false,
+                  "motionBlur": true,
+                  "motionBlurLength": 0.25,
+                  "opacity": 0.8,
+                  "order": 1,
+                  "bars": 64,
+                  "width": 512,
+                  "height": 48,
+                  "x": 0,
+                  "y": -156.3,
+                  "z": -500,
+                  "zoom": 1,
+                  "rotationX": 0,
+                  "rotationY": 0,
+                  "rotationZ": 0
+                }
+              },
+              "composer": {
+                "bloom": {
+                  "show": false,
+                  "strength": 0.85,
+                  "threshold": 0.73,
+                  "radius": 0.3
+                },
+                "rgb": {
+                  "show": false,
+                  "amount": 0.005,
+                  "angle": 0.7
+                },
+                "film": {
+                  "show": false,
+                  "count": 1000,
+                  "sIntensity": 0.22,
+                  "nIntensity": 0.59,
+                  "grayscale": false
+                },
+                "static": {
+                  "show": false,
+                  "amount": 0.2,
+                  "size": 2
+                },
+                "hue": {
+                  "show": false,
+                  "hue": 0,
+                  "saturation": 0
+                }
+              },
+              "images": {},
+              "texts": {},
+              "sparks": {
+                "enabled": false,
+                "emitters": []
+              }
+            },
+            "sequences": [],
+            "sidebarItems": [
+              {
+                "id": "bg-0",
+                "type": "background"
+              }
+            ]
+          }
+        ],
+        "transitions": [],
+        "audioClips": [
+          {
+            "name": "med-merci-monsieur.wav",
+            "url": "",
+            "startTime": 0,
+            "duration": 152.1000453514739,
+            "trimStart": 0,
+            "volume": 1,
+            "muted": false,
+            "trackIndex": 0,
+            "libraryId": 1,
+            "assetId": "asset_mlia9nq4_2",
+            "id": "audio_mlia9nq5_3"
+          }
+        ]
+      },
+      "sceneTrackCount": 2,
+      "audioTrackCount": 1,
+      "thumbnail": "",
+      "createdAt": "2026-02-11T17:09:08.127Z",
+      "updatedAt": "2026-02-11T17:09:08.127Z",
+      "id": 6
+    },
+    {
+      "name": "testtest",
+      "timeline": {
+        "assets": {
+          "asset_mli85hm5_2": {
+            "id": "asset_mli85hm5_2",
+            "type": "image",
+            "name": "Capture d’écran 2026-01-09 à 10.08.32.png",
+            "mimeType": "image/png",
+            "libraryId": 5,
+            "meta": {
+              "width": 774,
+              "height": 734
+            }
+          },
+          "asset_mli8ag98_2": {
+            "id": "asset_mli8ag98_2",
+            "type": "image",
+            "name": "robot2.jpg",
+            "mimeType": "image/jpeg",
+            "libraryId": 4,
+            "meta": {
+              "width": 774,
+              "height": 734
+            }
+          },
+          "asset_mli8krsc_1": {
+            "id": "asset_mli8krsc_1",
+            "type": "image",
+            "name": "Capture d’écran 2026-01-09 à 10.08.32.png",
+            "mimeType": "image/png",
+            "libraryId": 5,
+            "meta": {
+              "width": 774,
+              "height": 734
+            }
+          },
+          "asset_mli8oekk_4": {
+            "id": "asset_mli8oekk_4",
+            "type": "image",
+            "name": "Capture d’écran 2026-01-09 à 10.08.32.png",
+            "mimeType": "image/png",
+            "libraryId": 5,
+            "meta": {
+              "width": 774,
+              "height": 734
+            }
+          },
+          "asset_mli8qozd_c": {
+            "id": "asset_mli8qozd_c",
+            "type": "audio",
+            "name": "med-merci-monsieur.wav",
+            "mimeType": "audio/wav",
+            "libraryId": 1,
+            "meta": {
+              "duration": 152.1000453514739
+            }
+          },
+          "asset_mli8sul3_1": {
+            "id": "asset_mli8sul3_1",
+            "type": "image",
+            "name": "robot3.jpg",
+            "mimeType": "image/jpeg",
+            "libraryId": 3,
+            "meta": {
+              "width": 774,
+              "height": 734
+            }
+          },
+          "asset_mli8vf5w_1": {
+            "id": "asset_mli8vf5w_1",
+            "type": "image",
+            "name": "Capture d’écran 2026-01-09 à 10.08.32.png",
+            "mimeType": "image/png",
+            "libraryId": 5,
+            "meta": {
+              "width": 774,
+              "height": 734
+            }
+          },
+          "asset_mli8wrui_1": {
+            "id": "asset_mli8wrui_1",
+            "type": "image",
+            "name": "Capture d’écran 2026-01-09 à 10.08.32.png",
+            "mimeType": "image/png",
+            "libraryId": 5,
+            "meta": {
+              "width": 774,
+              "height": 734
+            }
+          },
+          "asset_mli9a0xf_1": {
+            "id": "asset_mli9a0xf_1",
+            "type": "image",
+            "name": "Capture d’écran 2026-01-09 à 10.08.32.png",
+            "mimeType": "image/png",
+            "libraryId": 5,
+            "meta": {
+              "width": 774,
+              "height": 734
+            }
+          },
+          "asset_mli9r990_2": {
+            "id": "asset_mli9r990_2",
+            "type": "audio",
+            "name": "med-merci-monsieur.wav",
+            "mimeType": "audio/wav",
+            "libraryId": 1,
+            "meta": {
+              "duration": 152.1000453514739
+            }
+          }
+        },
+        "scenes": [
+          {
+            "id": "scene_mli8aw09_3",
+            "name": "Scene 1",
+            "startTime": 0,
+            "duration": 6.51,
+            "color": "#6366f1",
+            "collapsed": true,
+            "hidden": false,
+            "trackIndex": 0,
+            "baseConfig": {
+              "scene": {
+                "bgColor": "",
+                "background": "",
+                "blur": 0,
+                "brightness": 95.29024198457792,
+                "shader": "Plasma",
+                "shader_speed": 0.8,
+                "shader_opacity": 1,
+                "shader_blending": "additive",
+                "shader_show": false,
+                "bgAssetId": "asset_mli9a0xf_1",
+                "bgLibraryId": 5,
+                "bgFit": "contain"
+              },
+              "music": "",
+              "timer": {
+                "show": false,
+                "color": "#ffffff",
+                "bgColor": false,
+                "opacity": 0.7,
+                "order": 1,
+                "width": 512,
+                "height": 64,
+                "size": 20,
+                "font": "Kdam Thmor Pro",
+                "align": "center",
+                "x": 0,
+                "y": -227.4,
+                "z": -500,
+                "rotationX": 0,
+                "rotationY": 0,
+                "rotationZ": 0
+              },
+              "progressbar": {
+                "show": false,
+                "color": "#ffffff",
+                "cursorColor": "#ffffff",
+                "bgColor": false,
+                "opacity": 0.32,
+                "order": 1,
+                "width": 512,
+                "height": 64,
+                "x": 0,
+                "y": -185.4,
+                "z": -500,
+                "rotationX": 0,
+                "rotationY": 0,
+                "rotationZ": 0
+              },
+              "vumeters": {
+                "oscilloscop": {
+                  "show": false,
+                  "color": "#00ff88",
+                  "bgColor": false,
+                  "motionBlur": true,
+                  "motionBlurLength": 0.25,
+                  "opacity": 0.9,
+                  "order": 1,
+                  "width": 1024,
+                  "height": 92,
+                  "x": 0,
+                  "y": 0,
+                  "z": -250,
+                  "rotationX": 0,
+                  "rotationY": 0,
+                  "rotationZ": 0
+                },
+                "spectrum": {
+                  "show": false,
+                  "color": "#ffffff",
+                  "bgColor": false,
+                  "multiColor": true,
+                  "centerSpectrum": false,
+                  "motionBlur": true,
+                  "motionBlurLength": 0.25,
+                  "opacity": 0.8,
+                  "order": 1,
+                  "bars": 64,
+                  "width": 512,
+                  "height": 48,
+                  "x": 0,
+                  "y": -156.3,
+                  "z": -500,
+                  "zoom": 1,
+                  "rotationX": 0,
+                  "rotationY": 0,
+                  "rotationZ": 0
+                }
+              },
+              "composer": {
+                "bloom": {
+                  "show": false,
+                  "strength": 0.9,
+                  "threshold": 0.6,
+                  "radius": 0.5
+                },
+                "rgb": {
+                  "show": false,
+                  "amount": 0.003,
+                  "angle": 0.5
+                },
+                "film": {
+                  "show": false,
+                  "count": 800,
+                  "sIntensity": 0.15,
+                  "nIntensity": 0.4,
+                  "grayscale": false
+                },
+                "static": {
+                  "show": false,
+                  "amount": 0.2,
+                  "size": 2
+                },
+                "hue": {
+                  "show": false,
+                  "hue": 0,
+                  "saturation": 0
+                }
+              },
+              "images": {},
+              "texts": {},
+              "sparks": {
+                "enabled": false,
+                "emitters": []
+              }
+            },
+            "sequences": [
+              {
+                "type": "shader",
+                "label": "shader",
+                "startOffset": 0,
+                "duration": 30,
+                "order": 0,
+                "baseConfig": {},
+                "keyframes": [
+                  {
+                    "time": 0,
+                    "path": "scene.brightness",
+                    "value": 1,
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli8b1vo_5"
+                  },
+                  {
+                    "time": 1.77,
+                    "path": "scene.brightness",
+                    "value": 92,
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli8b8gu_8"
+                  },
+                  {
+                    "time": 6.01,
+                    "path": "scene.brightness",
+                    "value": 1,
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli8bmsk_a"
+                  },
+                  {
+                    "time": 4.08,
+                    "path": "scene.brightness",
+                    "value": 100,
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli8lau2_2"
+                  }
+                ],
+                "id": "seq_mli8b1vm_4"
+              },
+              {
+                "type": "shader",
+                "label": "shader",
+                "startOffset": 0,
+                "duration": 30,
+                "order": 0,
+                "baseConfig": {},
+                "keyframes": [],
+                "id": "seq_mli8b1vp_6"
+              }
+            ],
+            "sidebarItems": [
+              {
+                "id": "bg-0",
+                "type": "background"
+              }
+            ]
+          },
+          {
+            "id": "scene_mli8cfge_b",
+            "name": "Scene 2",
+            "startTime": 6.29,
+            "duration": 7.78,
+            "color": "#8b5cf6",
+            "collapsed": true,
+            "hidden": false,
+            "trackIndex": 1,
+            "baseConfig": {
+              "scene": {
+                "bgColor": "#ef4747",
+                "background": "",
+                "blur": 0,
+                "brightness": 1,
+                "shader": "Plasma",
+                "shader_speed": 0.8,
+                "shader_opacity": 1,
+                "shader_blending": "additive",
+                "shader_show": false,
+                "bgFit": "contain"
+              },
+              "music": "",
+              "timer": {
+                "show": false,
+                "color": "#ffffff",
+                "bgColor": false,
+                "opacity": 0.7,
+                "order": 1,
+                "width": 512,
+                "height": 64,
+                "size": 20,
+                "font": "Kdam Thmor Pro",
+                "align": "center",
+                "x": 0,
+                "y": -227.4,
+                "z": -500,
+                "rotationX": 0,
+                "rotationY": 0,
+                "rotationZ": 0
+              },
+              "progressbar": {
+                "show": false,
+                "color": "#ffffff",
+                "cursorColor": "#ffffff",
+                "bgColor": false,
+                "opacity": 0.32,
+                "order": 1,
+                "width": 512,
+                "height": 64,
+                "x": 0,
+                "y": -185.4,
+                "z": -500,
+                "rotationX": 0,
+                "rotationY": 0,
+                "rotationZ": 0
+              },
+              "vumeters": {
+                "oscilloscop": {
+                  "show": false,
+                  "color": "#00ff88",
+                  "bgColor": false,
+                  "motionBlur": true,
+                  "motionBlurLength": 0.25,
+                  "opacity": 0.9,
+                  "order": 1,
+                  "width": 1024,
+                  "height": 92,
+                  "x": 0,
+                  "y": 0,
+                  "z": -250,
+                  "rotationX": 0,
+                  "rotationY": 0,
+                  "rotationZ": 0
+                },
+                "spectrum": {
+                  "show": false,
+                  "color": "#ffffff",
+                  "bgColor": false,
+                  "multiColor": true,
+                  "centerSpectrum": false,
+                  "motionBlur": true,
+                  "motionBlurLength": 0.25,
+                  "opacity": 0.8,
+                  "order": 1,
+                  "bars": 64,
+                  "width": 512,
+                  "height": 48,
+                  "x": 0,
+                  "y": -156.3,
+                  "z": -500,
+                  "zoom": 1,
+                  "rotationX": 0,
+                  "rotationY": 0,
+                  "rotationZ": 0
+                }
+              },
+              "composer": {
+                "bloom": {
+                  "show": false,
+                  "strength": 0.9,
+                  "threshold": 0.6,
+                  "radius": 0.5
+                },
+                "rgb": {
+                  "show": false,
+                  "amount": 0.003,
+                  "angle": 0.5
+                },
+                "film": {
+                  "show": false,
+                  "count": 800,
+                  "sIntensity": 0.15,
+                  "nIntensity": 0.4,
+                  "grayscale": false
+                },
+                "static": {
+                  "show": false,
+                  "amount": 0.2,
+                  "size": 2
+                },
+                "hue": {
+                  "show": false,
+                  "hue": 0,
+                  "saturation": 0
+                }
+              },
+              "images": {},
+              "texts": {
+                "text_1770827242100": {
+                  "show": true,
+                  "text": "Saucisse",
+                  "order": 1,
+                  "color": "#ffffff",
+                  "font": "Kdam Thmor Pro",
+                  "size": 24,
+                  "opacity": 1,
+                  "x": 0,
+                  "y": -119.67,
+                  "z": -500,
+                  "rotationX": 0,
+                  "rotationY": 0,
+                  "rotationZ": 0
+                }
+              },
+              "sparks": {
+                "enabled": false,
+                "emitters": ""
+              }
+            },
+            "sequences": [
+              {
+                "type": "shader",
+                "label": "shader",
+                "startOffset": 0,
+                "duration": 30,
+                "order": 0,
+                "baseConfig": {},
+                "keyframes": [
+                  {
+                    "time": 3.1902868652343734,
+                    "path": "scene.bgColor",
+                    "value": "#fd4b4b",
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli8dkzr_e"
+                  },
+                  {
+                    "time": 0,
+                    "path": "scene.bgColor",
+                    "value": "#000000",
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli8mdxl_1"
+                  },
+                  {
+                    "time": 5.4900573730468745,
+                    "path": "scene.bgColor",
+                    "value": "#ff5757",
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli8mkd9_2"
+                  },
+                  {
+                    "time": 7.730057373046875,
+                    "path": "scene.bgColor",
+                    "value": "#000000",
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli8mny2_3"
+                  }
+                ],
+                "id": "seq_mli8dhqg_c"
+              },
+              {
+                "type": "texts",
+                "label": "texts",
+                "startOffset": 0,
+                "duration": 7.78,
+                "order": 1,
+                "baseConfig": {},
+                "keyframes": [
+                  {
+                    "time": 1.271461705271328,
+                    "path": "texts.text_1770827242100.opacity",
+                    "value": 0.04,
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli8ts36_4"
+                  },
+                  {
+                    "time": 2.7496262478800846,
+                    "path": "texts.text_1770827242100.opacity",
+                    "value": 1,
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli8txn6_5"
+                  },
+                  {
+                    "time": 5.961791503933731,
+                    "path": "texts.text_1770827242100.opacity",
+                    "value": 1,
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli8u107_6"
+                  },
+                  {
+                    "time": 7.098841152094313,
+                    "path": "texts.text_1770827242100.opacity",
+                    "value": 0.01,
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli8u52t_7"
+                  }
+                ],
+                "id": "seq_mli8ts33_3"
+              }
+            ],
+            "sidebarItems": [
+              {
+                "id": "bg-0",
+                "type": "background"
+              },
+              {
+                "id": "si_mli8tgtw_2",
+                "type": "text",
+                "configKey": "text_1770827242100"
+              }
+            ]
+          },
+          {
+            "id": "scene_mli8oycr_5",
+            "name": "Scene 3",
+            "startTime": 13.81,
+            "duration": 6.479999999999999,
+            "color": "#ec4899",
+            "collapsed": true,
+            "hidden": false,
+            "trackIndex": 0,
+            "baseConfig": {
+              "scene": {
+                "bgColor": "#000000",
+                "background": "",
+                "blur": 0,
+                "brightness": 1,
+                "shader": "Med2",
+                "shader_speed": 0.8,
+                "shader_opacity": 1,
+                "shader_blending": "additive",
+                "shader_show": true,
+                "bgFit": "contain"
+              },
+              "music": "",
+              "timer": {
+                "show": false,
+                "color": "#ffffff",
+                "bgColor": false,
+                "opacity": 0.7,
+                "order": 1,
+                "width": 512,
+                "height": 64,
+                "size": 20,
+                "font": "Kdam Thmor Pro",
+                "align": "center",
+                "x": 0,
+                "y": -227.4,
+                "z": -500,
+                "rotationX": 0,
+                "rotationY": 0,
+                "rotationZ": 0
+              },
+              "progressbar": {
+                "show": false,
+                "color": "#ffffff",
+                "cursorColor": "#ffffff",
+                "bgColor": false,
+                "opacity": 0.32,
+                "order": 1,
+                "width": 512,
+                "height": 64,
+                "x": 0,
+                "y": -185.4,
+                "z": -500,
+                "rotationX": 0,
+                "rotationY": 0,
+                "rotationZ": 0
+              },
+              "vumeters": {
+                "oscilloscop": {
+                  "show": true,
+                  "color": "#ffffff",
+                  "bgColor": false,
+                  "motionBlur": true,
+                  "motionBlurLength": 0.25,
+                  "opacity": 1,
+                  "order": 1,
+                  "width": 1024,
+                  "height": 92,
+                  "x": 0,
+                  "y": 0,
+                  "z": -250,
+                  "rotationX": 0,
+                  "rotationY": 0,
+                  "rotationZ": 0
+                },
+                "spectrum": {
+                  "show": true,
+                  "color": "#ffffff",
+                  "bgColor": false,
+                  "multiColor": true,
+                  "centerSpectrum": false,
+                  "motionBlur": true,
+                  "motionBlurLength": 0.25,
+                  "opacity": 0.69,
+                  "order": 1,
+                  "bars": 128,
+                  "width": 512,
+                  "height": 48,
+                  "x": 0,
+                  "y": -156.3,
+                  "z": -500,
+                  "zoom": 1,
+                  "rotationX": 0,
+                  "rotationY": 0,
+                  "rotationZ": 0
+                }
+              },
+              "composer": {
+                "bloom": {
+                  "show": false,
+                  "strength": 0.9,
+                  "threshold": 0.6,
+                  "radius": 0.5
+                },
+                "rgb": {
+                  "show": false,
+                  "amount": 0.003,
+                  "angle": 0.5
+                },
+                "film": {
+                  "show": false,
+                  "count": 800,
+                  "sIntensity": 0.15,
+                  "nIntensity": 0.4,
+                  "grayscale": false
+                },
+                "static": {
+                  "show": false,
+                  "amount": 0.2,
+                  "size": 2
+                },
+                "hue": {
+                  "show": false,
+                  "hue": 0,
+                  "saturation": 0
+                }
+              },
+              "images": {},
+              "texts": {},
+              "sparks": {
+                "enabled": false,
+                "emitters": ""
+              }
+            },
+            "sequences": [
+              {
+                "type": "shader",
+                "label": "shader",
+                "startOffset": 0,
+                "duration": 30,
+                "order": 0,
+                "baseConfig": {},
+                "keyframes": [
+                  {
+                    "time": 0.15005737304687372,
+                    "path": "scene.shader_opacity",
+                    "value": 0,
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli8q0mw_8"
+                  },
+                  {
+                    "time": 1.550057373046874,
+                    "path": "scene.shader_opacity",
+                    "value": 1,
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli8q51p_b"
+                  }
+                ],
+                "id": "seq_mli8q0mu_7"
+              },
+              {
+                "type": "shader",
+                "label": "shader",
+                "startOffset": 0,
+                "duration": 30,
+                "order": 0,
+                "baseConfig": {},
+                "keyframes": [
+                  {
+                    "time": 0.15005737304687372,
+                    "path": "sparks.emitters",
+                    "value": "",
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli8q0mx_a"
+                  }
+                ],
+                "id": "seq_mli8q0mx_9"
+              }
+            ],
+            "sidebarItems": [
+              {
+                "id": "bg-0",
+                "type": "background"
+              },
+              {
+                "id": "si_mli8pa72_6",
+                "type": "shader"
+              },
+              {
+                "id": "si_mli9s0q7_4",
+                "type": "vumeters"
+              }
+            ]
+          }
+        ],
+        "transitions": [],
+        "audioClips": [
+          {
+            "name": "med-merci-monsieur.wav",
+            "url": "",
+            "startTime": 0,
+            "duration": 152.1000453514739,
+            "trimStart": 0,
+            "volume": 1,
+            "muted": false,
+            "trackIndex": 0,
+            "libraryId": 1,
+            "assetId": "asset_mli9r990_2",
+            "id": "audio_mli9r990_3"
+          }
+        ]
+      },
+      "sceneTrackCount": 2,
+      "audioTrackCount": 1,
+      "thumbnail": "",
+      "createdAt": "2026-02-11T16:56:56.797Z",
+      "updatedAt": "2026-02-11T16:56:56.797Z",
+      "id": 5
+    },
+    {
+      "name": "131231",
+      "timeline": {
+        "assets": {
+          "asset_mli85hm5_2": {
+            "id": "asset_mli85hm5_2",
+            "type": "image",
+            "name": "Capture d’écran 2026-01-09 à 10.08.32.png",
+            "mimeType": "image/png",
+            "libraryId": 5,
+            "meta": {
+              "width": 774,
+              "height": 734
+            }
+          },
+          "asset_mli8ag98_2": {
+            "id": "asset_mli8ag98_2",
+            "type": "image",
+            "name": "robot2.jpg",
+            "mimeType": "image/jpeg",
+            "libraryId": 4,
+            "meta": {
+              "width": 774,
+              "height": 734
+            }
+          },
+          "asset_mli8krsc_1": {
+            "id": "asset_mli8krsc_1",
+            "type": "image",
+            "name": "Capture d’écran 2026-01-09 à 10.08.32.png",
+            "mimeType": "image/png",
+            "libraryId": 5,
+            "meta": {
+              "width": 774,
+              "height": 734
+            }
+          },
+          "asset_mli8oekk_4": {
+            "id": "asset_mli8oekk_4",
+            "type": "image",
+            "name": "Capture d’écran 2026-01-09 à 10.08.32.png",
+            "mimeType": "image/png",
+            "libraryId": 5,
+            "meta": {
+              "width": 774,
+              "height": 734
+            }
+          },
+          "asset_mli8qozd_c": {
+            "id": "asset_mli8qozd_c",
+            "type": "audio",
+            "name": "med-merci-monsieur.wav",
+            "mimeType": "audio/wav",
+            "libraryId": 1,
+            "meta": {
+              "duration": 152.1000453514739
+            }
+          }
+        },
+        "scenes": [
+          {
+            "id": "scene_mli8aw09_3",
+            "name": "Scene 1",
+            "startTime": 0,
+            "duration": 6.51,
+            "color": "#6366f1",
+            "collapsed": false,
+            "hidden": false,
+            "trackIndex": 0,
+            "baseConfig": {
+              "scene": {
+                "bgColor": "",
+                "background": "",
+                "blur": 0,
+                "brightness": 1,
+                "shader": "Plasma",
+                "shader_speed": 0.8,
+                "shader_opacity": 1,
+                "shader_blending": "additive",
+                "shader_show": false,
+                "bgAssetId": "asset_mli8oekk_4",
+                "bgLibraryId": 5,
+                "bgFit": "contain"
+              },
+              "music": "",
+              "timer": {
+                "show": false,
+                "color": "#ffffff",
+                "bgColor": false,
+                "opacity": 0.7,
+                "order": 1,
+                "width": 512,
+                "height": 64,
+                "size": 20,
+                "font": "Kdam Thmor Pro",
+                "align": "center",
+                "x": 0,
+                "y": -227.4,
+                "z": -500,
+                "rotationX": 0,
+                "rotationY": 0,
+                "rotationZ": 0
+              },
+              "progressbar": {
+                "show": false,
+                "color": "#ffffff",
+                "cursorColor": "#ffffff",
+                "bgColor": false,
+                "opacity": 0.32,
+                "order": 1,
+                "width": 512,
+                "height": 64,
+                "x": 0,
+                "y": -185.4,
+                "z": -500,
+                "rotationX": 0,
+                "rotationY": 0,
+                "rotationZ": 0
+              },
+              "vumeters": {
+                "oscilloscop": {
+                  "show": false,
+                  "color": "#00ff88",
+                  "bgColor": false,
+                  "motionBlur": true,
+                  "motionBlurLength": 0.25,
+                  "opacity": 0.9,
+                  "order": 1,
+                  "width": 1024,
+                  "height": 92,
+                  "x": 0,
+                  "y": 0,
+                  "z": -250,
+                  "rotationX": 0,
+                  "rotationY": 0,
+                  "rotationZ": 0
+                },
+                "spectrum": {
+                  "show": false,
+                  "color": "#ffffff",
+                  "bgColor": false,
+                  "multiColor": true,
+                  "centerSpectrum": false,
+                  "motionBlur": true,
+                  "motionBlurLength": 0.25,
+                  "opacity": 0.8,
+                  "order": 1,
+                  "bars": 64,
+                  "width": 512,
+                  "height": 48,
+                  "x": 0,
+                  "y": -156.3,
+                  "z": -500,
+                  "zoom": 1,
+                  "rotationX": 0,
+                  "rotationY": 0,
+                  "rotationZ": 0
+                }
+              },
+              "composer": {
+                "bloom": {
+                  "show": false,
+                  "strength": 0.9,
+                  "threshold": 0.6,
+                  "radius": 0.5
+                },
+                "rgb": {
+                  "show": false,
+                  "amount": 0.003,
+                  "angle": 0.5
+                },
+                "film": {
+                  "show": false,
+                  "count": 800,
+                  "sIntensity": 0.15,
+                  "nIntensity": 0.4,
+                  "grayscale": false
+                },
+                "static": {
+                  "show": false,
+                  "amount": 0.2,
+                  "size": 2
+                },
+                "hue": {
+                  "show": false,
+                  "hue": 0,
+                  "saturation": 0
+                }
+              },
+              "images": {},
+              "texts": {},
+              "sparks": {
+                "enabled": false,
+                "emitters": []
+              }
+            },
+            "sequences": [
+              {
+                "type": "shader",
+                "label": "shader",
+                "startOffset": 0,
+                "duration": 30,
+                "order": 0,
+                "baseConfig": {},
+                "keyframes": [
+                  {
+                    "time": 0,
+                    "path": "scene.brightness",
+                    "value": 1,
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli8b1vo_5"
+                  },
+                  {
+                    "time": 1.77,
+                    "path": "scene.brightness",
+                    "value": 92,
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli8b8gu_8"
+                  },
+                  {
+                    "time": 6.01,
+                    "path": "scene.brightness",
+                    "value": 1,
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli8bmsk_a"
+                  },
+                  {
+                    "time": 4.08,
+                    "path": "scene.brightness",
+                    "value": 100,
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli8lau2_2"
+                  }
+                ],
+                "id": "seq_mli8b1vm_4"
+              },
+              {
+                "type": "shader",
+                "label": "shader",
+                "startOffset": 0,
+                "duration": 30,
+                "order": 0,
+                "baseConfig": {},
+                "keyframes": [],
+                "id": "seq_mli8b1vp_6"
+              }
+            ],
+            "sidebarItems": [
+              {
+                "id": "bg-0",
+                "type": "background"
+              }
+            ]
+          },
+          {
+            "id": "scene_mli8cfge_b",
+            "name": "Scene 2",
+            "startTime": 6.29,
+            "duration": 7.78,
+            "color": "#8b5cf6",
+            "collapsed": false,
+            "hidden": false,
+            "trackIndex": 1,
+            "baseConfig": {
+              "scene": {
+                "bgColor": "#000000",
+                "background": "",
+                "blur": 0,
+                "brightness": 1,
+                "shader": "Plasma",
+                "shader_speed": 0.8,
+                "shader_opacity": 1,
+                "shader_blending": "additive",
+                "shader_show": false,
+                "bgFit": "contain"
+              },
+              "music": "",
+              "timer": {
+                "show": false,
+                "color": "#ffffff",
+                "bgColor": false,
+                "opacity": 0.7,
+                "order": 1,
+                "width": 512,
+                "height": 64,
+                "size": 20,
+                "font": "Kdam Thmor Pro",
+                "align": "center",
+                "x": 0,
+                "y": -227.4,
+                "z": -500,
+                "rotationX": 0,
+                "rotationY": 0,
+                "rotationZ": 0
+              },
+              "progressbar": {
+                "show": false,
+                "color": "#ffffff",
+                "cursorColor": "#ffffff",
+                "bgColor": false,
+                "opacity": 0.32,
+                "order": 1,
+                "width": 512,
+                "height": 64,
+                "x": 0,
+                "y": -185.4,
+                "z": -500,
+                "rotationX": 0,
+                "rotationY": 0,
+                "rotationZ": 0
+              },
+              "vumeters": {
+                "oscilloscop": {
+                  "show": false,
+                  "color": "#00ff88",
+                  "bgColor": false,
+                  "motionBlur": true,
+                  "motionBlurLength": 0.25,
+                  "opacity": 0.9,
+                  "order": 1,
+                  "width": 1024,
+                  "height": 92,
+                  "x": 0,
+                  "y": 0,
+                  "z": -250,
+                  "rotationX": 0,
+                  "rotationY": 0,
+                  "rotationZ": 0
+                },
+                "spectrum": {
+                  "show": false,
+                  "color": "#ffffff",
+                  "bgColor": false,
+                  "multiColor": true,
+                  "centerSpectrum": false,
+                  "motionBlur": true,
+                  "motionBlurLength": 0.25,
+                  "opacity": 0.8,
+                  "order": 1,
+                  "bars": 64,
+                  "width": 512,
+                  "height": 48,
+                  "x": 0,
+                  "y": -156.3,
+                  "z": -500,
+                  "zoom": 1,
+                  "rotationX": 0,
+                  "rotationY": 0,
+                  "rotationZ": 0
+                }
+              },
+              "composer": {
+                "bloom": {
+                  "show": false,
+                  "strength": 0.9,
+                  "threshold": 0.6,
+                  "radius": 0.5
+                },
+                "rgb": {
+                  "show": false,
+                  "amount": 0.003,
+                  "angle": 0.5
+                },
+                "film": {
+                  "show": false,
+                  "count": 800,
+                  "sIntensity": 0.15,
+                  "nIntensity": 0.4,
+                  "grayscale": false
+                },
+                "static": {
+                  "show": false,
+                  "amount": 0.2,
+                  "size": 2
+                },
+                "hue": {
+                  "show": false,
+                  "hue": 0,
+                  "saturation": 0
+                }
+              },
+              "images": {},
+              "texts": {},
+              "sparks": {
+                "enabled": false,
+                "emitters": ""
+              }
+            },
+            "sequences": [
+              {
+                "type": "shader",
+                "label": "shader",
+                "startOffset": 0,
+                "duration": 30,
+                "order": 0,
+                "baseConfig": {},
+                "keyframes": [
+                  {
+                    "time": 3.1902868652343734,
+                    "path": "scene.bgColor",
+                    "value": "#fd4b4b",
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli8dkzr_e"
+                  },
+                  {
+                    "time": 0,
+                    "path": "scene.bgColor",
+                    "value": "#000000",
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli8mdxl_1"
+                  },
+                  {
+                    "time": 5.4900573730468745,
+                    "path": "scene.bgColor",
+                    "value": "#ff5757",
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli8mkd9_2"
+                  },
+                  {
+                    "time": 7.730057373046875,
+                    "path": "scene.bgColor",
+                    "value": "#000000",
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli8mny2_3"
+                  }
+                ],
+                "id": "seq_mli8dhqg_c"
+              }
+            ],
+            "sidebarItems": [
+              {
+                "id": "bg-0",
+                "type": "background"
+              }
+            ]
+          },
+          {
+            "id": "scene_mli8oycr_5",
+            "name": "Scene 3",
+            "startTime": 13.81,
+            "duration": 6.479999999999999,
+            "color": "#ec4899",
+            "collapsed": false,
+            "hidden": false,
+            "trackIndex": 0,
+            "baseConfig": {
+              "scene": {
+                "bgColor": "#000000",
+                "background": "",
+                "blur": 0,
+                "brightness": 1,
+                "shader": "Firestorm",
+                "shader_speed": 0.8,
+                "shader_opacity": 0,
+                "shader_blending": "additive",
+                "shader_show": true,
+                "bgFit": "contain"
+              },
+              "music": "",
+              "timer": {
+                "show": false,
+                "color": "#ffffff",
+                "bgColor": false,
+                "opacity": 0.7,
+                "order": 1,
+                "width": 512,
+                "height": 64,
+                "size": 20,
+                "font": "Kdam Thmor Pro",
+                "align": "center",
+                "x": 0,
+                "y": -227.4,
+                "z": -500,
+                "rotationX": 0,
+                "rotationY": 0,
+                "rotationZ": 0
+              },
+              "progressbar": {
+                "show": false,
+                "color": "#ffffff",
+                "cursorColor": "#ffffff",
+                "bgColor": false,
+                "opacity": 0.32,
+                "order": 1,
+                "width": 512,
+                "height": 64,
+                "x": 0,
+                "y": -185.4,
+                "z": -500,
+                "rotationX": 0,
+                "rotationY": 0,
+                "rotationZ": 0
+              },
+              "vumeters": {
+                "oscilloscop": {
+                  "show": false,
+                  "color": "#00ff88",
+                  "bgColor": false,
+                  "motionBlur": true,
+                  "motionBlurLength": 0.25,
+                  "opacity": 0.9,
+                  "order": 1,
+                  "width": 1024,
+                  "height": 92,
+                  "x": 0,
+                  "y": 0,
+                  "z": -250,
+                  "rotationX": 0,
+                  "rotationY": 0,
+                  "rotationZ": 0
+                },
+                "spectrum": {
+                  "show": false,
+                  "color": "#ffffff",
+                  "bgColor": false,
+                  "multiColor": true,
+                  "centerSpectrum": false,
+                  "motionBlur": true,
+                  "motionBlurLength": 0.25,
+                  "opacity": 0.8,
+                  "order": 1,
+                  "bars": 64,
+                  "width": 512,
+                  "height": 48,
+                  "x": 0,
+                  "y": -156.3,
+                  "z": -500,
+                  "zoom": 1,
+                  "rotationX": 0,
+                  "rotationY": 0,
+                  "rotationZ": 0
+                }
+              },
+              "composer": {
+                "bloom": {
+                  "show": false,
+                  "strength": 0.9,
+                  "threshold": 0.6,
+                  "radius": 0.5
+                },
+                "rgb": {
+                  "show": false,
+                  "amount": 0.003,
+                  "angle": 0.5
+                },
+                "film": {
+                  "show": false,
+                  "count": 800,
+                  "sIntensity": 0.15,
+                  "nIntensity": 0.4,
+                  "grayscale": false
+                },
+                "static": {
+                  "show": false,
+                  "amount": 0.2,
+                  "size": 2
+                },
+                "hue": {
+                  "show": false,
+                  "hue": 0,
+                  "saturation": 0
+                }
+              },
+              "images": {},
+              "texts": {},
+              "sparks": {
+                "enabled": false,
+                "emitters": []
+              }
+            },
+            "sequences": [
+              {
+                "type": "shader",
+                "label": "shader",
+                "startOffset": 0,
+                "duration": 30,
+                "order": 0,
+                "baseConfig": {},
+                "keyframes": [
+                  {
+                    "time": 0.15005737304687372,
+                    "path": "scene.shader_opacity",
+                    "value": 0,
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli8q0mw_8"
+                  },
+                  {
+                    "time": 1.550057373046874,
+                    "path": "scene.shader_opacity",
+                    "value": 1,
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli8q51p_b"
+                  }
+                ],
+                "id": "seq_mli8q0mu_7"
+              },
+              {
+                "type": "shader",
+                "label": "shader",
+                "startOffset": 0,
+                "duration": 30,
+                "order": 0,
+                "baseConfig": {},
+                "keyframes": [
+                  {
+                    "time": 0.15005737304687372,
+                    "path": "sparks.emitters",
+                    "value": "",
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli8q0mx_a"
+                  }
+                ],
+                "id": "seq_mli8q0mx_9"
+              }
+            ],
+            "sidebarItems": [
+              {
+                "id": "bg-0",
+                "type": "background"
+              },
+              {
+                "id": "si_mli8pa72_6",
+                "type": "shader"
+              }
+            ]
+          }
+        ],
+        "transitions": [],
+        "audioClips": [
+          {
+            "name": "med-merci-monsieur.wav",
+            "url": "",
+            "startTime": 0,
+            "duration": 152.1000453514739,
+            "trimStart": 0,
+            "volume": 1,
+            "muted": false,
+            "trackIndex": 0,
+            "libraryId": 1,
+            "assetId": "asset_mli8qozd_c",
+            "id": "audio_mli8qoze_d"
+          }
+        ]
+      },
+      "sceneTrackCount": 2,
+      "audioTrackCount": 1,
+      "thumbnail": "",
+      "createdAt": "2026-02-11T16:25:26.806Z",
+      "updatedAt": "2026-02-11T16:25:26.806Z",
+      "id": 4
+    },
+    {
+      "name": "azeaze",
+      "timeline": {
+        "assets": {
+          "asset_mli7d94w_2": {
+            "id": "asset_mli7d94w_2",
+            "type": "audio",
+            "name": "med-merci-monsieur.wav",
+            "mimeType": "audio/wav",
+            "libraryId": 1,
+            "meta": {
+              "duration": 152.1000453514739
+            }
+          },
+          "asset_mli7dfrn_4": {
+            "id": "asset_mli7dfrn_4",
+            "type": "image",
+            "name": "Capture d’écran 2026-01-09 à 10.08.32.png",
+            "mimeType": "image/png",
+            "libraryId": 5,
+            "meta": {
+              "width": 774,
+              "height": 734
+            }
+          }
+        },
+        "scenes": [
+          {
+            "id": "scene_mli7d3fk_1",
+            "name": "Scene 1",
+            "startTime": 0,
+            "duration": 30,
+            "color": "#6366f1",
+            "collapsed": true,
+            "hidden": false,
+            "trackIndex": 0,
+            "baseConfig": {
+              "scene": {
+                "bgColor": "",
+                "background": "",
+                "blur": 0,
+                "brightness": 68,
+                "shader": "",
+                "shader_speed": 0.8,
+                "shader_opacity": 1,
+                "shader_blending": "additive",
+                "bgAssetId": "asset_mli7dfrn_4",
+                "bgLibraryId": 5
+              },
+              "music": "",
+              "timer": {
+                "show": false,
+                "color": "#ffffff",
+                "bgColor": false,
+                "opacity": 0.7,
+                "order": 1,
+                "width": 512,
+                "height": 64,
+                "size": 20,
+                "font": "Kdam Thmor Pro",
+                "align": "center",
+                "x": 0,
+                "y": -227.4,
+                "z": -500,
+                "rotationX": 0,
+                "rotationY": 0,
+                "rotationZ": 0
+              },
+              "progressbar": {
+                "show": false,
+                "color": "#ffffff",
+                "cursorColor": "#ffffff",
+                "bgColor": false,
+                "opacity": 0.32,
+                "order": 1,
+                "width": 512,
+                "height": 64,
+                "x": 0,
+                "y": -185.4,
+                "z": -500,
+                "rotationX": 0,
+                "rotationY": 0,
+                "rotationZ": 0
+              },
+              "vumeters": {
+                "oscilloscop": {
+                  "show": false,
+                  "color": "#00ff88",
+                  "bgColor": false,
+                  "motionBlur": true,
+                  "motionBlurLength": 0.25,
+                  "opacity": 0.9,
+                  "order": 1,
+                  "width": 1024,
+                  "height": 92,
+                  "x": 0,
+                  "y": 0,
+                  "z": -250,
+                  "rotationX": 0,
+                  "rotationY": 0,
+                  "rotationZ": 0
+                },
+                "spectrum": {
+                  "show": false,
+                  "color": "#ffffff",
+                  "bgColor": false,
+                  "multiColor": true,
+                  "centerSpectrum": false,
+                  "motionBlur": true,
+                  "motionBlurLength": 0.25,
+                  "opacity": 0.8,
+                  "order": 1,
+                  "bars": 64,
+                  "width": 512,
+                  "height": 48,
+                  "x": 0,
+                  "y": -156.3,
+                  "z": -500,
+                  "zoom": 1,
+                  "rotationX": 0,
+                  "rotationY": 0,
+                  "rotationZ": 0
+                }
+              },
+              "composer": {
+                "bloom": {
+                  "show": false,
+                  "strength": 0.9,
+                  "threshold": 0.6,
+                  "radius": 0.5
+                },
+                "rgb": {
+                  "show": false,
+                  "amount": 0.003,
+                  "angle": 0.5
+                },
+                "film": {
+                  "show": false,
+                  "count": 800,
+                  "sIntensity": 0.15,
+                  "nIntensity": 0.4,
+                  "grayscale": false
+                },
+                "static": {
+                  "show": false,
+                  "amount": 0.2,
+                  "size": 2
+                },
+                "hue": {
+                  "show": false,
+                  "hue": 0,
+                  "saturation": 0
+                }
+              },
+              "images": {},
+              "texts": {},
+              "sparks": {
+                "enabled": false,
+                "emitters": []
+              }
+            },
+            "sequences": [],
+            "sidebarItems": [
+              {
+                "id": "bg-0",
+                "type": "background"
+              }
+            ]
+          }
+        ],
+        "transitions": [],
+        "audioClips": [
+          {
+            "name": "med-merci-monsieur.wav",
+            "url": "",
+            "startTime": 0,
+            "duration": 152.1000453514739,
+            "trimStart": 0,
+            "volume": 1,
+            "muted": false,
+            "trackIndex": 0,
+            "libraryId": 1,
+            "assetId": "asset_mli7d94w_2",
+            "id": "audio_mli7d94x_3"
+          }
+        ]
+      },
+      "sceneTrackCount": 1,
+      "audioTrackCount": 1,
+      "thumbnail": "",
+      "createdAt": "2026-02-11T15:47:18.768Z",
+      "updatedAt": "2026-02-11T15:47:18.768Z",
+      "id": 3
+    },
+    {
+      "name": "toto",
+      "timeline": {
+        "scenes": [
+          {
+            "id": "scene_mli3hcat_1",
+            "name": "Scene 1",
+            "startTime": 0,
+            "duration": 30,
+            "color": "#6366f1",
+            "collapsed": true,
+            "hidden": false,
+            "trackIndex": 0,
+            "baseConfig": {
+              "scene": {
+                "bgColor": "#3038a6",
+                "background": "",
+                "blur": 0,
+                "brightness": 90,
+                "shader": "",
+                "shader_speed": 0.8,
+                "shader_opacity": 1,
+                "shader_blending": "additive"
+              },
+              "music": "",
+              "timer": {
+                "show": false,
+                "color": "#ffffff",
+                "bgColor": false,
+                "opacity": 0.7,
+                "order": 1,
+                "width": 512,
+                "height": 64,
+                "size": 20,
+                "font": "Kdam Thmor Pro",
+                "align": "center",
+                "x": 0,
+                "y": -227.4,
+                "z": -500,
+                "rotationX": 0,
+                "rotationY": 0,
+                "rotationZ": 0
+              },
+              "progressbar": {
+                "show": false,
+                "color": "#ffffff",
+                "cursorColor": "#ffffff",
+                "bgColor": false,
+                "opacity": 0.32,
+                "order": 1,
+                "width": 512,
+                "height": 64,
+                "x": 0,
+                "y": -185.4,
+                "z": -500,
+                "rotationX": 0,
+                "rotationY": 0,
+                "rotationZ": 0
+              },
+              "vumeters": {
+                "oscilloscop": {
+                  "show": false,
+                  "color": "#00ff88",
+                  "bgColor": false,
+                  "motionBlur": true,
+                  "motionBlurLength": 0.25,
+                  "opacity": 0.9,
+                  "order": 1,
+                  "width": 1024,
+                  "height": 92,
+                  "x": 0,
+                  "y": 0,
+                  "z": -250,
+                  "rotationX": 0,
+                  "rotationY": 0,
+                  "rotationZ": 0
+                },
+                "spectrum": {
+                  "show": false,
+                  "color": "#ffffff",
+                  "bgColor": false,
+                  "multiColor": true,
+                  "centerSpectrum": false,
+                  "motionBlur": true,
+                  "motionBlurLength": 0.25,
+                  "opacity": 0.8,
+                  "order": 1,
+                  "bars": 64,
+                  "width": 512,
+                  "height": 48,
+                  "x": 0,
+                  "y": -156.3,
+                  "z": -500,
+                  "zoom": 1,
+                  "rotationX": 0,
+                  "rotationY": 0,
+                  "rotationZ": 0
+                }
+              },
+              "composer": {
+                "bloom": {
+                  "show": false,
+                  "strength": 0.9,
+                  "threshold": 0.6,
+                  "radius": 0.5
+                },
+                "rgb": {
+                  "show": false,
+                  "amount": 0.003,
+                  "angle": 0.5
+                },
+                "film": {
+                  "show": false,
+                  "count": 800,
+                  "sIntensity": 0.15,
+                  "nIntensity": 0.4,
+                  "grayscale": false
+                },
+                "static": {
+                  "show": false,
+                  "amount": 0.2,
+                  "size": 2
+                },
+                "hue": {
+                  "show": false,
+                  "hue": 0,
+                  "saturation": 0
+                }
+              },
+              "images": {
+                "image_1770818341379": {
+                  "show": true,
+                  "path": "blob:http://localhost:5173/bc553276-d039-4201-be5b-4e8ae87831de",
+                  "order": 1,
+                  "opacity": 1,
+                  "x": 371.97,
+                  "y": -7.33,
+                  "z": 115.73,
+                  "zoom": 7.9,
+                  "rotationX": -0.89,
+                  "rotationY": 0,
+                  "rotationZ": 0,
+                  "libraryId": 1.008,
+                  "blending": "normal"
+                }
+              },
+              "texts": {},
+              "sparks": {
+                "enabled": false,
+                "emitters": ""
+              }
+            },
+            "sequences": [
+              {
+                "type": "images",
+                "label": "images",
+                "startOffset": 0,
+                "duration": 30,
+                "order": 0,
+                "baseConfig": {},
+                "keyframes": [
+                  {
+                    "time": 0,
+                    "path": "images.image_1770818341379.x",
+                    "value": 371.97,
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli3kfpv_6"
+                  },
+                  {
+                    "time": 0,
+                    "path": "images.image_1770818341379.rotationX",
+                    "value": -0.89,
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli3kh3d_9"
+                  },
+                  {
+                    "time": 0,
+                    "path": "images.image_1770818341379.path",
+                    "value": "blob:http://localhost:5173/bc553276-d039-4201-be5b-4e8ae87831de",
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli3l0aq_a"
+                  },
+                  {
+                    "time": 0.40724981552615036,
+                    "path": "images.image_1770818341379.libraryId",
+                    "value": 1.008,
+                    "easing": {
+                      "type": "easeIn"
+                    },
+                    "id": "kf_mli3l0aq_b"
+                  },
+                  {
+                    "time": 10.978620736397314,
+                    "path": "images.image_1770818341379.libraryId",
+                    "value": 5,
+                    "easing": {
+                      "type": "easeInOut"
+                    },
+                    "id": "kf_mli3ulnn_c"
+                  },
+                  {
+                    "time": 17.5617986871265,
+                    "path": "images.image_1770818341379.libraryId",
+                    "value": 1.0099130976475288,
+                    "easing": {
+                      "type": "easeInOut"
+                    },
+                    "id": "kf_mli3uo1x_d"
+                  },
+                  {
+                    "time": 23.35361923628708,
+                    "path": "images.image_1770818341379.libraryId",
+                    "value": 1.0111622708160843,
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli3uola_e"
+                  }
+                ],
+                "id": "seq_mli3kfpu_5"
+              },
+              {
+                "type": "shader",
+                "label": "shader",
+                "startOffset": 0,
+                "duration": 30,
+                "order": 0,
+                "baseConfig": {},
+                "keyframes": [
+                  {
+                    "time": 0,
+                    "path": "sparks.emitters",
+                    "value": "",
+                    "easing": {
+                      "type": "linear"
+                    },
+                    "id": "kf_mli3kfpw_8"
+                  }
+                ],
+                "id": "seq_mli3kfpw_7"
+              }
+            ],
+            "sidebarItems": [
+              {
+                "id": "bg-0",
+                "type": "background"
+              },
+              {
+                "id": "si_mli3iozm_2",
+                "type": "image",
+                "configKey": "image_1770818341379"
+              }
+            ]
+          },
+          {
+            "id": "scene_mli3jrxy_3",
+            "name": "Scene 2",
+            "startTime": 30,
+            "duration": 30,
+            "color": "#8b5cf6",
+            "collapsed": true,
+            "hidden": false,
+            "trackIndex": 0,
+            "baseConfig": {
+              "scene": {
+                "bgColor": "#db3838",
+                "background": "",
+                "blur": 0,
+                "brightness": 90,
+                "shader": "",
+                "shader_speed": 0.8,
+                "shader_opacity": 1,
+                "shader_blending": "additive"
+              },
+              "music": "",
+              "timer": {
+                "show": false,
+                "color": "#ffffff",
+                "bgColor": false,
+                "opacity": 0.7,
+                "order": 1,
+                "width": 512,
+                "height": 64,
+                "size": 20,
+                "font": "Kdam Thmor Pro",
+                "align": "center",
+                "x": 0,
+                "y": -227.4,
+                "z": -500,
+                "rotationX": 0,
+                "rotationY": 0,
+                "rotationZ": 0
+              },
+              "progressbar": {
+                "show": false,
+                "color": "#ffffff",
+                "cursorColor": "#ffffff",
+                "bgColor": false,
+                "opacity": 0.32,
+                "order": 1,
+                "width": 512,
+                "height": 64,
+                "x": 0,
+                "y": -185.4,
+                "z": -500,
+                "rotationX": 0,
+                "rotationY": 0,
+                "rotationZ": 0
+              },
+              "vumeters": {
+                "oscilloscop": {
+                  "show": false,
+                  "color": "#00ff88",
+                  "bgColor": false,
+                  "motionBlur": true,
+                  "motionBlurLength": 0.25,
+                  "opacity": 0.9,
+                  "order": 1,
+                  "width": 1024,
+                  "height": 92,
+                  "x": 0,
+                  "y": 0,
+                  "z": -250,
+                  "rotationX": 0,
+                  "rotationY": 0,
+                  "rotationZ": 0
+                },
+                "spectrum": {
+                  "show": false,
+                  "color": "#ffffff",
+                  "bgColor": false,
+                  "multiColor": true,
+                  "centerSpectrum": false,
+                  "motionBlur": true,
+                  "motionBlurLength": 0.25,
+                  "opacity": 0.8,
+                  "order": 1,
+                  "bars": 64,
+                  "width": 512,
+                  "height": 48,
+                  "x": 0,
+                  "y": -156.3,
+                  "z": -500,
+                  "zoom": 1,
+                  "rotationX": 0,
+                  "rotationY": 0,
+                  "rotationZ": 0
+                }
+              },
+              "composer": {
+                "bloom": {
+                  "show": false,
+                  "strength": 0.9,
+                  "threshold": 0.6,
+                  "radius": 0.5
+                },
+                "rgb": {
+                  "show": false,
+                  "amount": 0.003,
+                  "angle": 0.5
+                },
+                "film": {
+                  "show": false,
+                  "count": 800,
+                  "sIntensity": 0.15,
+                  "nIntensity": 0.4,
+                  "grayscale": false
+                },
+                "static": {
+                  "show": false,
+                  "amount": 0.2,
+                  "size": 2
+                },
+                "hue": {
+                  "show": false,
+                  "hue": 0,
+                  "saturation": 0
+                }
+              },
+              "images": {},
+              "texts": {},
+              "sparks": {
+                "enabled": false,
+                "emitters": []
+              }
+            },
+            "sequences": [],
+            "sidebarItems": [
+              {
+                "id": "bg-0",
+                "type": "background"
+              }
+            ]
+          },
+          {
+            "id": "scene_mli3js1u_4",
+            "name": "Scene 3",
+            "startTime": 60,
+            "duration": 30,
+            "color": "#ec4899",
+            "collapsed": true,
+            "hidden": false,
+            "trackIndex": 0,
+            "baseConfig": {
+              "scene": {
+                "bgColor": "#6c8927",
+                "background": "",
+                "blur": 0,
+                "brightness": 90,
+                "shader": "",
+                "shader_speed": 0.8,
+                "shader_opacity": 1,
+                "shader_blending": "additive"
+              },
+              "music": "",
+              "timer": {
+                "show": false,
+                "color": "#ffffff",
+                "bgColor": false,
+                "opacity": 0.7,
+                "order": 1,
+                "width": 512,
+                "height": 64,
+                "size": 20,
+                "font": "Kdam Thmor Pro",
+                "align": "center",
+                "x": 0,
+                "y": -227.4,
+                "z": -500,
+                "rotationX": 0,
+                "rotationY": 0,
+                "rotationZ": 0
+              },
+              "progressbar": {
+                "show": false,
+                "color": "#ffffff",
+                "cursorColor": "#ffffff",
+                "bgColor": false,
+                "opacity": 0.32,
+                "order": 1,
+                "width": 512,
+                "height": 64,
+                "x": 0,
+                "y": -185.4,
+                "z": -500,
+                "rotationX": 0,
+                "rotationY": 0,
+                "rotationZ": 0
+              },
+              "vumeters": {
+                "oscilloscop": {
+                  "show": false,
+                  "color": "#00ff88",
+                  "bgColor": false,
+                  "motionBlur": true,
+                  "motionBlurLength": 0.25,
+                  "opacity": 0.9,
+                  "order": 1,
+                  "width": 1024,
+                  "height": 92,
+                  "x": 0,
+                  "y": 0,
+                  "z": -250,
+                  "rotationX": 0,
+                  "rotationY": 0,
+                  "rotationZ": 0
+                },
+                "spectrum": {
+                  "show": false,
+                  "color": "#ffffff",
+                  "bgColor": false,
+                  "multiColor": true,
+                  "centerSpectrum": false,
+                  "motionBlur": true,
+                  "motionBlurLength": 0.25,
+                  "opacity": 0.8,
+                  "order": 1,
+                  "bars": 64,
+                  "width": 512,
+                  "height": 48,
+                  "x": 0,
+                  "y": -156.3,
+                  "z": -500,
+                  "zoom": 1,
+                  "rotationX": 0,
+                  "rotationY": 0,
+                  "rotationZ": 0
+                }
+              },
+              "composer": {
+                "bloom": {
+                  "show": false,
+                  "strength": 0.9,
+                  "threshold": 0.6,
+                  "radius": 0.5
+                },
+                "rgb": {
+                  "show": false,
+                  "amount": 0.003,
+                  "angle": 0.5
+                },
+                "film": {
+                  "show": false,
+                  "count": 800,
+                  "sIntensity": 0.15,
+                  "nIntensity": 0.4,
+                  "grayscale": false
+                },
+                "static": {
+                  "show": false,
+                  "amount": 0.2,
+                  "size": 2
+                },
+                "hue": {
+                  "show": false,
+                  "hue": 0,
+                  "saturation": 0
+                }
+              },
+              "images": {},
+              "texts": {},
+              "sparks": {
+                "enabled": false,
+                "emitters": []
+              }
+            },
+            "sequences": [],
+            "sidebarItems": [
+              {
+                "id": "bg-0",
+                "type": "background"
+              }
+            ]
+          }
+        ],
+        "transitions": [],
+        "audioClips": [
+          {
+            "name": "med-merci-monsieur.wav",
+            "url": "blob:http://localhost:5173/02911449-0588-46ce-8b1f-314cf080706a",
+            "startTime": 0,
+            "duration": 152.1000453514739,
+            "trimStart": 0,
+            "volume": 1,
+            "muted": false,
+            "trackIndex": 0,
+            "libraryId": 1,
+            "id": "audio_mli6zfgk_f"
+          }
+        ]
+      },
+      "sceneTrackCount": 1,
+      "audioTrackCount": 1,
+      "thumbnail": "",
+      "createdAt": "2026-02-11T15:39:51.033Z",
+      "updatedAt": "2026-02-11T15:39:51.033Z",
+      "id": 2
+    },
+    {
+      "name": "test123",
+      "timeline": {
+        "scenes": [
+          {
+            "id": "scene_mli2eswx_1",
+            "name": "Scene 1",
+            "startTime": 0,
+            "duration": 17.06,
+            "color": "#6366f1",
+            "collapsed": true,
+            "hidden": false,
+            "trackIndex": 0,
+            "baseConfig": {
+              "scene": {
+                "bgColor": "#ff1c1c",
+                "background": "",
+                "blur": 0,
+                "brightness": 90,
+                "shader": "Cube",
+                "shader_speed": 0.8,
+                "shader_opacity": 1,
+                "shader_blending": "additive"
+              },
+              "music": "",
+              "timer": {
+                "show": false,
+                "color": "#ffffff",
+                "bgColor": false,
+                "opacity": 0.7,
+                "order": 1,
+                "width": 512,
+                "height": 64,
+                "size": 20,
+                "font": "Kdam Thmor Pro",
+                "align": "center",
+                "x": 0,
+                "y": -227.4,
+                "z": -500,
+                "rotationX": 0,
+                "rotationY": 0,
+                "rotationZ": 0
+              },
+              "progressbar": {
+                "show": false,
+                "color": "#ffffff",
+                "cursorColor": "#ffffff",
+                "bgColor": false,
+                "opacity": 0.32,
+                "order": 1,
+                "width": 512,
+                "height": 64,
+                "x": 0,
+                "y": -185.4,
+                "z": -500,
+                "rotationX": 0,
+                "rotationY": 0,
+                "rotationZ": 0
+              },
+              "vumeters": {
+                "oscilloscop": {
+                  "show": false,
+                  "color": "#00ff88",
+                  "bgColor": false,
+                  "motionBlur": true,
+                  "motionBlurLength": 0.25,
+                  "opacity": 0.9,
+                  "order": 1,
+                  "width": 1024,
+                  "height": 92,
+                  "x": 0,
+                  "y": 0,
+                  "z": -250,
+                  "rotationX": 0,
+                  "rotationY": 0,
+                  "rotationZ": 0
+                },
+                "spectrum": {
+                  "show": false,
+                  "color": "#ffffff",
+                  "bgColor": false,
+                  "multiColor": true,
+                  "centerSpectrum": false,
+                  "motionBlur": true,
+                  "motionBlurLength": 0.25,
+                  "opacity": 0.8,
+                  "order": 1,
+                  "bars": 64,
+                  "width": 512,
+                  "height": 48,
+                  "x": 0,
+                  "y": -156.3,
+                  "z": -500,
+                  "zoom": 1,
+                  "rotationX": 0,
+                  "rotationY": 0,
+                  "rotationZ": 0
+                }
+              },
+              "composer": {
+                "bloom": {
+                  "show": true,
+                  "strength": 0.9,
+                  "threshold": 0.6,
+                  "radius": 0.5
+                },
+                "rgb": {
+                  "show": true,
+                  "amount": 0.003,
+                  "angle": 0.5
+                },
+                "film": {
+                  "show": true,
+                  "count": 800,
+                  "sIntensity": 0.15,
+                  "nIntensity": 0.4,
+                  "grayscale": false
+                },
+                "static": {
+                  "show": false,
+                  "amount": 0.2,
+                  "size": 2
+                },
+                "hue": {
+                  "show": true,
+                  "hue": 0,
+                  "saturation": 0
+                }
+              },
+              "images": {},
+              "texts": {},
+              "sparks": {
+                "enabled": true,
+                "emitters": [
+                  {
+                    "id": "emitter_1770816834228",
+                    "name": "New Emitter",
+                    "count": 100,
+                    "color": "#ffffff",
+                    "opacity": 0.8,
+                    "size": 1,
+                    "acceleration": 0.1,
+                    "emissionOrigin": {
+                      "x": 0,
+                      "y": -50,
+                      "z": -10
+                    },
+                    "emissionDirection": "up",
+                    "perturbation": {
+                      "enabled": false,
+                      "amplitude": 0.2,
+                      "frequency": 10
+                    },
+                    "sprite": "./images/spark1.png",
+                    "blending": "additive",
+                    "muted": false
+                  }
+                ]
+              }
+            },
+            "sequences": []
+          },
+          {
+            "id": "scene_mli2exnu_2",
+            "name": "Scene 2",
+            "startTime": 10.39,
+            "duration": 30,
+            "color": "#8b5cf6",
+            "collapsed": true,
+            "hidden": false,
+            "trackIndex": 1,
+            "baseConfig": {
+              "scene": {
+                "bgColor": "#1d1b3c",
+                "background": "",
+                "blur": 0,
+                "brightness": 90,
+                "shader": "Cloud3",
+                "shader_speed": 0.8,
+                "shader_opacity": 1,
+                "shader_blending": "additive"
+              },
+              "music": "",
+              "timer": {
+                "show": false,
+                "color": "#ffffff",
+                "bgColor": false,
+                "opacity": 0.7,
+                "order": 1,
+                "width": 512,
+                "height": 64,
+                "size": 20,
+                "font": "Kdam Thmor Pro",
+                "align": "center",
+                "x": 0,
+                "y": -227.4,
+                "z": -500,
+                "rotationX": 0,
+                "rotationY": 0,
+                "rotationZ": 0
+              },
+              "progressbar": {
+                "show": false,
+                "color": "#ffffff",
+                "cursorColor": "#ffffff",
+                "bgColor": false,
+                "opacity": 0.32,
+                "order": 1,
+                "width": 512,
+                "height": 64,
+                "x": 0,
+                "y": -185.4,
+                "z": -500,
+                "rotationX": 0,
+                "rotationY": 0,
+                "rotationZ": 0
+              },
+              "vumeters": {
+                "oscilloscop": {
+                  "show": false,
+                  "color": "#00ff88",
+                  "bgColor": false,
+                  "motionBlur": true,
+                  "motionBlurLength": 0.25,
+                  "opacity": 0.9,
+                  "order": 1,
+                  "width": 1024,
+                  "height": 92,
+                  "x": 0,
+                  "y": 0,
+                  "z": -250,
+                  "rotationX": 0,
+                  "rotationY": 0,
+                  "rotationZ": 0
+                },
+                "spectrum": {
+                  "show": false,
+                  "color": "#ffffff",
+                  "bgColor": false,
+                  "multiColor": true,
+                  "centerSpectrum": false,
+                  "motionBlur": true,
+                  "motionBlurLength": 0.25,
+                  "opacity": 0.8,
+                  "order": 1,
+                  "bars": 64,
+                  "width": 512,
+                  "height": 48,
+                  "x": 0,
+                  "y": -156.3,
+                  "z": -500,
+                  "zoom": 1,
+                  "rotationX": 0,
+                  "rotationY": 0,
+                  "rotationZ": 0
+                }
+              },
+              "composer": {
+                "bloom": {
+                  "show": true,
+                  "strength": 0.9,
+                  "threshold": 0.6,
+                  "radius": 0.5
+                },
+                "rgb": {
+                  "show": true,
+                  "amount": 0.003,
+                  "angle": 0.5
+                },
+                "film": {
+                  "show": true,
+                  "count": 800,
+                  "sIntensity": 0.15,
+                  "nIntensity": 0.4,
+                  "grayscale": false
+                },
+                "static": {
+                  "show": false,
+                  "amount": 0.2,
+                  "size": 2
+                },
+                "hue": {
+                  "show": true,
+                  "hue": 0,
+                  "saturation": 0
+                }
+              },
+              "images": {},
+              "texts": {},
+              "sparks": {
+                "enabled": false,
+                "emitters": []
+              }
+            },
+            "sequences": []
+          }
+        ],
+        "transitions": [],
+        "audioClips": []
+      },
+      "sceneTrackCount": 2,
+      "audioTrackCount": 1,
+      "thumbnail": "",
+      "createdAt": "2026-02-11T13:39:38.820Z",
+      "updatedAt": "2026-02-11T13:39:38.820Z",
+      "id": 1
+    }
+  ]
+}

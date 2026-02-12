@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useRef } from "react";
 import { useStudioStore } from "@/store/useStudioStore.ts";
 import { useGanttStore } from "@/store/useGanttStore.ts";
 import { seedSamplePresets } from "@/db/samplePresets";
+import { resolveAllAssets, migrateToAssetRegistry } from "@/services/assetRegistry.ts";
 import { useAudioContext } from "@/hooks/useAudioContext.ts";
 import { useFps } from "@/hooks/useFps.ts";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts.ts";
@@ -44,12 +45,25 @@ function App() {
   const { setRenderer: setPlaybackRenderer, addAudioFile, getAudioBuffer, loadAudioClipBuffer } =
     usePlaybackEngine(audioContext, analyserNode);
 
-  // Seed sample presets on first launch
+  // Seed sample presets on first launch + resolve persisted assets
   const seeded = useRef(false);
   useEffect(() => {
     if (seeded.current) return;
     seeded.current = true;
     void seedSamplePresets();
+
+    // Restore blob URLs for assets persisted in localStorage
+    const timeline = useGanttStore.getState().timeline;
+    const hasAssets = Object.keys(timeline.assets ?? {}).length > 0;
+    const hasScenes = timeline.scenes.length > 0;
+    if (hasAssets || hasScenes) {
+      void (async () => {
+        await migrateToAssetRegistry(timeline);
+        await resolveAllAssets(timeline);
+        // Force re-render with resolved URLs
+        useGanttStore.setState({ timeline: { ...timeline } });
+      })();
+    }
   }, []);
 
   // Store the capture function in the global store so library UI can use it.
