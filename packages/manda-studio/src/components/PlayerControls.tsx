@@ -19,7 +19,6 @@ export function PlayerControls({
   const getTimelineDuration = useGanttStore((s) => s.getTimelineDuration);
   const duration = getTimelineDuration();
   const volume = useGanttStore((s) => s.masterVolume);
-  const setPlaying = useGanttStore((s) => s.setPlaying);
   const setCurrentTime = useGanttStore((s) => s.setCurrentTime);
   const setMasterVolume = useGanttStore((s) => s.setMasterVolume);
   const audioClips = useGanttStore((s) => s.timeline.audioClips);
@@ -28,8 +27,9 @@ export function PlayerControls({
   const volumeBeforeMuteRef = useRef(volume);
 
   const handlePlayPause = useCallback(() => {
-    setPlaying(!isPlaying);
-  }, [isPlaying, setPlaying]);
+    const { isPlaying: playing, setPlaying: sp } = useGanttStore.getState();
+    sp(!playing);
+  }, []);
 
   const handleMuteToggle = useCallback(() => {
     if (isMuted) {

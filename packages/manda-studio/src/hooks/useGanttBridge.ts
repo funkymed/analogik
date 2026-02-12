@@ -53,13 +53,15 @@ export function useGanttBridge() {
       const config = evaluateSceneAtTime(scene, time);
       if (!config) return;
 
-      const clone = structuredClone(config);
+      // Shallow clone: creates a new reference so the studio store doesn't
+      // hold the same object as the gantt store. Nested objects are shared
+      // (safe because updateConfig does path-based shallow cloning).
       configSceneIdRef.current = sceneId;
 
       // Push to studio inside the syncing guard
       isSyncingRef.current = true;
       try {
-        useStudioStore.getState().setConfig(clone);
+        useStudioStore.getState().setConfig({ ...config });
       } finally {
         isSyncingRef.current = false;
       }
@@ -141,6 +143,9 @@ export function useGanttBridge() {
             }
           }
         } else {
+          // Deep clone needed here: baseConfig is persisted in the gantt timeline
+          // and must be fully isolated from the studio store's live config.
+          // This path only runs on manual edits while paused (low frequency).
           gantt.updateScene(targetSceneId, { baseConfig: structuredClone(state.config) });
         }
       } finally {

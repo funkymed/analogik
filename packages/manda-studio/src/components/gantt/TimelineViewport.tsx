@@ -32,28 +32,30 @@ export function TimelineViewport({ children, onVerticalScroll, onLoadAudioFile }
   const duration = getTimelineDuration();
   const totalWidth = duration * pixelsPerSecond;
 
-  // Center-locked follow: playhead stays at viewport center,
-  // except at the very start (scroll=0) and very end (scroll=max).
+  // Use refs to read latest values without re-attaching listeners.
+  const ppsRef = useRef(pixelsPerSecond);
+  ppsRef.current = pixelsPerSecond;
+
+  // Center-locked follow: playhead stays at viewport center via rAF loop.
+  // Uses refs to avoid triggering a React effect 60x/sec during playback.
   useEffect(() => {
     if (!followPlayhead || !isPlaying) return;
 
-    const el = scrollRef.current;
-    if (!el) return;
-
-    const playheadX = currentTime * pixelsPerSecond;
-    const viewportWidth = el.clientWidth;
-    const halfView = viewportWidth / 2;
-    const maxScroll = el.scrollWidth - viewportWidth;
-
-    // Desired scroll = playhead at center
-    const idealScroll = playheadX - halfView;
-    // Clamp to [0, maxScroll] — handles start & end phases naturally
-    el.scrollLeft = Math.max(0, Math.min(maxScroll, idealScroll));
-  }, [currentTime, pixelsPerSecond, followPlayhead, isPlaying]);
-
-  // Use refs to read latest values without re-attaching the wheel listener.
-  const ppsRef = useRef(pixelsPerSecond);
-  ppsRef.current = pixelsPerSecond;
+    let rafId: number;
+    const tick = () => {
+      const el = scrollRef.current;
+      if (el) {
+        const playheadX = useGanttStore.getState().currentTime * ppsRef.current;
+        const viewportWidth = el.clientWidth;
+        const halfView = viewportWidth / 2;
+        const maxScroll = el.scrollWidth - viewportWidth;
+        el.scrollLeft = Math.max(0, Math.min(maxScroll, playheadX - halfView));
+      }
+      rafId = requestAnimationFrame(tick);
+    };
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
+  }, [followPlayhead, isPlaying]);
   const trackHeightRef = useRef(trackHeight);
   trackHeightRef.current = trackHeight;
 
