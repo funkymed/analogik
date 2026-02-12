@@ -11,6 +11,8 @@ import ImagePlus from "lucide-react/dist/esm/icons/image-plus.js";
 import Plus from "lucide-react/dist/esm/icons/plus.js";
 import Sparkles from "lucide-react/dist/esm/icons/sparkles.js";
 import Type from "lucide-react/dist/esm/icons/type.js";
+import Eye from "lucide-react/dist/esm/icons/eye.js";
+import EyeOff from "lucide-react/dist/esm/icons/eye-off.js";
 import XIcon from "lucide-react/dist/esm/icons/x.js";
 import Zap from "lucide-react/dist/esm/icons/zap.js";
 import { useGanttStore } from "@/store/useGanttStore.ts";
@@ -347,6 +349,7 @@ export function AccordionSidebar() {
   const scenes = useGanttStore((s) => s.timeline.scenes);
   const addSidebarItem = useGanttStore((s) => s.addSidebarItem);
   const removeSidebarItem = useGanttStore((s) => s.removeSidebarItem);
+  const updateScene = useGanttStore((s) => s.updateScene);
   const config = useStudioStore((s) => s.config);
 
   const selectedScene = scenes.find((s) => s.id === selection.sceneId);
@@ -402,6 +405,31 @@ export function AccordionSidebar() {
     return LABEL_MAP[item.type];
   }
 
+  const handleSceneNameChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (!selectedScene) return;
+      updateScene(selectedScene.id, { name: e.target.value });
+    },
+    [selectedScene, updateScene],
+  );
+
+  const handleSceneColorChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (!selectedScene) return;
+      updateScene(selectedScene.id, { color: e.target.value });
+    },
+    [selectedScene, updateScene],
+  );
+
+  const sceneShow = useStudioStore((s) => s.config.scene?.show !== false);
+  const updateStudioConfig = useStudioStore((s) => s.updateConfig);
+  const pushHistory = useStudioStore((s) => s.pushHistory);
+
+  const handleSceneVisibilityToggle = useCallback(() => {
+    pushHistory();
+    updateStudioConfig("scene.show", !sceneShow);
+  }, [pushHistory, updateStudioConfig, sceneShow]);
+
   if (!selectedScene) {
     return (
       <div className="flex h-full flex-col items-center justify-center p-4 text-center">
@@ -412,7 +440,37 @@ export function AccordionSidebar() {
 
   return (
     <div className="flex h-full flex-col">
-      {/* Header */}
+      {/* Scene name + color */}
+      <div className="flex shrink-0 items-center gap-2 border-b border-zinc-800 px-3 py-2">
+        <input
+          type="color"
+          value={selectedScene.color || "#6366f1"}
+          onChange={handleSceneColorChange}
+          className="h-6 w-6 shrink-0 cursor-pointer appearance-none rounded border border-zinc-700 bg-transparent p-0 [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:rounded [&::-webkit-color-swatch]:border-none"
+          title="Scene color"
+        />
+        <input
+          type="text"
+          value={selectedScene.name}
+          onChange={handleSceneNameChange}
+          className="min-w-0 flex-1 rounded bg-transparent px-1.5 py-0.5 text-sm font-medium text-zinc-200 outline-none ring-zinc-600 transition-shadow hover:ring-1 focus:ring-1 focus:ring-indigo-500"
+          spellCheck={false}
+        />
+        <button
+          type="button"
+          onClick={handleSceneVisibilityToggle}
+          className={`shrink-0 rounded p-1 transition-colors ${
+            sceneShow
+              ? "text-zinc-300 hover:text-zinc-100"
+              : "text-zinc-600 hover:text-zinc-400"
+          }`}
+          title={sceneShow ? "Hide scene" : "Show scene"}
+        >
+          {sceneShow ? <Eye size={14} /> : <EyeOff size={14} />}
+        </button>
+      </div>
+
+      {/* Components header */}
       <div className="relative flex shrink-0 items-center justify-between border-b border-zinc-800 px-3 py-2">
         <h2 className="text-xs font-semibold text-zinc-300">Components</h2>
         <div className="flex items-center gap-1">

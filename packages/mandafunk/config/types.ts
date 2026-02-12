@@ -224,6 +224,8 @@ export interface ComposerType {
  * Controls the visual backdrop including GLSL shader effects.
  */
 export interface SceneConfig {
+  /** Whether the scene is visible during playback. Defaults to true. */
+  show?: boolean;
   /** Background color as a CSS hex string. Empty string for no solid background. */
   bgColor: string;
   /** Background image URL. Empty string for no background image. */

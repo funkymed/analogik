@@ -5,7 +5,6 @@ import { useStudioStore } from "@/store/useStudioStore";
 import { LabeledSlider } from "@/components/ui/LabeledSlider";
 import { LabeledToggle } from "@/components/ui/LabeledToggle";
 import { BlendingControl } from "@/components/ui/BlendingControl";
-import { SectionHeader } from "@/components/ui/SectionHeader";
 
 function displayShaderName(name: string): string {
   return name.replace(/Shader$/, "");
@@ -18,7 +17,6 @@ export function ShaderPanel() {
   const setLibraryOpen = useStudioStore((s) => s.setLibraryOpen);
 
   const scene = config.scene;
-  const hasShader = !!scene.shader && scene.shader_show !== false;
 
   const [dropOver, setDropOver] = useState(false);
 
@@ -83,13 +81,17 @@ export function ShaderPanel() {
     setDropOver(false);
   }, []);
 
+  const hasShader = !!scene.shader && scene.shader_show !== false;
+
   return (
     <div className="flex flex-col">
-      <SectionHeader
-        title="Shader"
-        enabled={hasShader}
-        onToggle={handleToggleShader}
-      >
+      <LabeledToggle
+        label="Visible"
+        checked={hasShader}
+        onChange={handleToggleShader}
+      />
+
+      <div className="space-y-3 pt-2">
         {/* Current shader / drop zone */}
         <div
           className={`rounded-md border border-dashed p-3 transition-colors ${
@@ -185,7 +187,7 @@ export function ShaderPanel() {
           onChange={(v) => handleSceneUpdate("shader_sin_cos_space", v)}
           onPointerDown={handleSliderPointerDown}
         />
-      </SectionHeader>
+      </div>
     </div>
   );
 }

@@ -10,7 +10,6 @@ interface SceneLayerProps {
 }
 
 const ROW_BASE_HEIGHT = 40;
-const SCENE_LABEL_ROW_HEIGHT = 20;
 const PARAMETER_ROW_HEIGHT = 24;
 
 /** Count unique keyframe paths across all sequences in a scene. */
@@ -125,13 +124,13 @@ export function SceneLayer({ pixelsPerSecond }: SceneLayerProps) {
 
             {/* Inline expanded sequences below the scene block + label rows area */}
             {(() => {
-              const sceneLabelTotal = Math.round(trackScenes.length * SCENE_LABEL_ROW_HEIGHT * trackHeight);
+              const scaledParamRow = Math.round(PARAMETER_ROW_HEIGHT * trackHeight);
               let cumulativeParamHeight = 0;
               return trackScenes.map((scene) => {
                 if (scene.collapsed) return null;
-                const myOffset = baseRowHeight + sceneLabelTotal + cumulativeParamHeight;
+                const myOffset = baseRowHeight + cumulativeParamHeight;
                 const pathCount = countUniquePaths(scene);
-                cumulativeParamHeight += pathCount * PARAMETER_ROW_HEIGHT;
+                cumulativeParamHeight += pathCount * scaledParamRow;
                 return (
                   <SceneExpander
                     key={`exp-${scene.id}`}
@@ -140,6 +139,7 @@ export function SceneLayer({ pixelsPerSecond }: SceneLayerProps) {
                     topOffset={myOffset}
                     leftOffset={scene.startTime * pixelsPerSecond}
                     widthPx={scene.duration * pixelsPerSecond}
+                    paramRowHeight={scaledParamRow}
                   />
                 );
               });

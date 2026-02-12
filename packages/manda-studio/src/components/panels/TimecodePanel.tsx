@@ -31,11 +31,13 @@ export function TimecodePanel() {
 
   return (
     <div className="flex flex-col">
-      <SectionHeader
-        title="Timecode"
-        enabled={timer.show}
-        onToggle={handleToggleShow}
-      >
+      <LabeledToggle
+        label="Visible"
+        checked={timer.show}
+        onChange={handleToggleShow}
+      />
+
+      <div className="space-y-3 pt-2">
         <ColorInput
           label="Color"
           value={timer.color}
@@ -122,67 +124,14 @@ export function TimecodePanel() {
 
         {/* Position sub-section */}
         <SectionHeader title="Position" defaultOpen={false}>
-          <LabeledSlider
-            label="X"
-            value={timer.x}
-            min={-650}
-            max={650}
-            step={0.01}
-            onChange={(v) => updateConfig(`${path}.x`, v)}
-            onPointerDown={pushHistory}
-          />
-
-          <LabeledSlider
-            label="Y"
-            value={timer.y}
-            min={-650}
-            max={650}
-            step={0.01}
-            onChange={(v) => updateConfig(`${path}.y`, v)}
-            onPointerDown={pushHistory}
-          />
-
-          <LabeledSlider
-            label="Z"
-            value={timer.z}
-            min={-650}
-            max={-1}
-            step={0.01}
-            onChange={(v) => updateConfig(`${path}.z`, v)}
-            onPointerDown={pushHistory}
-          />
-
-          <LabeledSlider
-            label="Rotation X"
-            value={timer.rotationX}
-            min={-2}
-            max={2}
-            step={0.01}
-            onChange={(v) => updateConfig(`${path}.rotationX`, v)}
-            onPointerDown={pushHistory}
-          />
-
-          <LabeledSlider
-            label="Rotation Y"
-            value={timer.rotationY}
-            min={-2}
-            max={2}
-            step={0.01}
-            onChange={(v) => updateConfig(`${path}.rotationY`, v)}
-            onPointerDown={pushHistory}
-          />
-
-          <LabeledSlider
-            label="Rotation Z"
-            value={timer.rotationZ}
-            min={-2}
-            max={2}
-            step={0.01}
-            onChange={(v) => updateConfig(`${path}.rotationZ`, v)}
-            onPointerDown={pushHistory}
-          />
+          <LabeledSlider label="X" value={timer.x} min={-650} max={650} step={0.01} onChange={(v) => updateConfig(`${path}.x`, v)} onPointerDown={pushHistory} />
+          <LabeledSlider label="Y" value={timer.y} min={-650} max={650} step={0.01} onChange={(v) => updateConfig(`${path}.y`, v)} onPointerDown={pushHistory} />
+          <LabeledSlider label="Z" value={timer.z} min={-650} max={-1} step={0.01} onChange={(v) => updateConfig(`${path}.z`, v)} onPointerDown={pushHistory} />
+          <LabeledSlider label="Rotation X" value={timer.rotationX} min={-2} max={2} step={0.01} onChange={(v) => updateConfig(`${path}.rotationX`, v)} onPointerDown={pushHistory} />
+          <LabeledSlider label="Rotation Y" value={timer.rotationY} min={-2} max={2} step={0.01} onChange={(v) => updateConfig(`${path}.rotationY`, v)} onPointerDown={pushHistory} />
+          <LabeledSlider label="Rotation Z" value={timer.rotationZ} min={-2} max={2} step={0.01} onChange={(v) => updateConfig(`${path}.rotationZ`, v)} onPointerDown={pushHistory} />
         </SectionHeader>
-      </SectionHeader>
+      </div>
     </div>
   );
 }

@@ -48,6 +48,9 @@ export class PlaybackEngine {
   /** Last scene id to detect scene transitions. */
   private lastSceneId: string | null = null;
 
+  /** Whether the current scene's config has show !== false. */
+  private sceneVisible = true;
+
   /** Throttle: only update the store every ~100ms. */
   private lastStoreUpdateTime = 0;
   private static readonly STORE_UPDATE_INTERVAL = 100; // ms
@@ -143,6 +146,7 @@ export class PlaybackEngine {
       this.evaluateWithTimeline(timeline);
     }
 
+    // Always render in pause/edit mode (ignore scene.show)
     this.renderer.render(this.currentTime);
   }
 
@@ -153,6 +157,7 @@ export class PlaybackEngine {
   async renderSelectedConfig(config: ConfigType): Promise<void> {
     if (!this.renderer || this.playing) return;
 
+    // Always render in edit mode (ignore scene.show)
     await this.pushConfigToRenderer(config);
     this.renderer.render(this.currentTime);
   }
@@ -183,9 +188,13 @@ export class PlaybackEngine {
         this.evaluateWithTimeline(timeline);
       }
 
-      // Render the frame at the current timeline time
+      // Render the frame, or black-out if scene.show is false
       if (this.renderer) {
-        this.renderer.render(this.currentTime);
+        if (this.sceneVisible) {
+          this.renderer.render(this.currentTime);
+        } else {
+          this.renderer.renderBlack();
+        }
       }
 
       // Throttled store update for UI
@@ -248,8 +257,12 @@ export class PlaybackEngine {
 
     // Push config to renderer (does NOT render — render() is called separately).
     // Fire-and-forget during playback — the RAF loop renders every frame.
+    // Always push config so the renderer is ready when visibility changes.
     if (result.config && this.renderer) {
+      this.sceneVisible = result.config.scene?.show !== false;
       void this.pushConfigToRenderer(result.config);
+    } else {
+      this.sceneVisible = false;
     }
 
     // Sync audio clips (only during playback — not when paused/seeking)

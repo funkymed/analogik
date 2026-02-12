@@ -184,8 +184,8 @@ export function interpolateValue(
     return lerpHexColor(a, b, t);
   }
 
-  // Snap: booleans and strings switch at 50%
-  return t < 0.5 ? a : b;
+  // Step: booleans and non-color strings hold value A until reaching keyframe B
+  return t < 1 ? a : b;
 }
 
 // ---------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import Eye from "lucide-react/dist/esm/icons/eye.js";
 import EyeOff from "lucide-react/dist/esm/icons/eye-off.js";
 import Volume2 from "lucide-react/dist/esm/icons/volume-2.js";
@@ -6,13 +6,13 @@ import VolumeX from "lucide-react/dist/esm/icons/volume-x.js";
 import Plus from "lucide-react/dist/esm/icons/plus.js";
 import Upload from "lucide-react/dist/esm/icons/upload.js";
 import X from "lucide-react/dist/esm/icons/x.js";
-import { SCENE_COLORS, useGanttStore } from "@/store/useGanttStore.ts";
+import { useGanttStore } from "@/store/useGanttStore.ts";
 import { useStudioStore } from "@/store/useStudioStore.ts";
 import { useTrackHeights } from "@/hooks/useTrackHeights.ts";
 import type { TimelineScene } from "@/timeline/ganttTypes.ts";
 
 const SCENE_ROW_BASE = 40;
-const SCENE_LABEL_ROW_HEIGHT = 20;
+const PARAMETER_ROW_HEIGHT = 24;
 
 const PARAM_COLORS = [
   "bg-indigo-400",
@@ -36,142 +36,6 @@ function getParameterPaths(scene: TimelineScene): string[] {
     }
   }
   return [...paths].sort();
-}
-
-/* ------------------------------------------------------------------ */
-/*  SceneLabelRow — inline scene name + color swatch                  */
-/* ------------------------------------------------------------------ */
-
-interface SceneLabelRowProps {
-  scene: TimelineScene;
-  height: number;
-}
-
-function SceneLabelRow({ scene, height }: SceneLabelRowProps) {
-  const updateScene = useGanttStore((s) => s.updateScene);
-  const selectScene = useGanttStore((s) => s.selectScene);
-  const selectedSceneId = useGanttStore((s) => s.selection.sceneId);
-
-  const [editing, setEditing] = useState(false);
-  const [nameValue, setNameValue] = useState(scene.name);
-  const [showColors, setShowColors] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const colorRef = useRef<HTMLDivElement>(null);
-
-  // Sync name if changed externally
-  useEffect(() => {
-    if (!editing) setNameValue(scene.name);
-  }, [scene.name, editing]);
-
-  // Focus input when editing starts
-  useEffect(() => {
-    if (editing) {
-      inputRef.current?.focus();
-      inputRef.current?.select();
-    }
-  }, [editing]);
-
-  // Close color picker on outside click
-  useEffect(() => {
-    if (!showColors) return;
-    const handleClick = (e: MouseEvent) => {
-      if (colorRef.current && !colorRef.current.contains(e.target as Node)) {
-        setShowColors(false);
-      }
-    };
-    document.addEventListener("pointerdown", handleClick);
-    return () => document.removeEventListener("pointerdown", handleClick);
-  }, [showColors]);
-
-  const commitName = useCallback(() => {
-    const trimmed = nameValue.trim();
-    if (trimmed && trimmed !== scene.name) {
-      updateScene(scene.id, { name: trimmed });
-    } else {
-      setNameValue(scene.name);
-    }
-    setEditing(false);
-  }, [nameValue, scene.id, scene.name, updateScene]);
-
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === "Enter") {
-        commitName();
-      } else if (e.key === "Escape") {
-        setNameValue(scene.name);
-        setEditing(false);
-      }
-    },
-    [commitName, scene.name],
-  );
-
-  const handleColorSelect = useCallback(
-    (color: string) => {
-      updateScene(scene.id, { color });
-      setShowColors(false);
-    },
-    [scene.id, updateScene],
-  );
-
-  const isSelected = selectedSceneId === scene.id;
-
-  return (
-    <div
-      className={`group/scene flex items-center gap-1 px-1.5 ${
-        isSelected ? "bg-zinc-800/50" : "hover:bg-zinc-800/30"
-      }`}
-      style={{ height }}
-    >
-      {/* Color swatch — click to open picker */}
-      <div className="relative" ref={colorRef}>
-        <button
-          type="button"
-          className="h-2.5 w-2.5 shrink-0 rounded-sm border border-white/20 transition-transform hover:scale-125"
-          style={{ backgroundColor: scene.color }}
-          onClick={() => setShowColors((v) => !v)}
-          title="Change color"
-        />
-        {showColors && (
-          <div className="absolute top-full left-0 z-50 mt-1 flex gap-0.5 rounded bg-zinc-900 p-1 shadow-lg ring-1 ring-zinc-700">
-            {SCENE_COLORS.map((c) => (
-              <button
-                key={c}
-                type="button"
-                className={`h-4 w-4 rounded-sm border transition-transform hover:scale-110 ${
-                  c === scene.color
-                    ? "border-white ring-1 ring-white/50"
-                    : "border-white/20"
-                }`}
-                style={{ backgroundColor: c }}
-                onClick={() => handleColorSelect(c)}
-              />
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Scene name — click to select, double-click to rename */}
-      {editing ? (
-        <input
-          ref={inputRef}
-          className="min-w-0 flex-1 rounded bg-zinc-800 px-0.5 text-[9px] text-zinc-300 outline-none ring-1 ring-zinc-600"
-          value={nameValue}
-          onChange={(e) => setNameValue(e.target.value)}
-          onBlur={commitName}
-          onKeyDown={handleKeyDown}
-        />
-      ) : (
-        <span
-          className="min-w-0 flex-1 cursor-default truncate text-[9px] text-zinc-400"
-          title={`${scene.name} — Double-click to rename`}
-          onClick={() => selectScene(scene.id)}
-          onDoubleClick={() => setEditing(true)}
-        >
-          {scene.name}
-        </span>
-      )}
-    </div>
-  );
 }
 
 /* ------------------------------------------------------------------ */
@@ -264,6 +128,7 @@ export function TrackLabelsPanel({ onLoadAudioFile }: TrackLabelsPanelProps) {
 
   const trackHeight = useGanttStore((s) => s.trackHeight);
   const baseRowHeight = Math.round(SCENE_ROW_BASE * trackHeight);
+  const paramRowHeight = Math.round(PARAMETER_ROW_HEIGHT * trackHeight);
 
   // Pre-compute parameter paths per expanded scene
   const expandedParamsByScene = useMemo(() => {
@@ -349,18 +214,6 @@ export function TrackLabelsPanel({ onLoadAudioFile }: TrackLabelsPanelProps) {
               </div>
             </div>
 
-            {/* Scene name labels (sorted by startTime) */}
-            {trackScenes
-              .slice()
-              .sort((a, b) => a.startTime - b.startTime)
-              .map((scene) => (
-                <SceneLabelRow
-                  key={scene.id}
-                  scene={scene}
-                  height={Math.round(SCENE_LABEL_ROW_HEIGHT * trackHeight)}
-                />
-              ))}
-
             {/* Parameter path labels for expanded scenes on this track */}
             {trackScenes.map((scene) => {
               const paths = expandedParamsByScene.get(scene.id);
@@ -370,8 +223,10 @@ export function TrackLabelsPanel({ onLoadAudioFile }: TrackLabelsPanelProps) {
                 return (
                   <div
                     key={`${scene.id}-${path}`}
-                    className="flex h-6 items-center gap-1 px-1.5"
+                    className="flex items-center gap-1 px-1.5"
+                    style={{ height: paramRowHeight }}
                   >
+                    <span className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ backgroundColor: scene.color }} />
                     <span className={`h-1.5 w-1.5 shrink-0 rounded-sm ${PARAM_COLORS[idx % PARAM_COLORS.length]}`} />
                     <span className="truncate text-[9px] text-zinc-500" title={path}>
                       {shortPath}

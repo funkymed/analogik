@@ -46,6 +46,7 @@ function OscilloscopeSection() {
       title="Oscilloscope"
       enabled={oscilloscop.show}
       onToggle={handleToggleShow}
+      defaultOpen={false}
     >
       <ColorInput
         label="Color"
@@ -229,6 +230,7 @@ function SpectrumSection() {
       title="Spectrum"
       enabled={spectrum.show}
       onToggle={handleToggleShow}
+      defaultOpen={false}
     >
       {spectrumColorIsString && (
         <ColorInput

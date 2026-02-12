@@ -31,6 +31,7 @@ import type { ConfigType } from "./types";
  */
 export const configDefault: ConfigType = {
   scene: {
+    show: true,
     bgColor: "",
     background: "",
     blur: 0,
@@ -44,7 +45,7 @@ export const configDefault: ConfigType = {
   music: "",
 
   timer: {
-    show: true,
+    show: false,
     color: "#ffffff",
     bgColor: false,
     opacity: 0.7,
@@ -63,7 +64,7 @@ export const configDefault: ConfigType = {
   },
 
   progressbar: {
-    show: true,
+    show: false,
     color: "#ffffff",
     cursorColor: "#ffffff",
     bgColor: false,
@@ -81,7 +82,7 @@ export const configDefault: ConfigType = {
 
   vumeters: {
     oscilloscop: {
-      show: true,
+      show: false,
       color: "#ffffff",
       bgColor: false,
       motionBlur: true,
@@ -98,7 +99,7 @@ export const configDefault: ConfigType = {
       rotationZ: 0,
     },
     spectrum: {
-      show: true,
+      show: false,
       color: "#ffffff",
       bgColor: false,
       multiColor: true,
@@ -122,7 +123,7 @@ export const configDefault: ConfigType = {
 
   composer: {
     bloom: {
-      show: true,
+      show: false,
       strength: 0.85,
       threshold: 0.73,
       radius: 0.3,
@@ -133,7 +134,7 @@ export const configDefault: ConfigType = {
       angle: 0.7,
     },
     film: {
-      show: true,
+      show: false,
       count: 1000,
       sIntensity: 0.22,
       nIntensity: 0.59,
@@ -145,7 +146,7 @@ export const configDefault: ConfigType = {
       size: 2,
     },
     hue: {
-      show: true,
+      show: false,
       hue: 0,
       saturation: 0,
     },

@@ -17,23 +17,25 @@ export interface EvaluationResult {
  * If multiple scenes overlap, lower trackIndex wins (higher priority).
  * Within the same track, latest startTime wins.
  */
-function findActiveScene(
+/**
+ * Return all scenes active at the given time, sorted by priority
+ * (lower trackIndex first, then latest startTime first within the same track).
+ */
+function findActiveScenesAtTime(
   scenes: TimelineScene[],
   time: number,
-): TimelineScene | null {
-  let best: TimelineScene | null = null;
+): TimelineScene[] {
+  const candidates: TimelineScene[] = [];
   for (const scene of scenes) {
     if (time >= scene.startTime && time < scene.startTime + scene.duration) {
-      if (
-        !best ||
-        scene.trackIndex < best.trackIndex ||
-        (scene.trackIndex === best.trackIndex && scene.startTime > best.startTime)
-      ) {
-        best = scene;
-      }
+      candidates.push(scene);
     }
   }
-  return best;
+  candidates.sort((a, b) => {
+    if (a.trackIndex !== b.trackIndex) return a.trackIndex - b.trackIndex;
+    return b.startTime - a.startTime;
+  });
+  return candidates;
 }
 
 // ---------------------------------------------------------------------------
@@ -96,7 +98,7 @@ function evaluateKeyframes(
     // Sort by time
     kfs.sort((a, b) => a.time - b.time);
 
-    // Before first keyframe: use first keyframe's value
+    // Before first keyframe: hold first keyframe's value
     if (sequenceTime <= kfs[0].time) {
       result.set(path, kfs[0].value);
       continue;
@@ -212,13 +214,14 @@ export function evaluateTimelineAtTime(
   timeline: Timeline,
   time: number,
 ): EvaluationResult {
-  const activeScene = findActiveScene(timeline.scenes, time);
+  const candidates = findActiveScenesAtTime(timeline.scenes, time);
 
-  if (!activeScene) {
-    return { config: null, activeScene: null };
+  // Try scenes by priority — skip those with scene.show === false
+  for (const scene of candidates) {
+    const config = evaluateScene(scene, time);
+    if (config.scene?.show === false) continue;
+    return { config, activeScene: scene };
   }
 
-  const config = evaluateScene(activeScene, time);
-
-  return { config, activeScene };
+  return { config: null, activeScene: null };
 }

@@ -15,6 +15,7 @@ interface ParameterRowProps {
   entries: ParameterEntry[];
   pixelsPerSecond: number;
   sceneStartTime: number;
+  rowHeight?: number;
 }
 
 /**
@@ -26,6 +27,7 @@ export function ParameterRow({
   entries,
   pixelsPerSecond,
   sceneStartTime,
+  rowHeight,
 }: ParameterRowProps) {
   const selectedKeyframeIds = useGanttStore((s) => s.selection.keyframeIds);
   const selectKeyframes = useGanttStore((s) => s.selectKeyframes);
@@ -115,7 +117,7 @@ export function ParameterRow({
   }, [sceneId, editingEntry, removeKeyframe]);
 
   return (
-    <div className="relative flex h-6 w-full border-b border-zinc-800/30">
+    <div className="relative flex w-full border-b border-zinc-800/30" style={{ height: rowHeight ?? 24 }}>
       {/* Keyframe area (labels are in TrackLabelsPanel) */}
       <div className="relative flex-1">
         {entries.map((entry) => {

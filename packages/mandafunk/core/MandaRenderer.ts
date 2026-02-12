@@ -373,6 +373,17 @@ export class MandaRenderer {
     }
   }
 
+  /**
+   * Clears the canvas to black without rendering the scene or composer.
+   * Used when scene.show is false.
+   */
+  renderBlack(): void {
+    if (this.renderer) {
+      this.renderer.setClearColor(0x000000, 1);
+      this.renderer.clear(true, true, true);
+    }
+  }
+
   // -----------------------------------------------------------------------
   // Resize
   // -----------------------------------------------------------------------

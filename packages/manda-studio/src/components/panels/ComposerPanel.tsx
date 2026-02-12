@@ -22,7 +22,7 @@ function BloomSection() {
   );
 
   return (
-    <SectionHeader title="Bloom" enabled={bloom.show} onToggle={handleToggle}>
+    <SectionHeader title="Bloom" enabled={bloom.show} onToggle={handleToggle} defaultOpen={false}>
       <LabeledSlider
         label="Strength"
         value={bloom.strength}
@@ -78,6 +78,7 @@ function RgbSection() {
       title="RGB Shift"
       enabled={rgb.show}
       onToggle={handleToggle}
+      defaultOpen={false}
     >
       <LabeledSlider
         label="Amount"
@@ -132,6 +133,7 @@ function FilmSection() {
       title="Film Grain"
       enabled={film.show}
       onToggle={handleToggle}
+      defaultOpen={false}
     >
       <LabeledSlider
         label="Scanline Count"
@@ -194,6 +196,7 @@ function StaticSection() {
       title="Static"
       enabled={staticEffect.show}
       onToggle={handleToggle}
+      defaultOpen={false}
     >
       <LabeledSlider
         label="Amount"
@@ -240,6 +243,7 @@ function HueSection() {
       title="Hue / Saturation"
       enabled={hue.show}
       onToggle={handleToggle}
+      defaultOpen={false}
     >
       <LabeledSlider
         label="Hue"

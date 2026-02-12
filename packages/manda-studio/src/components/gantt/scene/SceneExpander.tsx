@@ -11,6 +11,8 @@ interface SceneExpanderProps {
   leftOffset?: number;
   /** Pixel width (scene duration). */
   widthPx?: number;
+  /** Scaled height per parameter row. */
+  paramRowHeight?: number;
 }
 
 /**
@@ -23,6 +25,7 @@ export function SceneExpander({
   topOffset = 0,
   leftOffset,
   widthPx,
+  paramRowHeight,
 }: SceneExpanderProps) {
   // Collect all keyframes grouped by path across all sequences
   const parameterGroups = useMemo(() => {
@@ -67,6 +70,7 @@ export function SceneExpander({
           entries={entries}
           pixelsPerSecond={pixelsPerSecond}
           sceneStartTime={scene.startTime}
+          rowHeight={paramRowHeight}
         />
       ))}
     </div>

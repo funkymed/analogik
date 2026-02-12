@@ -31,11 +31,13 @@ export function ProgressBarPanel() {
 
   return (
     <div className="flex flex-col">
-      <SectionHeader
-        title="Progress Bar"
-        enabled={progressbar.show}
-        onToggle={handleToggleShow}
-      >
+      <LabeledToggle
+        label="Visible"
+        checked={progressbar.show}
+        onChange={handleToggleShow}
+      />
+
+      <div className="space-y-3 pt-2">
         <ColorInput
           label="Bar Color"
           value={progressbar.color}
@@ -93,67 +95,14 @@ export function ProgressBarPanel() {
 
         {/* Position sub-section */}
         <SectionHeader title="Position" defaultOpen={false}>
-          <LabeledSlider
-            label="X"
-            value={progressbar.x}
-            min={-650}
-            max={650}
-            step={0.01}
-            onChange={(v) => updateConfig(`${path}.x`, v)}
-            onPointerDown={pushHistory}
-          />
-
-          <LabeledSlider
-            label="Y"
-            value={progressbar.y}
-            min={-650}
-            max={650}
-            step={0.01}
-            onChange={(v) => updateConfig(`${path}.y`, v)}
-            onPointerDown={pushHistory}
-          />
-
-          <LabeledSlider
-            label="Z"
-            value={progressbar.z}
-            min={-650}
-            max={-1}
-            step={0.01}
-            onChange={(v) => updateConfig(`${path}.z`, v)}
-            onPointerDown={pushHistory}
-          />
-
-          <LabeledSlider
-            label="Rotation X"
-            value={progressbar.rotationX}
-            min={-2}
-            max={2}
-            step={0.01}
-            onChange={(v) => updateConfig(`${path}.rotationX`, v)}
-            onPointerDown={pushHistory}
-          />
-
-          <LabeledSlider
-            label="Rotation Y"
-            value={progressbar.rotationY}
-            min={-2}
-            max={2}
-            step={0.01}
-            onChange={(v) => updateConfig(`${path}.rotationY`, v)}
-            onPointerDown={pushHistory}
-          />
-
-          <LabeledSlider
-            label="Rotation Z"
-            value={progressbar.rotationZ}
-            min={-2}
-            max={2}
-            step={0.01}
-            onChange={(v) => updateConfig(`${path}.rotationZ`, v)}
-            onPointerDown={pushHistory}
-          />
+          <LabeledSlider label="X" value={progressbar.x} min={-650} max={650} step={0.01} onChange={(v) => updateConfig(`${path}.x`, v)} onPointerDown={pushHistory} />
+          <LabeledSlider label="Y" value={progressbar.y} min={-650} max={650} step={0.01} onChange={(v) => updateConfig(`${path}.y`, v)} onPointerDown={pushHistory} />
+          <LabeledSlider label="Z" value={progressbar.z} min={-650} max={-1} step={0.01} onChange={(v) => updateConfig(`${path}.z`, v)} onPointerDown={pushHistory} />
+          <LabeledSlider label="Rotation X" value={progressbar.rotationX} min={-2} max={2} step={0.01} onChange={(v) => updateConfig(`${path}.rotationX`, v)} onPointerDown={pushHistory} />
+          <LabeledSlider label="Rotation Y" value={progressbar.rotationY} min={-2} max={2} step={0.01} onChange={(v) => updateConfig(`${path}.rotationY`, v)} onPointerDown={pushHistory} />
+          <LabeledSlider label="Rotation Z" value={progressbar.rotationZ} min={-2} max={2} step={0.01} onChange={(v) => updateConfig(`${path}.rotationZ`, v)} onPointerDown={pushHistory} />
         </SectionHeader>
-      </SectionHeader>
+      </div>
     </div>
   );
 }
