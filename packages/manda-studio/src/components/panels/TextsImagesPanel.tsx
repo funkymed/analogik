@@ -1,6 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
-import Plus from "lucide-react/dist/esm/icons/plus.js";
-import Trash2 from "lucide-react/dist/esm/icons/trash-2.js";
+import { useCallback, useState } from "react";
 import ImageIcon from "lucide-react/dist/esm/icons/image.js";
 import type { TextType, ImageType } from "@mandafunk/config/types";
 import { useStudioStore } from "@/store/useStudioStore";
@@ -9,16 +7,7 @@ import { createAssetEntry } from "@/services/assetRegistry";
 import { LabeledSlider } from "@/components/ui/LabeledSlider";
 import { LabeledToggle } from "@/components/ui/LabeledToggle";
 import { ColorInput } from "@/components/ui/ColorInput";
-import { SectionHeader } from "@/components/ui/SectionHeader";
 import { BlendingControl } from "@/components/ui/BlendingControl";
-
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
-
-interface TextsImagesPanelProps {
-  panelType: "texts" | "images";
-}
 
 // ---------------------------------------------------------------------------
 // Defaults
@@ -464,112 +453,3 @@ export function ImageItemEditor({ itemKey, item, zMin = -650, zMax = -1 }: Image
   );
 }
 
-// ---------------------------------------------------------------------------
-// Main panel component
-// ---------------------------------------------------------------------------
-
-export function TextsImagesPanel({ panelType }: TextsImagesPanelProps) {
-  const config = useStudioStore((s) => s.config);
-  const updateConfig = useStudioStore((s) => s.updateConfig);
-  const setConfig = useStudioStore((s) => s.setConfig);
-  const pushHistory = useStudioStore((s) => s.pushHistory);
-
-  const isTexts = panelType === "texts";
-  const entries = useMemo(() => {
-    const items = isTexts
-      ? toRecord<TextType>(config.texts as Record<string, TextType> | TextType[] | undefined)
-      : toRecord<ImageType>(config.images as Record<string, ImageType> | ImageType[] | undefined);
-    return Object.entries(items);
-  }, [isTexts, config.texts, config.images]);
-
-  const handleAdd = useCallback(() => {
-    pushHistory();
-    const key = isTexts ? `text_${Date.now()}` : `image_${Date.now()}`;
-    const newItem = isTexts
-      ? structuredClone(DEFAULT_TEXT)
-      : structuredClone(DEFAULT_IMAGE);
-
-    const currentItems = isTexts
-      ? toRecord<TextType>(config.texts as Record<string, TextType> | TextType[] | undefined)
-      : toRecord<ImageType>(config.images as Record<string, ImageType> | ImageType[] | undefined);
-
-    updateConfig(panelType, { ...currentItems, [key]: newItem });
-  }, [isTexts, config.texts, config.images, updateConfig, pushHistory, panelType]);
-
-  const handleDelete = useCallback(
-    (key: string) => {
-      pushHistory();
-      const currentItems = isTexts
-        ? toRecord<TextType>(config.texts as Record<string, TextType> | TextType[] | undefined)
-        : toRecord<ImageType>(config.images as Record<string, ImageType> | ImageType[] | undefined);
-
-      const updated = { ...currentItems };
-      delete updated[key];
-
-      const newConfig = structuredClone(config);
-      if (isTexts) {
-        (newConfig as Record<string, unknown>).texts = updated;
-      } else {
-        (newConfig as Record<string, unknown>).images = updated;
-      }
-      setConfig(newConfig);
-    },
-    [isTexts, config, setConfig, pushHistory],
-  );
-
-  return (
-    <div className="flex flex-col gap-1">
-      {/* Header with Add button */}
-      <div className="flex items-center justify-between px-1 py-2">
-        <h2 className="text-xs font-medium text-zinc-300">
-          {isTexts ? "Texts" : "Images"}
-        </h2>
-        <button
-          type="button"
-          onClick={handleAdd}
-          className="flex items-center gap-1 rounded bg-zinc-800 px-2 py-1 text-[10px] text-zinc-300 transition-colors hover:bg-zinc-700"
-          aria-label={isTexts ? "Add text" : "Add image"}
-        >
-          <Plus className="h-3 w-3" />
-          {isTexts ? "Add Text" : "Add Image"}
-        </button>
-      </div>
-
-      {/* Empty state */}
-      {entries.length === 0 && (
-        <p className="px-1 py-4 text-center text-xs text-zinc-600">
-          No {isTexts ? "texts" : "images"} yet. Click the button above to add
-          one.
-        </p>
-      )}
-
-      {/* Item list */}
-      {entries.map(([key, item]) => (
-        <SectionHeader
-          key={key}
-          title={isTexts ? (item as TextType).text || key : key}
-          defaultOpen={false}
-        >
-          {/* Delete button */}
-          <div className="flex justify-end">
-            <button
-              type="button"
-              onClick={() => handleDelete(key)}
-              className="flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] text-red-400 transition-colors hover:bg-red-400/10"
-              aria-label={`Delete ${key}`}
-            >
-              <Trash2 className="h-3 w-3" />
-              Delete
-            </button>
-          </div>
-
-          {isTexts ? (
-            <TextItemEditor itemKey={key} item={item as TextType} />
-          ) : (
-            <ImageItemEditor itemKey={key} item={item as ImageType} zMin={-200} zMax={200} />
-          )}
-        </SectionHeader>
-      ))}
-    </div>
-  );
-}

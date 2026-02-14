@@ -65,7 +65,7 @@ function deepEqual(a: unknown, b: unknown): boolean {
  * @param defaults - The default config to compare against (typically `configDefault`).
  * @returns A partial config containing only the differences.
  */
-export function diffConfig(
+function diffConfig(
   actual: Record<string, unknown>,
   defaults: Record<string, unknown>,
 ): Record<string, unknown> {
@@ -151,12 +151,3 @@ export function mergeWithDefaults(
   return result;
 }
 
-/**
- * Convenience wrapper: merge a partial config onto `configDefault` and return a full ConfigType.
- */
-export function mergeOntoDefaults(partial: Partial<ConfigType>): ConfigType {
-  return mergeWithDefaults(
-    partial as unknown as Record<string, unknown>,
-    configDefault as unknown as Record<string, unknown>,
-  ) as ConfigType;
-}

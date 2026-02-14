@@ -386,7 +386,7 @@ function reconstructAudioClip(
  * This function inspects the config and creates sidebar entries for
  * each section that is present or enabled.
  */
-export function deriveSidebarItems(config: ConfigType): SidebarItem[] {
+function deriveSidebarItems(config: ConfigType): SidebarItem[] {
   const items: SidebarItem[] = [];
 
   // Background is always present

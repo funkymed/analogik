@@ -52,15 +52,6 @@ export async function createAssetEntry(
 // Resolve
 // ---------------------------------------------------------------------------
 
-/** Look up an asset's runtimeUrl by id. */
-export function resolveAssetUrl(
-  assets: Record<string, AssetEntry>,
-  assetId: string | undefined,
-): string | undefined {
-  if (!assetId) return undefined;
-  return assets[assetId]?.runtimeUrl;
-}
-
 /**
  * Walk the entire timeline and create blob URLs for every asset that has a
  * `libraryId` but no `runtimeUrl`. Then patch scene configs and audio clips
